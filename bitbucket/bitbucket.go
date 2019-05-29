@@ -1,0 +1,350 @@
+package bitbucket
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/bitbucket"
+	"golang.org/x/oauth2/clientcredentials"
+	"io"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
+	"sort"
+	"strconv"
+	"strings"
+)
+
+const DEFAULT_PAGE_LENGTH = 10
+
+const (
+	apiBaseURL = "https://api.bitbucket.org/2.0"
+	userAgent  = "go-bitbucket"
+)
+
+// A Client manages communication with the Bitbucket API.
+type Client struct {
+	client *http.Client // HTTP client used to communicate with the API.
+
+	// Base URL for API requests. Defaults to the public Bitbucket API, but can be
+	// set to a domain endpoint to use with GitHub Enterprise. BaseURL should
+	// always be specified with a trailing slash.
+	BaseURL string
+
+	// User agent used when communicating with the Bitbucket API.
+	UserAgent string
+
+	// Reuse a single struct instead of allocating one for each service on the heap.
+	common service
+
+	// Services used for talking to different parts of the Bitbucket API.
+	Issues       *IssuesService
+	PullRequests *PullRequestsService
+
+	Pagelen uint64
+	Auth    *auth
+}
+
+type auth struct {
+	appID, secret  string
+	user, password string
+	token          oauth2.Token
+	bearerToken    string
+}
+
+type service struct {
+	client *Client
+}
+
+// ListOptions specifies the optional parameters to various List methods that
+// support pagination.
+type ListOptions struct {
+	// For paginated result sets, page of results to retrieve.
+	Page uint64 `json:"page,omitempty"`
+
+	// For paginated result sets, the number of results to include per page.
+	PageLen uint64 `json:"pagelen,omitempty"`
+}
+
+// BitbucketLink represents a single link object from Bitbucket object links.
+type BitbucketLink struct {
+	HRef *string `json:"href,omitempty"`
+}
+
+type BitbucketContent struct {
+	Raw    *string `json:"raw,omitempty"`
+	Markup *string `json:"markup,omitempty"`
+	HTML   *string `json:"html,omitempty"`
+	Type   *string `json:"type,omitempty"`
+}
+
+// Uses the Client Credentials Grant oauth2 flow to authenticate to Bitbucket
+func NewOAuthClientCredentials(i, s string) *Client {
+	a := &auth{appID: i, secret: s}
+	ctx := context.Background()
+	conf := &clientcredentials.Config{
+		ClientID:     i,
+		ClientSecret: s,
+		TokenURL:     bitbucket.Endpoint.TokenURL,
+	}
+
+	tok, err := conf.Token(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.token = *tok
+	return injectClient(a)
+
+}
+
+func NewOAuth(i, s string) *Client {
+	a := &auth{appID: i, secret: s}
+	ctx := context.Background()
+	conf := &oauth2.Config{
+		ClientID:     i,
+		ClientSecret: s,
+		Endpoint:     bitbucket.Endpoint,
+	}
+
+	// Redirect user to consent page to ask for permission
+	// for the scopes specified above.
+	url := conf.AuthCodeURL("state", oauth2.AccessTypeOffline)
+	fmt.Printf("Visit the URL for the auth dialog:\n%v", url)
+
+	// Use the authorization code that is pushed to the redirect
+	// URL. Exchange will do the handshake to retrieve the
+	// initial access token. The HTTP Client returned by
+	// conf.Client will refresh the token as necessary.
+	var code string
+	fmt.Printf("Enter the code in the return URL: ")
+	if _, err := fmt.Scan(&code); err != nil {
+		log.Fatal(err)
+	}
+	tok, err := conf.Exchange(ctx, code)
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.token = *tok
+	return injectClient(a)
+}
+
+// NewOAuthWithCode finishes the OAuth handshake with a given code
+// and returns a *Client
+func NewOAuthWithCode(i, s, c string) (*Client, string) {
+	a := &auth{appID: i, secret: s}
+	ctx := context.Background()
+	conf := &oauth2.Config{
+		ClientID:     i,
+		ClientSecret: s,
+		Endpoint:     bitbucket.Endpoint,
+	}
+
+	tok, err := conf.Exchange(ctx, c)
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.token = *tok
+	return injectClient(a), tok.AccessToken
+}
+
+func NewOAuthToken(t oauth2.Token) *Client {
+	a := &auth{token: t}
+	return injectClient(a)
+}
+
+func NewOAuthbearerToken(t string) *Client {
+	a := &auth{bearerToken: t}
+	return injectClient(a)
+}
+
+func NewBasicAuth(u, p string) *Client {
+	a := &auth{user: u, password: p}
+	return injectClient(a)
+}
+
+func injectClient(a *auth) *Client {
+	c := &Client{Auth: a, Pagelen: DEFAULT_PAGE_LENGTH, BaseURL: apiBaseURL, UserAgent: userAgent, client: new(http.Client)}
+	c.common.client = c
+	c.PullRequests = (*PullRequestsService)(&c.common)
+	c.Issues = (*IssuesService)(&c.common)
+
+	return c
+}
+
+func (c *Client) requestUrl(template string, args ...interface{}) string {
+	if len(args) == 1 && args[0] == "" {
+		return c.BaseURL + template
+	}
+	return c.BaseURL + fmt.Sprintf(template, args...)
+}
+
+func (c *Client) execute(method string, urlStr string, v, body interface{}, opts string) (*Response, error) {
+	// Use pagination if changed from default value
+	const DEC_RADIX = 10
+	if strings.Contains(urlStr, "/repositories/") {
+		if c.Pagelen != DEFAULT_PAGE_LENGTH {
+			urlObj, err := url.Parse(urlStr)
+			if err != nil {
+				return nil, err
+			}
+			q := urlObj.Query()
+			q.Set("pagelen", strconv.FormatUint(c.Pagelen, DEC_RADIX))
+			urlObj.RawQuery = q.Encode()
+			urlStr = urlObj.String()
+		}
+	}
+
+	if opts != "" {
+		// encode the query string. then add it to the urlStr
+		encodedQuery := url.QueryEscape(opts)
+		urlStr += fmt.Sprintf("?q=%s", encodedQuery)
+	}
+
+	var buf io.ReadWriter
+	if body != nil {
+		buf = new(bytes.Buffer)
+		enc := json.NewEncoder(buf)
+		enc.SetEscapeHTML(false)
+		err := enc.Encode(body)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	req, err := http.NewRequest(method, urlStr, buf)
+	if err != nil {
+		return nil, err
+	}
+
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("User-Agent", c.UserAgent)
+	}
+
+	c.authenticateRequest(req)
+	response, err := c.doRequest(req, v, false)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func (c *Client) doRequest(req *http.Request, v interface{}, emptyResponse bool) (*Response, error) {
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if resp.Body != nil {
+		defer resp.Body.Close()
+	}
+
+	if (resp.StatusCode != http.StatusOK) && (resp.StatusCode != http.StatusCreated) {
+		return nil, fmt.Errorf(resp.Status)
+	}
+
+	if emptyResponse {
+		return nil, nil
+	}
+
+	if resp.Body == nil {
+		return nil, fmt.Errorf("response body is nil")
+	}
+
+	response := newResponse(resp)
+
+	err = json.NewDecoder(resp.Body).Decode(v)
+
+	return response, err
+}
+
+func (c *Client) authenticateRequest(req *http.Request) {
+	if c.Auth.bearerToken != "" {
+		req.Header.Set("Authorization", "Bearer "+c.Auth.bearerToken)
+	}
+
+	if c.Auth.user != "" && c.Auth.password != "" {
+		req.SetBasicAuth(c.Auth.user, c.Auth.password)
+	} else if c.Auth.token.Valid() {
+		c.Auth.token.SetAuthHeader(req)
+	}
+	return
+}
+
+type Response struct {
+	*http.Response
+
+	Page    int
+	Next    string
+	PageLen int
+	size    int
+}
+
+// newResponse creates a new Response for the provided http.Response.
+func newResponse(r *http.Response) *Response {
+	response := &Response{Response: r}
+	return response
+}
+
+type ErrorResponse struct {
+	Body     []byte
+	Response *http.Response
+	Message  string
+}
+
+func (e *ErrorResponse) Error() string {
+	path, _ := url.QueryUnescape(e.Response.Request.URL.Path)
+	u := fmt.Sprintf("%s://%s%s", e.Response.Request.URL.Scheme, e.Response.Request.URL.Host, path)
+	return fmt.Sprintf("%s %s: %d %s", e.Response.Request.Method, u, e.Response.StatusCode, e.Message)
+}
+
+// CheckResponse checks the API response for errors, and returns them if present.
+func CheckResponse(r *http.Response) error {
+	switch r.StatusCode {
+	case 200, 201, 202, 204, 304:
+		return nil
+	}
+
+	errorResponse := &ErrorResponse{Response: r}
+	data, err := ioutil.ReadAll(r.Body)
+	if err == nil && data != nil {
+		errorResponse.Body = data
+
+		var raw interface{}
+		if err := json.Unmarshal(data, &raw); err != nil {
+			errorResponse.Message = "failed to parse unknown error format"
+		} else {
+			errorResponse.Message = parseError(raw)
+		}
+	}
+
+	return errorResponse
+}
+
+func parseError(raw interface{}) string {
+	switch raw := raw.(type) {
+	case string:
+		return raw
+
+	case []interface{}:
+		var errs []string
+		for _, v := range raw {
+			errs = append(errs, parseError(v))
+		}
+		return fmt.Sprintf("[%s]", strings.Join(errs, ", "))
+
+	case map[string]interface{}:
+		var errs []string
+		for k, v := range raw {
+			errs = append(errs, fmt.Sprintf("{%s: %s}", k, parseError(v)))
+		}
+		sort.Strings(errs)
+		return strings.Join(errs, ", ")
+
+	default:
+		return fmt.Sprintf("failed to parse unexpected error type: %T", raw)
+	}
+}
