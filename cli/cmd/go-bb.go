@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	bbcli "github.com/davidji99/go-bitbucket/cli/cli"
 	"github.com/davidji99/go-bitbucket/cli/command"
 	"gopkg.in/urfave/cli.v1"
 	"log"
@@ -18,9 +19,11 @@ var (
 )
 
 func main() {
+	bitbucketCli := bbcli.New()
+
 	app := cli.NewApp()
 	app.Name = CliName
-	app.Usage = "Bitbucket APIv2 CLI tool"
+	app.Usage = "Bitbucket APIv2 BBCli tool"
 	app.HelpName = CliName
 	app.ArgsUsage = ""
 	app.UsageText = fmt.Sprintf("%s <COMMAND> [options]", CliName)
@@ -41,7 +44,7 @@ func main() {
 
 	// Stores all commands
 	commands := []cli.Command{
-		command.IssueList(),
+		command.Issues(bitbucketCli),
 	}
 	app.Commands = commands
 

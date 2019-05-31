@@ -3,7 +3,7 @@ package bitbucket
 // IssuesService handles communication with the issue related methods
 // of the Bitbucket API.
 //
-// Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues
+// bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues
 type IssuesService struct {
 	client *Client
 }

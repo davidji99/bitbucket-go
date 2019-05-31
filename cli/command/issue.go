@@ -3,34 +3,81 @@ package command
 import (
 	"fmt"
 	"github.com/davidji99/go-bitbucket/bitbucket"
+	cli2 "github.com/davidji99/go-bitbucket/cli/cli"
 	"gopkg.in/urfave/cli.v1"
-	"os"
 )
 
-func IssueList() cli.Command {
+func Issues(bbcli *cli2.BBCli) cli.Command {
 	return cli.Command{
-		Name: "issue:list",
-		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name: GetFlagCliString("owner"),
+		Name:  "issues",
+		Usage: "Interact with Bitbucket issues",
+		Subcommands: []cli.Command{
+			{
+				Name:  "list",
+				Usage: "Returns the issues in the issue tracker",
+				Flags: []cli.Flag{
+					cli.StringFlag{
+						Name: GetFlagCliString("owner"),
+					},
+					cli.StringFlag{
+						Name: GetFlagCliString("repo"),
+					},
+					cli.StringFlag{
+						Name: GetFlagCliString("query"),
+					},
+				},
+				Action: func(c *cli.Context) error {
+					api := bitbucket.NewBasicAuth(bbcli.GetUser(), bbcli.GetPass())
+
+					result, _, err := api.Issues.List(c.String("owner"), c.String("repo"), nil)
+					if err != nil {
+						return err
+					}
+
+					for _, i := range result.Values {
+						fmt.Println(i)
+					}
+
+					return nil
+				},
 			},
-			cli.StringFlag{
-				Name: GetFlagCliString("repo"),
+			{
+				Name:  "create",
+				Usage: "Create a new issue",
+				Flags: []cli.Flag{
+					cli.StringFlag{
+						Name: GetFlagCliString("title"),
+					},
+					cli.StringFlag{
+						Name: GetFlagCliString("kind"),
+					},
+					cli.StringFlag{
+						Name: GetFlagCliString("priority"),
+					},
+					cli.StringFlag{
+						Name: GetFlagCliString("owner"),
+					},
+					cli.StringFlag{
+						Name: GetFlagCliString("repo"),
+					},
+				},
+				Action: func(c *cli.Context) error {
+					api := bitbucket.NewBasicAuth(bbcli.GetUser(), bbcli.GetPass())
+					newIssueOpts := &bitbucket.IssueRequest{
+						Title:    NewStringPointer(c.String("title")),
+						Kind:     NewStringPointer(c.String("kind")),
+						Priority: NewStringPointer(c.String("priority")),
+					}
+
+					result, _, err := api.Issues.Create(c.String("owner"), c.String("repo"), newIssueOpts)
+					if err != nil {
+						return err
+					}
+
+					fmt.Println(result)
+					return nil
+				},
 			},
-		},
-		Action: func(c *cli.Context) error {
-			api := bitbucket.NewBasicAuth(os.Getenv("BB_USER"), os.Getenv("BB_PASS"))
-
-			result, _, err := api.Issues.List(c.String("owner"), c.String("repo"))
-			if err != nil {
-				return err
-			}
-
-			for _, i := range result.Values {
-				fmt.Println(i)
-			}
-
-			return nil
 		},
 	}
 }

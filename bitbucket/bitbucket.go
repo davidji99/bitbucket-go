@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/google/go-querystring/query"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/bitbucket"
 	"golang.org/x/oauth2/clientcredentials"
@@ -13,6 +14,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -41,8 +43,13 @@ type Client struct {
 	common service
 
 	// Services used for talking to different parts of the Bitbucket API.
+	Commits      *CommitsService
+	Components   *ComponentsService
 	Issues       *IssuesService
+	Milestones   *MilestonesService
+	Repositories *RepositoriesService
 	PullRequests *PullRequestsService
+	Versions     *VersionsService
 
 	Pagelen uint64
 	Auth    *auth
@@ -79,6 +86,21 @@ type BitbucketContent struct {
 	Markup *string `json:"markup,omitempty"`
 	HTML   *string `json:"html,omitempty"`
 	Type   *string `json:"type,omitempty"`
+}
+
+// FilterSortOpts represents the querying and sorting mechanism available to certain Bitbucket API resources.
+//
+// Bitbucket API Docs: https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering#query-sort
+type FilterSortOpts struct {
+	// Query is the raw non-URL encoded query string.
+	// Note that the entire query string is put in the Query field.
+	// This library will take care of URL encoding the string for you.
+	Query string `url:"q,omitempty"`
+
+	// In principle, every field that can be queried can also be used as a key for sorting.
+	// By default the sort order is ascending. To reverse the order, prefix the field name with a hyphen (e.g. ?sort=-updated_on).
+	// Only one field can be sorted on. Compound fields (e.g. sort on state first, followed by updated_on) are not supported.
+	Sort string `url:"sort,omitempty"`
 }
 
 // Uses the Client Credentials Grant oauth2 flow to authenticate to Bitbucket
@@ -168,8 +190,13 @@ func NewBasicAuth(u, p string) *Client {
 func injectClient(a *auth) *Client {
 	c := &Client{Auth: a, Pagelen: DEFAULT_PAGE_LENGTH, BaseURL: apiBaseURL, UserAgent: userAgent, client: new(http.Client)}
 	c.common.client = c
-	c.PullRequests = (*PullRequestsService)(&c.common)
+	c.Commits = (*CommitsService)(&c.common)
+	c.Components = (*ComponentsService)(&c.common)
 	c.Issues = (*IssuesService)(&c.common)
+	c.Milestones = (*MilestonesService)(&c.common)
+	c.PullRequests = (*PullRequestsService)(&c.common)
+	c.Repositories = (*RepositoriesService)(&c.common)
+	c.Versions = (*VersionsService)(&c.common)
 
 	return c
 }
@@ -181,7 +208,7 @@ func (c *Client) requestUrl(template string, args ...interface{}) string {
 	return c.BaseURL + fmt.Sprintf(template, args...)
 }
 
-func (c *Client) execute(method string, urlStr string, v, body interface{}, opts string) (*Response, error) {
+func (c *Client) execute(method string, urlStr string, v, body interface{}) (*Response, error) {
 	// Use pagination if changed from default value
 	const DEC_RADIX = 10
 	if strings.Contains(urlStr, "/repositories/") {
@@ -195,12 +222,6 @@ func (c *Client) execute(method string, urlStr string, v, body interface{}, opts
 			urlObj.RawQuery = q.Encode()
 			urlStr = urlObj.String()
 		}
-	}
-
-	if opts != "" {
-		// encode the query string. then add it to the urlStr
-		encodedQuery := url.QueryEscape(opts)
-		urlStr += fmt.Sprintf("?q=%s", encodedQuery)
 	}
 
 	var buf io.ReadWriter
@@ -347,4 +368,27 @@ func parseError(raw interface{}) string {
 	default:
 		return fmt.Sprintf("failed to parse unexpected error type: %T", raw)
 	}
+}
+
+// addOptions adds the parameters in opt as URL query parameters to s. opt
+// must be a struct whose fields may contain "url" tags.
+// Credit: https://github.com/google/go-github/blob/master/github/github.go#L226
+func addOptions(s string, opt interface{}) (string, error) {
+	v := reflect.ValueOf(opt)
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return s, nil
+	}
+
+	u, err := url.Parse(s)
+	if err != nil {
+		return s, err
+	}
+
+	qs, err := query.Values(opt)
+	if err != nil {
+		return s, err
+	}
+
+	u.RawQuery = qs.Encode()
+	return u.String(), nil
 }

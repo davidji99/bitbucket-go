@@ -25,3 +25,18 @@ func GetCmdFlagShort(fullName string) string {
 
 	return shortName
 }
+
+// NewStringPointer returns the pointer of a string value
+func NewStringPointer(value string) *string {
+	return &value
+}
+
+// NewIntPointer returns the pointer of a string value
+func NewIntPointer(value int) *int {
+	return &value
+}
+
+// NewInt64Pointer returns the pointer of a string value
+func NewInt64Pointer(value int64) *int64 {
+	return &value
+}

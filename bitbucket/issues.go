@@ -42,7 +42,7 @@ type Issue struct {
 	ID         *int64        `json:"id,omitempty"`
 }
 
-// IssueLinks represents the "links" object in a Bitbucket issue,
+// IssueLinks represents the "links" object in a Bitbucket issue.
 type IssueLinks struct {
 	Self        *BitbucketLink `json:"self,omitempty"`
 	Attachments *BitbucketLink `json:"attachments,omitempty"`
@@ -52,6 +52,7 @@ type IssueLinks struct {
 	Vote        *BitbucketLink `json:"vote,omitempty"`
 }
 
+// IssueContent represents the Description box in the Bitbucket issue UI.
 type IssueContent struct {
 	Raw    *string `json:"raw,omitempty"`
 	Markup *string `json:"markup,omitempty"`
@@ -59,42 +60,86 @@ type IssueContent struct {
 	Type   *string `json:"type,omitempty"`
 }
 
+// IssueRequest represents a request to create/update an issue.
 type IssueRequest struct {
-	Title    *string                  `json:"title,omitempty"`
-	Kind     *string                  `json:"kind,omitempty"`
-	Priority *string                  `json:"priority,omitempty"`
-	Content  *CreateIssueContentOpts  `json:"content,omitempty"`
-	Assignee *CreateIssueAssigneeOpts `json:"assignee,omitempty"`
+	Title     *string                   `json:"title,omitempty"`    // Required field.
+	Kind      *string                   `json:"kind,omitempty"`     // Required field.
+	Priority  *string                   `json:"priority,omitempty"` // Required field.
+	Content   *IssueRequestContentOpts  `json:"content,omitempty"`
+	Component *ComponentRequest         `json:"component,omitempty"`
+	Milestone *MilestoneRequest         `json:"milestone,omitempty"`
+	Version   *VersionRequest           `json:"version,omitempty"`
+	Assignee  *IssueRequestAssigneeOpts `json:"assignee,omitempty"`
 }
 
-type CreateIssueContentOpts struct {
-	Raw *string `json:"raw,omitempty"`
+// IssueRequestContentOpts represents the Description box when creating/updating a new issue.
+type IssueRequestContentOpts struct {
+	Raw  *string `json:"raw,omitempty"`
+	HTML *string `json:"html,omitempty"`
 }
 
-type CreateIssueAssigneeOpts struct {
+// IssueRequestAssigneeOpts represents the Bitbucket user to be assigned when creating/updating a new issue.
+type IssueRequestAssigneeOpts struct {
 	Username *string `json:"username,omitempty"`
 }
 
-func (i *IssuesService) List(owner, repoSlug string) (*Issues, *Response, error) {
+// List all issues for a given repository.
+// Supports filtering by passing in a non-URI encoded query string. Reference: https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering
+// Example query string: (state = "new" OR state = "on hold") AND assignee = null AND component = "UI" and updated_on > 2015-11-11T00:00:00-07:00
+//
+// Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues#get
+func (i *IssuesService) List(owner, repoSlug string, opts *FilterSortOpts) (*Issues, *Response, error) {
 	issues := new(Issues)
 	urlStr := i.client.requestUrl("/repositories/%s/%s/issues", owner, repoSlug)
+	urlStr, addOptErr := addOptions(urlStr, opts)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
 
-	response, err := i.client.execute("GET", urlStr, &issues, nil, "")
+	response, err := i.client.execute("GET", urlStr, issues, nil)
+
 	return issues, response, err
 }
 
-func (i *IssuesService) Get(owner, repoSlug, issueId string) (*Issue, *Response, error) {
-	result := new(Issue)
-	urlStr := i.client.requestUrl("/repositories/%s/%s/issues/%s", owner, repoSlug, issueId)
-	response, err := i.client.execute("GET", urlStr, result, nil, "")
+// Get a single issue.
+//
+// Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D#get
+func (i *IssuesService) Get(owner, repoSlug string, issueId int64) (*Issue, *Response, error) {
+	issue := new(Issue)
+	urlStr := i.client.requestUrl("/repositories/%s/%s/issues/%v", owner, repoSlug, issueId)
+	response, err := i.client.execute("GET", urlStr, issue, nil)
 
-	return result, response, err
+	return issue, response, err
 }
 
+// Create a new issue.
+//
+// Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues#post
 func (i *IssuesService) Create(owner, repoSlug string, io *IssueRequest) (*Issue, *Response, error) {
-	result := new(Issue)
+	issue := new(Issue)
 	urlStr := i.client.requestUrl("/repositories/%s/%s/issues", owner, repoSlug)
-	response, err := i.client.execute("POST", urlStr, result, io, "")
+	response, err := i.client.execute("POST", urlStr, issue, io)
 
-	return result, response, err
+	return issue, response, err
+}
+
+// Update an issue.
+//
+// Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D#put
+func (i *IssuesService) Update(owner, repoSlug string, issueId int64, io *IssueRequest) (*Issue, *Response, error) {
+	issue := new(Issue)
+	urlStr := i.client.requestUrl("/repositories/%s/%s/issues/%v", owner, repoSlug, issueId)
+	response, err := i.client.execute("PUT", urlStr, issue, io)
+
+	return issue, response, err
+}
+
+// Deletes the specified issue. This requires write access to the repository.
+//
+// Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D#delete
+func (i *IssuesService) Delete(owner, repoSlug string, issueId int64) (*Response, error) {
+	urlStr := i.client.requestUrl("/repositories/%s/%s/issues/%v", owner, repoSlug, issueId)
+	response, err := i.client.execute("DELETE", urlStr, nil, nil)
+
+	return response, err
 }
