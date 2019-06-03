@@ -10,11 +10,7 @@ type MilestonesService service
 
 // Milestones represent a collection of milestones.
 type Milestones struct {
-	Page     int    `json:"page,omitempty"`
-	Next     string `json:"next,omitempty"`
-	Pagelen  int    `json:"pagelen,omitempty"`
-	Size     int    `json:"size,omitempty"`
-	Previous string `json:"previous,omitempty"`
+	Pagination
 
 	Values []*Milestone `json:"values,omitempty"`
 }

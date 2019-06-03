@@ -10,11 +10,7 @@ type VersionsService service
 
 // Versions represents a collection of versions.
 type Versions struct {
-	Page     int    `json:"page,omitempty"`
-	Next     string `json:"next,omitempty"`
-	Pagelen  int    `json:"pagelen,omitempty"`
-	Size     int    `json:"size,omitempty"`
-	Previous string `json:"previous,omitempty"`
+	Pagination
 
 	Values []*Version `json:"values,omitempty"`
 }

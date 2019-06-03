@@ -43,13 +43,19 @@ type Client struct {
 	common service
 
 	// Services used for talking to different parts of the Bitbucket API.
-	Commits      *CommitsService
-	Components   *ComponentsService
-	Issues       *IssuesService
-	Milestones   *MilestonesService
-	Repositories *RepositoriesService
-	PullRequests *PullRequestsService
-	Versions     *VersionsService
+	BranchRestrictions *BranchRestrictionsService
+	Commits            *CommitsService
+	Components         *ComponentsService
+	Diff               *DiffService
+	Downloads          *DownloadsService
+	Issues             *IssuesService
+	Milestones         *MilestonesService
+	Repositories       *RepositoriesService
+	PullRequests       *PullRequestsService
+	Teams              *TeamsService
+	User               *UserService
+	Users              *UsersService
+	Versions           *VersionsService
 
 	Pagelen uint64
 	Auth    *auth
@@ -81,11 +87,21 @@ type BitbucketLink struct {
 	HRef *string `json:"href,omitempty"`
 }
 
+// BitbucketContent represents content found in a Bitbucket resource.
 type BitbucketContent struct {
 	Raw    *string `json:"raw,omitempty"`
 	Markup *string `json:"markup,omitempty"`
 	HTML   *string `json:"html,omitempty"`
 	Type   *string `json:"type,omitempty"`
+}
+
+// Pagination represents the pagination data returned on most LIST functions
+type Pagination struct {
+	Page     *int64  `json:"page,omitempty"`
+	Next     *string `json:"next,omitempty"`
+	Pagelen  *int64  `json:"pagelen,omitempty"`
+	Size     *int64  `json:"size,omitempty"`
+	Previous *string `json:"previous,omitempty"`
 }
 
 // FilterSortOpts represents the querying and sorting mechanism available to certain Bitbucket API resources.
@@ -190,12 +206,18 @@ func NewBasicAuth(u, p string) *Client {
 func injectClient(a *auth) *Client {
 	c := &Client{Auth: a, Pagelen: DEFAULT_PAGE_LENGTH, BaseURL: apiBaseURL, UserAgent: userAgent, client: new(http.Client)}
 	c.common.client = c
+	c.BranchRestrictions = (*BranchRestrictionsService)(&c.common)
 	c.Commits = (*CommitsService)(&c.common)
 	c.Components = (*ComponentsService)(&c.common)
+	c.Diff = (*DiffService)(&c.common)
+	c.Downloads = (*DownloadsService)(&c.common)
 	c.Issues = (*IssuesService)(&c.common)
 	c.Milestones = (*MilestonesService)(&c.common)
 	c.PullRequests = (*PullRequestsService)(&c.common)
 	c.Repositories = (*RepositoriesService)(&c.common)
+	c.Teams = (*TeamsService)(&c.common)
+	c.User = (*UserService)(&c.common)
+	c.Users = (*UsersService)(&c.common)
 	c.Versions = (*VersionsService)(&c.common)
 
 	return c
@@ -208,7 +230,7 @@ func (c *Client) requestUrl(template string, args ...interface{}) string {
 	return c.BaseURL + fmt.Sprintf(template, args...)
 }
 
-func (c *Client) execute(method string, urlStr string, v, body interface{}) (*Response, error) {
+func (c *Client) newRequest(method string, urlStr string, v, body interface{}) (*http.Request, error) {
 	// Use pagination if changed from default value
 	const DEC_RADIX = 10
 	if strings.Contains(urlStr, "/repositories/") {
@@ -245,7 +267,15 @@ func (c *Client) execute(method string, urlStr string, v, body interface{}) (*Re
 		req.Header.Set("User-Agent", c.UserAgent)
 	}
 
-	c.authenticateRequest(req)
+	return req, nil
+}
+
+func (c *Client) execute(method string, urlStr string, v, body interface{}) (*Response, error) {
+	req, reqErr := c.newRequest(method, urlStr, v, body)
+	if reqErr != nil {
+		return nil, reqErr
+	}
+
 	response, err := c.doRequest(req, v, false)
 	if err != nil {
 		return nil, err
@@ -255,6 +285,8 @@ func (c *Client) execute(method string, urlStr string, v, body interface{}) (*Re
 }
 
 func (c *Client) doRequest(req *http.Request, v interface{}, emptyResponse bool) (*Response, error) {
+	c.addAuthHeaders(req)
+
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
@@ -277,12 +309,24 @@ func (c *Client) doRequest(req *http.Request, v interface{}, emptyResponse bool)
 
 	response := newResponse(resp)
 
-	err = json.NewDecoder(resp.Body).Decode(v)
+	if v != nil {
+		if w, ok := v.(io.Writer); ok {
+			io.Copy(w, resp.Body)
+		} else {
+			decErr := json.NewDecoder(resp.Body).Decode(v)
+			if decErr == io.EOF {
+				decErr = nil
+			}
+			if decErr != nil {
+				err = decErr
+			}
+		}
+	}
 
 	return response, err
 }
 
-func (c *Client) authenticateRequest(req *http.Request) {
+func (c *Client) addAuthHeaders(req *http.Request) {
 	if c.Auth.bearerToken != "" {
 		req.Header.Set("Authorization", "Bearer "+c.Auth.bearerToken)
 	}

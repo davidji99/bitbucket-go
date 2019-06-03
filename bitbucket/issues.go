@@ -10,11 +10,7 @@ type IssuesService service
 
 // Issues represent a collection of issues.
 type Issues struct {
-	Page     int    `json:"page,omitempty"`
-	Next     string `json:"next,omitempty"`
-	Pagelen  int    `json:"pagelen,omitempty"`
-	Size     int    `json:"size,omitempty"`
-	Previous string `json:"previous,omitempty"`
+	Pagination
 
 	Values []*Issue `json:"values,omitempty"`
 }
@@ -84,6 +80,7 @@ type IssueRequestAssigneeOpts struct {
 }
 
 // List all issues for a given repository.
+//
 // Supports filtering by passing in a non-URI encoded query string. Reference: https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering
 // Example query string: (state = "new" OR state = "on hold") AND assignee = null AND component = "UI" and updated_on > 2015-11-11T00:00:00-07:00
 //

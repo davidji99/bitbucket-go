@@ -10,11 +10,7 @@ type ComponentsService service
 
 // Components represent a collection of components.
 type Components struct {
-	Page     int    `json:"page,omitempty"`
-	Next     string `json:"next,omitempty"`
-	Pagelen  int    `json:"pagelen,omitempty"`
-	Size     int    `json:"size,omitempty"`
-	Previous string `json:"previous,omitempty"`
+	Pagination
 
 	Values []*Component `json:"values,omitempty"`
 }

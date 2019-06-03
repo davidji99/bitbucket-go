@@ -12,11 +12,7 @@ type RepositoriesService service
 
 // Repositories represent a collection of repositories.
 type Repositories struct {
-	Page     int    `json:"page,omitempty"`
-	Next     string `json:"next,omitempty"`
-	PageLen  int    `json:"pagelen,omitempty"`
-	Size     int    `json:"size,omitempty"`
-	Previous string `json:"previous,omitempty"`
+	Pagination
 
 	Values []*Issue `json:"values,omitempty"`
 }

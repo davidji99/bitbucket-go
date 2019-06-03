@@ -9,11 +9,7 @@ import "time"
 type PullRequestsService service
 
 type PullRequests struct {
-	Page     int    `json:"page,omitempty"`
-	Next     string `json:"next,omitempty"`
-	Pagelen  int    `json:"pagelen,omitempty"`
-	Size     int    `json:"size,omitempty"`
-	Previous string `json:"previous,omitempty"`
+	Pagination
 
 	Values []*PullRequest `json:"values,omitempty"`
 }
