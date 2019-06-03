@@ -2,7 +2,7 @@ package bitbucket
 
 // UserRepositoriesPermissions represents a collection of a user's permissions on repositories.
 type UserRepositoriesPermissions struct {
-	Pagination
+	PaginationInfo
 
 	Values []*UserRepositoriesPermission `json:"values,omitempty"`
 }

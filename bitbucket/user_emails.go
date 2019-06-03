@@ -2,7 +2,7 @@ package bitbucket
 
 // UserEmails represents a collection of user emails.
 type UserEmails struct {
-	Pagination
+	PaginationInfo
 
 	Values []*UserEmail `json:"values,omitempty"`
 }
@@ -24,9 +24,14 @@ type UserEmailLinks struct {
 // GetEmails returns all the authenticated user's email addresses. Both confirmed and unconfirmed.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/emails/%7Bemail%7D#get
-func (u *UserService) GetEmails() (*UserEmails, *Response, error) {
+func (u *UserService) GetEmails(opts *ListPaginationOpts) (*UserEmails, *Response, error) {
 	emails := new(UserEmails)
 	urlStr := u.client.requestUrl("/user/emails")
+	urlStr, addOptErr := addOptions(urlStr, opts)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := u.client.execute("GET", urlStr, emails, nil)
 
 	return emails, response, err

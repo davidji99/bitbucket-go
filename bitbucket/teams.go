@@ -10,7 +10,7 @@ type TeamsService service
 
 // Teams represents a collection of teams.
 type Teams struct {
-	Pagination
+	PaginationInfo
 
 	Values []*Team `json:"values,omitempty"`
 }
@@ -48,6 +48,8 @@ type TeamListOpts struct {
 	//  - contributor: returns a list of teams which the caller has write access to at least one repository owned by the team.
 	//  - admin: returns a list teams which the caller has team administrator access.
 	Role string `url:"role,omitempty"`
+
+	ListPaginationOpts
 }
 
 // List returns all the teams that the authenticated user is associated with.

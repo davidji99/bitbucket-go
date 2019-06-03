@@ -12,7 +12,7 @@ type RepositoriesService service
 
 // Repositories represent a collection of repositories.
 type Repositories struct {
-	Pagination
+	PaginationInfo
 
 	Values []*Issue `json:"values,omitempty"`
 }

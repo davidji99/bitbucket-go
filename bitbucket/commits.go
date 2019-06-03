@@ -10,7 +10,7 @@ type CommitsService service
 
 // Commits represent a collection of commits.
 type Commits struct {
-	Pagination
+	PaginationInfo
 
 	Values []*Commit `json:"values,omitempty"`
 }
@@ -46,9 +46,14 @@ type CommitLinks struct {
 // Supports filtering by passing in a non-URI encoded query string. Refer to the API docs below.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commits#get
-func (c *CommitsService) List(owner, repoSlug string) (*Commits, *Response, error) {
+func (c *CommitsService) List(owner, repoSlug string, opts *ListPaginationOpts) (*Commits, *Response, error) {
 	commits := new(Commits)
 	urlStr := c.client.requestUrl("/repositories/%s/%s/commits", owner, repoSlug)
+	urlStr, addOptErr := addOptions(urlStr, opts)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := c.client.execute("GET", urlStr, &commits, nil)
 
 	return commits, response, err

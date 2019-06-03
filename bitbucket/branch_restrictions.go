@@ -8,7 +8,7 @@ type BranchRestrictionsService service
 
 // BranchRestrictions represent a collection of branch restrictions.
 type BranchRestrictions struct {
-	Pagination
+	PaginationInfo
 
 	Values []*BranchRestriction `json:"values,omitempty"`
 }
@@ -36,6 +36,8 @@ type BRListOpts struct {
 
 	// Branch restrictions applied to branches of this pattern
 	Pattern string `url:"pattern,omitempty"`
+
+	ListPaginationOpts
 }
 
 // BRRequest represents a request to create/update a branch restriction.

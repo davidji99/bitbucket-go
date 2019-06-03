@@ -6,9 +6,14 @@ package bitbucket
 // This includes users in groups that may not actually have access to any of the team's repositories.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/members#get
-func (t *TeamsService) ListMembers(teamUsername string) (*Users, *Response, error) {
+func (t *TeamsService) ListMembers(teamUsername string, opts *ListPaginationOpts) (*Users, *Response, error) {
 	result := new(Users)
 	urlStr := t.client.requestUrl("/teams/%s/members", teamUsername)
+	urlStr, addOptErr := addOptions(urlStr, opts)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := t.client.execute("GET", urlStr, result, nil)
 
 	return result, response, err

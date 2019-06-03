@@ -9,7 +9,7 @@ import "net/url"
 type DownloadsService service
 
 type Downloads struct {
-	Pagination
+	PaginationInfo
 
 	Values []*DownloadArtifact `json:"values,omitempty"`
 }
@@ -30,9 +30,14 @@ type DownloadFileLinks struct {
 // List returns a list of download links associated with the repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/downloads#get
-func (d *DownloadsService) List(owner, repoSlug string) (*Downloads, *Response, error) {
+func (d *DownloadsService) List(owner, repoSlug string, opts *ListPaginationOpts) (*Downloads, *Response, error) {
 	downloads := new(Downloads)
 	urlStr := d.client.requestUrl("/repositories/%s/%s/downloads", owner, repoSlug)
+	urlStr, addOptErr := addOptions(urlStr, opts)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := d.client.execute("GET", urlStr, downloads, nil)
 
 	return downloads, response, err

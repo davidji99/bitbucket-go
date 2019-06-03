@@ -4,7 +4,7 @@ import "time"
 
 // UserHooks represent a user's hooks.
 type UserHooks struct {
-	Pagination
+	PaginationInfo
 
 	Values []*Issue `json:"values,omitempty"`
 }
@@ -25,9 +25,14 @@ type UserHook struct {
 // Accepts the user's UUID, account_id, or username. Recommend to use UUID or account_id.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/hooks#get
-func (u *UsersService) ListHooks(userID string) (*UserHooks, *Response, error) {
+func (u *UsersService) ListHooks(userID string, opts *ListPaginationOpts) (*UserHooks, *Response, error) {
 	hooks := new(UserHooks)
 	urlStr := u.client.requestUrl("/users/%s/hooks", userID)
+	urlStr, addOptErr := addOptions(urlStr, opts)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := u.client.execute("GET", urlStr, hooks, nil)
 
 	return hooks, response, err

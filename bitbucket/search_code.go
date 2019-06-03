@@ -2,7 +2,7 @@ package bitbucket
 
 // SearchCodeResults represents the results from a search query.
 type SearchCodeResults struct {
-	Pagination
+	PaginationInfo
 
 	QuerySubstituted *bool             `json:"query_substituted,omitempty"`
 	Values           *SearchCodeResult `json:"values,omitempty"`
@@ -51,9 +51,5 @@ type CodeSearchOpts struct {
 	// The search query
 	SearchQuery string `url:"search_query,omitempty"`
 
-	// Which page of the search results to retrieve
-	Page string `url:"page,omitempty"`
-
-	// How many search results to retrieve per page
-	Pagelen string `url:"pagelen,omitempty"`
+	ListPaginationOpts
 }

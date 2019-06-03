@@ -10,7 +10,7 @@ type VersionsService service
 
 // Versions represents a collection of versions.
 type Versions struct {
-	Pagination
+	PaginationInfo
 
 	Values []*Version `json:"values,omitempty"`
 }
@@ -38,9 +38,14 @@ type VersionRequest struct {
 // List all versions that have been defined in the issue tracker.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/versions#get
-func (v *VersionsService) List(owner, repoSlug string) (*Versions, *Response, error) {
+func (v *VersionsService) List(owner, repoSlug string, opts *ListPaginationOpts) (*Versions, *Response, error) {
 	versions := new(Versions)
 	urlStr := v.client.requestUrl("/repositories/%s/%s/versions", owner, repoSlug)
+	urlStr, addOptErr := addOptions(urlStr, opts)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := v.client.execute("GET", urlStr, versions, nil)
 
 	// Parse and store the version id

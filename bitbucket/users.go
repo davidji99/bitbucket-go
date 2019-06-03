@@ -8,7 +8,7 @@ type UsersService service
 
 // Users represents a collection of users.
 type Users struct {
-	Pagination
+	PaginationInfo
 
 	Values []*User `json:"values,omitempty"`
 }

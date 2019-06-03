@@ -2,7 +2,7 @@ package bitbucket
 
 // UserTeamsPermissions represents a collection of a user's permissions on repositories.
 type UserTeamsPermissions struct {
-	Pagination
+	PaginationInfo
 
 	Values []*UserTeamsPermission `json:"values,omitempty"`
 }

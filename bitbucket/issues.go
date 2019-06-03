@@ -10,7 +10,7 @@ type IssuesService service
 
 // Issues represent a collection of issues.
 type Issues struct {
-	Pagination
+	PaginationInfo
 
 	Values []*Issue `json:"values,omitempty"`
 }

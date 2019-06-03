@@ -1,7 +1,7 @@
 package bitbucket
 
 type TeamPermissions struct {
-	Pagination
+	PaginationInfo
 
 	Values []*TeamPermission `json:"values,omitempty"`
 }
@@ -14,7 +14,7 @@ type TeamPermission struct {
 }
 
 type TeamRepoPermissions struct {
-	Pagination
+	PaginationInfo
 
 	Values []*TeamRepoPermission `json:"values,omitempty"`
 }
@@ -32,9 +32,14 @@ type TeamRepoPermission struct {
 // only the highest level is returned.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/permissions#get
-func (t *TeamsService) ListPermissions(teamUsername string) (*TeamPermissions, *Response, error) {
+func (t *TeamsService) ListPermissions(teamUsername string, opts *ListPaginationOpts) (*TeamPermissions, *Response, error) {
 	result := new(TeamPermissions)
 	urlStr := t.client.requestUrl("/teams/%s/permissions", teamUsername)
+	urlStr, addOptErr := addOptions(urlStr, opts)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := t.client.execute("GET", urlStr, result, nil)
 
 	return result, response, err

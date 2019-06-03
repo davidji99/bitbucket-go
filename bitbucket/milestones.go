@@ -10,7 +10,7 @@ type MilestonesService service
 
 // Milestones represent a collection of milestones.
 type Milestones struct {
-	Pagination
+	PaginationInfo
 
 	Values []*Milestone `json:"values,omitempty"`
 }
@@ -38,9 +38,14 @@ type MilestoneRequest struct {
 // List all milestones that have been defined in the issue tracker.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/milestones#get
-func (m *MilestonesService) List(owner, repoSlug string) (*Milestones, *Response, error) {
+func (m *MilestonesService) List(owner, repoSlug string, opts *ListPaginationOpts) (*Milestones, *Response, error) {
 	milestones := new(Milestones)
 	urlStr := m.client.requestUrl("/repositories/%s/%s/milestones", owner, repoSlug)
+	urlStr, addOptErr := addOptions(urlStr, opts)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := m.client.execute("GET", urlStr, milestones, nil)
 
 	// Parse and store the milestonoe id

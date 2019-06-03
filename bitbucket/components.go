@@ -10,7 +10,7 @@ type ComponentsService service
 
 // Components represent a collection of components.
 type Components struct {
-	Pagination
+	PaginationInfo
 
 	Values []*Component `json:"values,omitempty"`
 }
@@ -38,9 +38,14 @@ type ComponentRequest struct {
 // List all components that have been defined in the issue tracker.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/components#get
-func (c *ComponentsService) List(owner, repoSlug string) (*Components, *Response, error) {
+func (c *ComponentsService) List(owner, repoSlug string, opts *ListPaginationOpts) (*Components, *Response, error) {
 	components := new(Components)
 	urlStr := c.client.requestUrl("/repositories/%s/%s/components", owner, repoSlug)
+	urlStr, addOptErr := addOptions(urlStr, opts)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := c.client.execute("GET", urlStr, components, nil)
 
 	// Parse and store the component id

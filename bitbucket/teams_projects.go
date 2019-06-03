@@ -3,7 +3,7 @@ package bitbucket
 import "time"
 
 type TeamProjects struct {
-	Pagination
+	PaginationInfo
 
 	Values []*TeamProject `json:"values,omitempty"`
 }
@@ -37,9 +37,14 @@ type TeamProjectRequest struct {
 // ListProjects returns each project a team has.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/projects/#get
-func (t *TeamsService) ListProjects(teamUsername string) (*TeamProjects, *Response, error) {
+func (t *TeamsService) ListProjects(teamUsername string, opts *ListPaginationOpts) (*TeamProjects, *Response, error) {
 	result := new(TeamProjects)
 	urlStr := t.client.requestUrl("/teams/%s/projects/", teamUsername) // trailing slash is required!
+	urlStr, addOptErr := addOptions(urlStr, opts)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := t.client.execute("GET", urlStr, result, nil)
 
 	return result, response, err

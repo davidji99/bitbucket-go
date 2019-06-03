@@ -95,12 +95,28 @@ type BitbucketContent struct {
 	Type   *string `json:"type,omitempty"`
 }
 
-// Pagination represents the pagination data returned on most LIST functions
-type Pagination struct {
-	Page     *int64  `json:"page,omitempty"`
-	Next     *string `json:"next,omitempty"`
-	Pagelen  *int64  `json:"pagelen,omitempty"`
-	Size     *int64  `json:"size,omitempty"`
+// PaginationInfo represents the pagination data returned on most LIST functions.
+//
+// Bitbucket API Docs: https://developer.atlassian.com/bitbucket/api/2/reference/meta/pagination
+type PaginationInfo struct {
+	// Page number of the current results. This is an optional element that is not provided in all responses.
+	Page *int64 `json:"page,omitempty"`
+
+	//  Link to the next page if it exists. The last page of a collection does not have this value.
+	//  Use this link to navigate the result set and refrain from constructing your own URLs.
+	Next *string `json:"next,omitempty"`
+
+	// Current number of objects on the existing page.
+	Pagelen *int64 `json:"pagelen,omitempty"`
+
+	// Total number of objects in the response. This is an optional element that is not provided in all responses, as it can be expensive to compute.
+	Size *int64 `json:"size,omitempty"`
+
+	//Link to previous page if it exists. A collections first page does not have this value.
+	// This is an optional element that is not provided in all responses.
+	// Some result sets strictly support forward navigation and never provide previous links.
+	// Clients must anticipate that backwards navigation is not always available.
+	// Use this link to navigate the result set and refrain from constructing your own URLs.
 	Previous *string `json:"previous,omitempty"`
 }
 
@@ -117,6 +133,15 @@ type FilterSortOpts struct {
 	// By default the sort order is ascending. To reverse the order, prefix the field name with a hyphen (e.g. ?sort=-updated_on).
 	// Only one field can be sorted on. Compound fields (e.g. sort on state first, followed by updated_on) are not supported.
 	Sort string `url:"sort,omitempty"`
+
+	ListPaginationOpts
+}
+
+// ListOptions specifies the optional parameters to various List methods that
+// support pagination.
+type ListPaginationOpts struct {
+	Page    int `url:"page,omitempty"`
+	Pagelen int `url:"pagelen,omitempty"` // Globally, the minimum length is 10 and the maximum is 100. Some APIs may specify a different default.
 }
 
 // Uses the Client Credentials Grant oauth2 flow to authenticate to Bitbucket

@@ -9,7 +9,7 @@ import "time"
 type PullRequestsService service
 
 type PullRequests struct {
-	Pagination
+	PaginationInfo
 
 	Values []*PullRequest `json:"values,omitempty"`
 }
