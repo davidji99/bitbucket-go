@@ -119,10 +119,10 @@ type Branch struct {
 // Example query string: source.repository.full_name != "main/repo" AND state = "OPEN" AND reviewers.username = "evzijst" AND destination.branch.name = "master"
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests#get
-func (p *PullRequestsService) List(owner, repoSlug string, opts *PullRequestListOpts) (*PullRequests, *Response, error) {
+func (p *PullRequestsService) List(owner, repoSlug string, opts ...interface{}) (*PullRequests, *Response, error) {
 	pullRequests := new(PullRequests)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

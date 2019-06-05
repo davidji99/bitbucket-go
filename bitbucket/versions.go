@@ -1,6 +1,6 @@
 package bitbucket
 
-const versionSelfUrl = `http[sS]?:\/\/.*\/2.0\/repositories\/.*\/.*\/versions/(\d+)`
+const versionSelfUrlRegex = `http[sS]?:\/\/.*\/2.0\/repositories\/.*\/.*\/versions/(\d+)`
 
 // VersionsService handles communication with the version related methods
 // of the Bitbucket API.
@@ -38,10 +38,10 @@ type VersionRequest struct {
 // List all versions that have been defined in the issue tracker.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/versions#get
-func (v *VersionsService) List(owner, repoSlug string, opts *ListPaginationOpts) (*Versions, *Response, error) {
+func (v *VersionsService) List(owner, repoSlug string, opts ...interface{}) (*Versions, *Response, error) {
 	versions := new(Versions)
 	urlStr := v.client.requestUrl("/repositories/%s/%s/versions", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -50,7 +50,7 @@ func (v *VersionsService) List(owner, repoSlug string, opts *ListPaginationOpts)
 
 	// Parse and store the version id
 	for _, version := range versions.Values {
-		version.ID = parseForResourceId(versionSelfUrl, *version.Links.Self.HRef)
+		version.ID = parseForResourceId(versionSelfUrlRegex, *version.Links.Self.HRef)
 	}
 
 	return versions, response, err
@@ -66,7 +66,7 @@ func (v *VersionsService) Get(owner, repoSlug string, versionID int64) (*Version
 	response, err := v.client.execute("GET", urlStr, version, nil)
 
 	// Parse and store the version id
-	version.ID = parseForResourceId(versionSelfUrl, *version.Links.Self.HRef)
+	version.ID = parseForResourceId(versionSelfUrlRegex, *version.Links.Self.HRef)
 
 	return version, response, err
 }

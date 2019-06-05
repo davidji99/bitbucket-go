@@ -37,7 +37,7 @@ type BRListOpts struct {
 	// Branch restrictions applied to branches of this pattern
 	Pattern string `url:"pattern,omitempty"`
 
-	ListPaginationOpts
+	ListOpts
 }
 
 // BRRequest represents a request to create/update a branch restriction.
@@ -51,10 +51,10 @@ type BranchRestrictionRequest struct {
 // List returns a paginated list of all branch restrictions on the repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/branch-restrictions#get
-func (br *BranchRestrictionsService) List(owner, repoSlug string, opts *BRListOpts) (*BranchRestrictions, *Response, error) {
+func (br *BranchRestrictionsService) List(owner, repoSlug string, opts ...interface{}) (*BranchRestrictions, *Response, error) {
 	result := new(BranchRestrictions)
 	urlStr := br.client.requestUrl("/repositories/%s/%s/branch-restrictions", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

@@ -19,26 +19,31 @@ type Repositories struct {
 
 // Repository represents a Bitbucket repository.
 type Repository struct {
-	SCM        *string          `json:"scm,omitempty"`
-	Website    *string          `json:"page,omitempty"`
-	HasWiki    *bool            `json:"has_wiki,omitempty"`
-	Language   *string          `json:"language,omitempty"`
-	ForkPolicy *string          `json:"fork_policy,omitempty"`
-	Links      *RepositoryLinks `json:"links,omitempty"`
-	Name       *string          `json:"name,omitempty"`
-	CreatedOn  *time.Time       `json:"created_on,omitempty"`
-	MainBranch struct {
-		Type *string `json:"type,omitempty"`
-		Name *string `json:"name,omitempty"`
-	} `json:"main_branch,omitempty"`
-	FullName    *string    `json:"full_name,omitempty"`
-	Owner       *User      `json:"owner,omitempty"`
-	UpdatedOn   *time.Time `json:"updated_on,omitempty"`
-	Size        *int64     `json:"size,omitempty"`
-	Type        *string    `json:"type,omitempty"`
-	Slug        *string    `json:"slug,omitempty"`
-	IsPrivate   *bool      `json:"is_private,omitempty"`
-	Description *string    `json:"description,omitempty"`
+	SCM         *string               `json:"scm,omitempty"`
+	Website     *string               `json:"page,omitempty"`
+	HasIssues   *bool                 `json:"has_issues,omitempty"`
+	HasWiki     *bool                 `json:"has_wiki,omitempty"`
+	Language    *string               `json:"language,omitempty"`
+	ForkPolicy  *string               `json:"fork_policy,omitempty"`
+	Links       *RepositoryLinks      `json:"links,omitempty"`
+	Name        *string               `json:"name,omitempty"`
+	CreatedOn   *time.Time            `json:"created_on,omitempty"`
+	MainBranch  *RepositoryMainBranch `json:"main_branch,omitempty"`
+	FullName    *string               `json:"full_name,omitempty"`
+	Owner       *User                 `json:"owner,omitempty"`
+	UpdatedOn   *time.Time            `json:"updated_on,omitempty"`
+	Size        *int64                `json:"size,omitempty"`
+	Type        *string               `json:"type,omitempty"`
+	Slug        *string               `json:"slug,omitempty"`
+	IsPrivate   *bool                 `json:"is_private,omitempty"`
+	Description *string               `json:"description,omitempty"`
+	Parent      *Repository           `json:"parent,omitempty"`
+}
+
+// RepositoryMainBranch represents the primary branch set for a repository.
+type RepositoryMainBranch struct {
+	Type *string `json:"type,omitempty"`
+	Name *string `json:"name,omitempty"`
 }
 
 // RepositoryCloneLink represents the specific clone related links in a Bitbucket repository.
@@ -111,10 +116,10 @@ type RepositoryDeleteOpts struct {
 // Example query string: parent.owner.username = "bitbucket"
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories#get
-func (r *RepositoriesService) ListAll(opts *FilterSortOpts) (*Repositories, *Response, error) {
+func (r *RepositoriesService) ListAll(opts ...interface{}) (*Repositories, *Response, error) {
 	repositories := new(Repositories)
 	urlStr := r.client.requestUrl("/repositories")
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -130,10 +135,10 @@ func (r *RepositoriesService) ListAll(opts *FilterSortOpts) (*Repositories, *Res
 // Example query string: parent.owner.username = "bitbucket"
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D#get
-func (r *RepositoriesService) List(owner string, opts *RepositoryListOpts) (*Repositories, *Response, error) {
+func (r *RepositoriesService) List(owner string, opts ...interface{}) (*Repositories, *Response, error) {
 	repositories := new(Repositories)
 	urlStr := r.client.requestUrl("/repositories/%s", owner)
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -180,9 +185,9 @@ func (r *RepositoriesService) Update(owner, repoSlug string, rr *RepositoryReque
 // This is an irreversible operation.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#delete
-func (r *RepositoriesService) Delete(owner, repoSlug string, opts *RepositoryDeleteOpts) (*Response, error) {
+func (r *RepositoriesService) Delete(owner, repoSlug string, opts ...interface{}) (*Response, error) {
 	urlStr := r.client.requestUrl("/repositories/%s/%s", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, addOptErr
 	}

@@ -49,7 +49,7 @@ type TeamListOpts struct {
 	//  - admin: returns a list teams which the caller has team administrator access.
 	Role string `url:"role,omitempty"`
 
-	ListPaginationOpts
+	ListOpts
 }
 
 // List returns all the teams that the authenticated user is associated with.
@@ -57,10 +57,10 @@ type TeamListOpts struct {
 // Requires 'role' query parameter to be set.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams#get
-func (t *TeamsService) List(opts *TeamListOpts) (*Teams, *Response, error) {
+func (t *TeamsService) List(opts ...interface{}) (*Teams, *Response, error) {
 	teams := new(Teams)
 	urlStr := t.client.requestUrl("/teams")
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

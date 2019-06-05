@@ -39,10 +39,10 @@ type PRApprovalActivity struct {
 // ListActivity returns a paginated list of all pull requests' activity log on a specified repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/activity#get
-func (p *PullRequestsService) ListActivity(owner, repoSlug string, opts *ListPaginationOpts) (*PRActivities, *Response, error) {
+func (p *PullRequestsService) ListActivity(owner, repoSlug string, opts ...interface{}) (*PRActivities, *Response, error) {
 	result := new(PRActivities)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/activity", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

@@ -38,10 +38,10 @@ type MilestoneRequest struct {
 // List all milestones that have been defined in the issue tracker.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/milestones#get
-func (m *MilestonesService) List(owner, repoSlug string, opts *ListPaginationOpts) (*Milestones, *Response, error) {
+func (m *MilestonesService) List(owner, repoSlug string, opts ...interface{}) (*Milestones, *Response, error) {
 	milestones := new(Milestones)
 	urlStr := m.client.requestUrl("/repositories/%s/%s/milestones", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

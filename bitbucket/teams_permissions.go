@@ -32,10 +32,10 @@ type TeamRepoPermission struct {
 // only the highest level is returned.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/permissions#get
-func (t *TeamsService) ListPermissions(teamUsername string, opts *ListPaginationOpts) (*TeamPermissions, *Response, error) {
+func (t *TeamsService) ListPermissions(teamUsername string, opts ...interface{}) (*TeamPermissions, *Response, error) {
 	result := new(TeamPermissions)
 	urlStr := t.client.requestUrl("/teams/%s/permissions", teamUsername)
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -51,10 +51,10 @@ func (t *TeamsService) ListPermissions(teamUsername string, opts *ListPagination
 // an object containing the repository permissions of all the username's repositories will be returned.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/permissions/repositories#get
-func (t *TeamsService) ListRepositoryPermissions(teamUsername string, opts *FilterSortOpts) (*TeamRepoPermissions, *Response, error) {
+func (t *TeamsService) ListRepositoryPermissions(teamUsername string, opts ...interface{}) (*TeamRepoPermissions, *Response, error) {
 	result := new(TeamRepoPermissions)
 	urlStr := t.client.requestUrl("/teams/%s/permissions/repositories", teamUsername)
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -70,10 +70,10 @@ func (t *TeamsService) ListRepositoryPermissions(teamUsername string, opts *Filt
 // an object containing the repository permissions of the username's repository will be returned.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/permissions/repositories/%7Brepo_slug%7D#get
-func (t *TeamsService) GetRepositoryPermissions(teamUsername, repoSlug string, opts *FilterSortOpts) (*TeamRepoPermissions, *Response, error) {
+func (t *TeamsService) GetRepositoryPermissions(teamUsername, repoSlug string, opts ...interface{}) (*TeamRepoPermissions, *Response, error) {
 	result := new(TeamRepoPermissions)
 	urlStr := t.client.requestUrl("/teams/%s/permissions/repositories/%s", teamUsername, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

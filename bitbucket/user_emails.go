@@ -24,10 +24,10 @@ type UserEmailLinks struct {
 // GetEmails returns all the authenticated user's email addresses. Both confirmed and unconfirmed.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/emails/%7Bemail%7D#get
-func (u *UserService) GetEmails(opts *ListPaginationOpts) (*UserEmails, *Response, error) {
+func (u *UserService) GetEmails(opts ...interface{}) (*UserEmails, *Response, error) {
 	emails := new(UserEmails)
 	urlStr := u.client.requestUrl("/user/emails")
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

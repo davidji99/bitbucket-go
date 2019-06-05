@@ -35,10 +35,10 @@ type SSHKeyAddRequest struct {
 // Accepts the user's UUID, account_id, or username. Recommend to use UUID or account_id.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/ssh-keys#get
-func (u *UsersService) ListSSHKeys(userID string, opts *ListPaginationOpts) (*UsersSSHKeys, *Response, error) {
+func (u *UsersService) ListSSHKeys(userID string, opts ...interface{}) (*UsersSSHKeys, *Response, error) {
 	sshKeys := new(UsersSSHKeys)
 	urlStr := u.client.requestUrl("/users/%s/ssh-keys", userID)
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

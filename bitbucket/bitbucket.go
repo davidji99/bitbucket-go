@@ -44,18 +44,27 @@ type Client struct {
 
 	// Services used for talking to different parts of the Bitbucket API.
 	BranchRestrictions *BranchRestrictionsService
+	Commit             *CommitService
 	Commits            *CommitsService
 	Components         *ComponentsService
+	DefaultReviewers   *DefaultReviewersService
+	DeployKeys         *DeployKeysService
 	Diff               *DiffService
 	Downloads          *DownloadsService
+	FileHistory        *FileHistoryService
+	Forks              *ForksService
 	Issues             *IssuesService
 	Milestones         *MilestonesService
-	Repositories       *RepositoriesService
+	Patch              *PatchService
 	PullRequests       *PullRequestsService
+	Refs               *RefsService
+	Repositories       *RepositoriesService
+	SRC                *SRCService
 	Teams              *TeamsService
 	User               *UserService
 	Users              *UsersService
 	Versions           *VersionsService
+	Watchers           *WatchersService
 
 	Pagelen uint64
 	Auth    *auth
@@ -69,17 +78,7 @@ type auth struct {
 }
 
 type service struct {
-	client *Client
-}
-
-// ListOptions specifies the optional parameters to various List methods that
-// support pagination.
-type ListOptions struct {
-	// For paginated result sets, page of results to retrieve.
-	Page uint64 `json:"page,omitempty"`
-
-	// For paginated result sets, the number of results to include per page.
-	PageLen uint64 `json:"pagelen,omitempty"`
+	client *Client // TODO: rename this to API
 }
 
 // BitbucketLink represents a single link object from Bitbucket object links.
@@ -120,7 +119,8 @@ type PaginationInfo struct {
 	Previous *string `json:"previous,omitempty"`
 }
 
-// FilterSortOpts represents the querying and sorting mechanism available to certain Bitbucket API resources.
+// FilterSortOpts represents the querying and sorting mechanism available
+// to certain Bitbucket API resources that return multiple results in a response.
 //
 // Bitbucket API Docs: https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering#query-sort
 type FilterSortOpts struct {
@@ -133,15 +133,24 @@ type FilterSortOpts struct {
 	// By default the sort order is ascending. To reverse the order, prefix the field name with a hyphen (e.g. ?sort=-updated_on).
 	// Only one field can be sorted on. Compound fields (e.g. sort on state first, followed by updated_on) are not supported.
 	Sort string `url:"sort,omitempty"`
-
-	ListPaginationOpts
 }
 
-// ListOptions specifies the optional parameters to various List methods that
-// support pagination.
-type ListPaginationOpts struct {
-	Page    int `url:"page,omitempty"`
-	Pagelen int `url:"pagelen,omitempty"` // Globally, the minimum length is 10 and the maximum is 100. Some APIs may specify a different default.
+// ListOpts specifies the optional parameters to various List methods that support pagination.
+type ListOpts struct {
+	// For paginated result sets, page of results to retrieve.
+	Page int64 `url:"page,omitempty"`
+
+	// For paginated result sets, the number of results to include per page.
+	// Globally, the minimum length is 10 and the maximum is 100. Some APIs may specify a different default.
+	Pagelen int64 `url:"pagelen,omitempty"`
+}
+
+// PartialRespOpts represents the URL parameter to request a partial response and to add or remove
+// specific fields from a response.
+//
+// Bitbucket API Docs: https://developer.atlassian.com/bitbucket/api/2/reference/meta/partial-response
+type PartialRespOpts struct {
+	Fields string `url:"fields,omitempty"`
 }
 
 // Uses the Client Credentials Grant oauth2 flow to authenticate to Bitbucket
@@ -232,18 +241,27 @@ func injectClient(a *auth) *Client {
 	c := &Client{Auth: a, Pagelen: DEFAULT_PAGE_LENGTH, BaseURL: apiBaseURL, UserAgent: userAgent, client: new(http.Client)}
 	c.common.client = c
 	c.BranchRestrictions = (*BranchRestrictionsService)(&c.common)
+	c.Commit = (*CommitService)(&c.common)
 	c.Commits = (*CommitsService)(&c.common)
 	c.Components = (*ComponentsService)(&c.common)
+	c.DefaultReviewers = (*DefaultReviewersService)(&c.common)
+	c.DeployKeys = (*DeployKeysService)(&c.common)
 	c.Diff = (*DiffService)(&c.common)
 	c.Downloads = (*DownloadsService)(&c.common)
+	c.FileHistory = (*FileHistoryService)(&c.common)
+	c.Forks = (*ForksService)(&c.common)
 	c.Issues = (*IssuesService)(&c.common)
 	c.Milestones = (*MilestonesService)(&c.common)
+	c.Patch = (*PatchService)(&c.common)
 	c.PullRequests = (*PullRequestsService)(&c.common)
+	c.Refs = (*RefsService)(&c.common)
 	c.Repositories = (*RepositoriesService)(&c.common)
+	c.SRC = (*SRCService)(&c.common)
 	c.Teams = (*TeamsService)(&c.common)
 	c.User = (*UserService)(&c.common)
 	c.Users = (*UsersService)(&c.common)
 	c.Versions = (*VersionsService)(&c.common)
+	c.Watchers = (*WatchersService)(&c.common)
 
 	return c
 }
@@ -336,7 +354,10 @@ func (c *Client) doRequest(req *http.Request, v interface{}, emptyResponse bool)
 
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {
-			io.Copy(w, resp.Body)
+			_, copyErr := io.Copy(w, resp.Body)
+			if copyErr != nil {
+				return nil, copyErr
+			}
 		} else {
 			decErr := json.NewDecoder(resp.Body).Decode(v)
 			if decErr == io.EOF {
@@ -439,25 +460,63 @@ func parseError(raw interface{}) string {
 	}
 }
 
-// addOptions adds the parameters in opt as URL query parameters to s. opt
-// must be a struct whose fields may contain "url" tags.
-// Credit: https://github.com/google/go-github/blob/master/github/github.go#L226
-func addOptions(s string, opt interface{}) (string, error) {
-	v := reflect.ValueOf(opt)
-	if v.Kind() == reflect.Ptr && v.IsNil() {
+//// addOptions adds the parameters in opt as URL query parameters to s. opt
+//// must be a struct whose fields may contain "url" tags.
+//// Credit: https://github.com/google/go-github/blob/master/github/github.go#L226
+//func addOptions(s string, opt interface{}) (string, error) {
+//	v := reflect.ValueOf(opt)
+//	if v.Kind() == reflect.Ptr && v.IsNil() {
+//		return s, nil
+//	}
+//
+//	u, err := url.Parse(s)
+//	if err != nil {
+//		return s, err
+//	}
+//
+//	qs, err := query.Values(opt)
+//	if err != nil {
+//		return s, err
+//	}
+//
+//	u.RawQuery = qs.Encode()
+//	return u.String(), nil
+//}
+
+// addOptions takes a slice of opts and adds the parameters in each opt as URL query parameters to s.
+// each opt must be a struct whose fields may contain "url" tags.
+// Based on: https://github.com/google/go-github/blob/master/github/github.go#L226
+func addOptions(s string, opts ...interface{}) (string, error) {
+	// Handle if opts is nil
+	v := reflect.ValueOf(opts)
+	if v.Kind() == reflect.Slice && v.IsNil() {
 		return s, nil
 	}
 
+	// Parse URL
 	u, err := url.Parse(s)
 	if err != nil {
 		return s, err
 	}
 
-	qs, err := query.Values(opt)
-	if err != nil {
-		return s, err
+	fulQS := url.Values{}
+	for _, opt := range opts {
+		//// Handle scenario when no opts are passed which means opts is a slice containing one empty slice.
+		//v := reflect.ValueOf(opt)
+		//if v.Kind() == reflect.Slice && v.IsNil() {
+		//	return s, nil
+		//}
+
+		qs, err := query.Values(opt)
+		if err != nil {
+			return s, err
+		}
+
+		for k, v := range qs {
+			fulQS[k] = v
+		}
 	}
 
-	u.RawQuery = qs.Encode()
+	u.RawQuery = fulQS.Encode()
 	return u.String(), nil
 }

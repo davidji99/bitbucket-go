@@ -85,10 +85,10 @@ type IssueRequestAssigneeOpts struct {
 // Example query string: (state = "new" OR state = "on hold") AND assignee = null AND component = "UI" and updated_on > 2015-11-11T00:00:00-07:00
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues#get
-func (i *IssuesService) List(owner, repoSlug string, opts *FilterSortOpts) (*Issues, *Response, error) {
+func (i *IssuesService) List(owner, repoSlug string, opts ...interface{}) (*Issues, *Response, error) {
 	issues := new(Issues)
 	urlStr := i.client.requestUrl("/repositories/%s/%s/issues", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
-	_ "github.com/k0kubun/pp"
 	"github.com/davidji99/go-bitbucket"
+	_ "github.com/k0kubun/pp"
 )
 
 func TestGetRepositoryRepositories(t *testing.T) {

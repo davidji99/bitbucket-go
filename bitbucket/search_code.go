@@ -14,6 +14,7 @@ type SearchCodeResult struct {
 	ContentMatchCount *int64                `json:"content_match_count,omitempty"`
 	ContentMatches    []*SearchContentMatch `json:"content_matches,omitempty"`
 	PathMatches       []*SearchMatch        `json:"path_matches,omitempty"`
+	File              *CodeFile             `json:"file,omitempty"`
 }
 
 // SearchContentMatch represents the content code lines that match a search result.
@@ -33,8 +34,8 @@ type SearchMatch struct {
 	Match *bool   `json:"match,omitempty"`
 }
 
-// SearchCodeFile represents the information regarding the file that matched a search query.
-type SearchCodeFile struct {
+// CodeFile represents the information regarding the file that matched a search query.
+type CodeFile struct {
 	Path  *string              `json:"path,omitempty"`
 	Type  *string              `json:"type,omitempty"`
 	Links *SearchCodeFileLinks `json:"links,omitempty"`
@@ -51,5 +52,5 @@ type CodeSearchOpts struct {
 	// The search query
 	SearchQuery string `url:"search_query,omitempty"`
 
-	ListPaginationOpts
+	ListOpts
 }

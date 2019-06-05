@@ -1,6 +1,6 @@
 package bitbucket
 
-const componentSelfUrl = `http[sS]?:\/\/.*\/2.0\/repositories\/.*\/.*\/components/(\d+)`
+const componentSelfUrlRegex = `http[sS]?:\/\/.*\/2.0\/repositories\/.*\/.*\/components/(\d+)`
 
 // ComponentsService handles communication with the user related methods
 // of the Bitbucket API.
@@ -38,10 +38,10 @@ type ComponentRequest struct {
 // List all components that have been defined in the issue tracker.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/components#get
-func (c *ComponentsService) List(owner, repoSlug string, opts *ListPaginationOpts) (*Components, *Response, error) {
+func (c *ComponentsService) List(owner, repoSlug string, opts ...interface{}) (*Components, *Response, error) {
 	components := new(Components)
 	urlStr := c.client.requestUrl("/repositories/%s/%s/components", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -50,7 +50,7 @@ func (c *ComponentsService) List(owner, repoSlug string, opts *ListPaginationOpt
 
 	// Parse and store the component id
 	for _, component := range components.Values {
-		component.ID = parseForResourceId(componentSelfUrl, *component.Links.Self.HRef)
+		component.ID = parseForResourceId(componentSelfUrlRegex, *component.Links.Self.HRef)
 	}
 
 	return components, response, err
@@ -66,7 +66,7 @@ func (c *ComponentsService) Get(owner, repoSlug string, componentID int64) (*Com
 	response, err := c.client.execute("GET", urlStr, component, nil)
 
 	// Parse and store the component id
-	component.ID = parseForResourceId(componentSelfUrl, *component.Links.Self.HRef)
+	component.ID = parseForResourceId(componentSelfUrlRegex, *component.Links.Self.HRef)
 
 	return component, response, err
 }
