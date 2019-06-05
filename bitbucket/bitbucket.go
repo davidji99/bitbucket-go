@@ -53,6 +53,7 @@ type Client struct {
 	Downloads          *DownloadsService
 	FileHistory        *FileHistoryService
 	Forks              *ForksService
+	HookEvents         *HookEventsService
 	Issues             *IssuesService
 	Milestones         *MilestonesService
 	Patch              *PatchService
@@ -250,6 +251,7 @@ func injectClient(a *auth) *Client {
 	c.Downloads = (*DownloadsService)(&c.common)
 	c.FileHistory = (*FileHistoryService)(&c.common)
 	c.Forks = (*ForksService)(&c.common)
+	c.HookEvents = (*HookEventsService)(&c.common)
 	c.Issues = (*IssuesService)(&c.common)
 	c.Milestones = (*MilestonesService)(&c.common)
 	c.Patch = (*PatchService)(&c.common)

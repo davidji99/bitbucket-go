@@ -111,22 +111,22 @@ type RepositoryDeleteOpts struct {
 	RedirectTo string `url:"redirect_to,omitempty"`
 }
 
-// List all public repositories.
+// ListPublic returns all public repositories.
 // Supports filtering by passing in a non-URI encoded query string. Reference: https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering
 // Example query string: parent.owner.username = "bitbucket"
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories#get
-func (r *RepositoriesService) ListAll(opts ...interface{}) (*Repositories, *Response, error) {
-	repositories := new(Repositories)
+func (r *RepositoriesService) ListPublic(opts ...interface{}) (*Repositories, *Response, error) {
+	result := new(Repositories)
 	urlStr := r.client.requestUrl("/repositories")
 	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
 
-	response, err := r.client.execute("GET", urlStr, repositories, nil)
+	response, err := r.client.execute("GET", urlStr, result, nil)
 
-	return repositories, response, err
+	return result, response, err
 }
 
 // List all repositories owned by the specified account or UUID.
@@ -136,71 +136,58 @@ func (r *RepositoriesService) ListAll(opts ...interface{}) (*Repositories, *Resp
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D#get
 func (r *RepositoriesService) List(owner string, opts ...interface{}) (*Repositories, *Response, error) {
-	repositories := new(Repositories)
+	result := new(Repositories)
 	urlStr := r.client.requestUrl("/repositories/%s", owner)
 	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
 
-	response, err := r.client.execute("GET", urlStr, repositories, nil)
+	response, err := r.client.execute("GET", urlStr, result, nil)
 
-	return repositories, response, err
+	return result, response, err
 }
 
 // Get a single repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#get
 func (r *RepositoriesService) Get(owner, repoSlug string) (*Repository, *Response, error) {
-	repo := new(Repository)
+	result := new(Repository)
 	urlStr := r.client.requestUrl("/repositories/%s/%s", owner, repoSlug)
-	response, err := r.client.execute("GET", urlStr, repo, nil)
+	response, err := r.client.execute("GET", urlStr, result, nil)
 
-	return repo, response, err
+	return result, response, err
 }
 
 // Create a new repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#post
 func (r *RepositoriesService) Create(owner string, rr *RepositoryRequest) (*Repository, *Response, error) {
-	repo := new(Repository)
+	result := new(Repository)
 	urlStr := r.client.requestUrl("/repositories/%s/%s", owner, rr.GetName())
-	response, err := r.client.execute("POST", urlStr, repo, rr)
+	response, err := r.client.execute("POST", urlStr, result, rr)
 
-	return repo, response, err
+	return result, response, err
 }
 
 // Update a repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#put
 func (r *RepositoriesService) Update(owner, repoSlug string, rr *RepositoryRequest) (*Repository, *Response, error) {
-	repo := new(Repository)
+	result := new(Repository)
 	urlStr := r.client.requestUrl("/repositories/%s/%s", owner, repoSlug)
-	response, err := r.client.execute("PUT", urlStr, repo, rr)
+	response, err := r.client.execute("PUT", urlStr, result, rr)
 
-	return repo, response, err
+	return result, response, err
 }
 
 // Delete a repository.
 // This is an irreversible operation.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#delete
-func (r *RepositoriesService) Delete(owner, repoSlug string, opts ...interface{}) (*Response, error) {
+func (r *RepositoriesService) Delete(owner, repoSlug string) (*Response, error) {
 	urlStr := r.client.requestUrl("/repositories/%s/%s", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, addOptErr
-	}
-
 	response, err := r.client.execute("DELETE", urlStr, nil, nil)
 
 	return response, err
-}
-
-// GetName returns the Name field if it's non-nil, empty string otherwise.
-func (rr *RepositoryRequest) GetName() string {
-	if rr == nil || rr.Name == nil {
-		return ""
-	}
-	return *rr.Name
 }

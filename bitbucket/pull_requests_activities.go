@@ -65,30 +65,14 @@ func (p *PullRequestsService) GetActivity(owner, repoSlug string, pullRequestId 
 
 // GetActivityType returns the non-nil field representing the activity: an update or approval.
 // It returns the activity object and its type.
-func (a *PRActivity) GetActivityType() (interface{}, string) {
-	if v, _ := a.GetUpdate(); v != nil {
-		return a.GetUpdate()
+func (p *PRActivity) GetActivityType() (interface{}, string) {
+	if v := p.GetUpdate(); v != nil {
+		return p.GetUpdate(), UpdateActivity
 	}
 
-	if v, _ := a.GetApproval(); v != nil {
-		return a.GetUpdate()
+	if v := p.GetApproval(); v != nil {
+		return p.GetUpdate(), ApprovalActivity
 	}
 
 	return nil, ""
-}
-
-// GetUpdate returns the Update field if it's non-nil, nil otherwise.
-func (a *PRActivity) GetUpdate() (interface{}, string) {
-	if a == nil || a.Update == nil {
-		return nil, ""
-	}
-	return *a.Update, UpdateActivity
-}
-
-// GetApproval returns the Approval field if it's non-nil, nil otherwise.
-func (a *PRActivity) GetApproval() (interface{}, string) {
-	if a == nil || a.Approval == nil {
-		return nil, ""
-	}
-	return *a.Approval, ApprovalActivity
 }
