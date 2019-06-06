@@ -25,8 +25,8 @@ type CommitStatus struct {
 
 // CSLinks represents the "links" object in a Bitbucket commit status.
 type CSLinks struct {
-	Self *BitbucketLink `json:"self,omitempty"`
-	HTML *BitbucketLink `json:"html,omitempty"`
+	Self *Link `json:"self,omitempty"`
+	HTML *Link `json:"html,omitempty"`
 }
 
 // CommitStatusRequest represents a new commit status.

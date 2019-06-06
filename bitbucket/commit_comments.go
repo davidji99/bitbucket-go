@@ -11,26 +11,26 @@ type CommitComments struct {
 
 // CommitComment represents a commit comment.
 type CommitComment struct {
-	Links     *CCLinks          `json:"links,omitempty"`
-	Deleted   *bool             `json:"deleted,omitempty"`
-	Content   *BitbucketContent `json:"content,omitempty"`
-	CreatedOn *time.Time        `json:"created_on,omitempty"`
-	User      *User             `json:"user,omitempty"`
-	Commit    *Commit           `json:"commit,omitempty"`
-	UpdatedOn *time.Time        `json:"updated_on,omitempty"`
-	Type      *string           `json:"type,omitempty"`
-	ID        *int64            `json:"id,omitempty"`
+	Links     *CCLinks   `json:"links,omitempty"`
+	Deleted   *bool      `json:"deleted,omitempty"`
+	Content   *Content   `json:"content,omitempty"`
+	CreatedOn *time.Time `json:"created_on,omitempty"`
+	User      *User      `json:"user,omitempty"`
+	Commit    *Commit    `json:"commit,omitempty"`
+	UpdatedOn *time.Time `json:"updated_on,omitempty"`
+	Type      *string    `json:"type,omitempty"`
+	ID        *int64     `json:"id,omitempty"`
 }
 
 // CCLinks represents the "links" object in a Bitbucket commit comment.
 type CCLinks struct {
-	Self *BitbucketLink `json:"self,omitempty"`
-	HTML *BitbucketLink `json:"html,omitempty"`
+	Self *Link `json:"self,omitempty"`
+	HTML *Link `json:"html,omitempty"`
 }
 
 // CommitCommentRequest represents a new commit comment.
 type CommitCommentRequest struct {
-	Content       *BitbucketContent `json:"content,omitempty"`
+	Content       *Content `json:"content,omitempty"`
 	ParentComment struct {
 		Id *int64 `json:"id,omitempty"`
 	} `json:"parent,omitempty"`

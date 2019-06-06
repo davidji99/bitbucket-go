@@ -26,7 +26,7 @@ type Component struct {
 
 // ComponentLinks represents the "links" object in a Bitbucket component.
 type ComponentLinks struct {
-	Self *BitbucketLink `json:"self,omitempty"`
+	Self *Link `json:"self,omitempty"`
 }
 
 // ComponentRequest represents an existing component to be added to an issue or pull request.

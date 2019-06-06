@@ -15,14 +15,14 @@ type Users struct {
 
 // UserLinks represents the "links" object in a Bitbucket user.
 type UserLinks struct {
-	Hooks        *BitbucketLink `json:"hooks,omitempty"`
-	Self         *BitbucketLink `json:"self,omitempty"`
-	Repositories *BitbucketLink `json:"repositories,omitempty"`
-	HTML         *BitbucketLink `json:"html,omitempty"`
-	Followers    *BitbucketLink `json:"followers,omitempty"`
-	Avatar       *BitbucketLink `json:"avatar,omitempty"`
-	Following    *BitbucketLink `json:"following,omitempty"`
-	Snippets     *BitbucketLink `json:"snippet,omitempty"`
+	Hooks        *Link `json:"hooks,omitempty"`
+	Self         *Link `json:"self,omitempty"`
+	Repositories *Link `json:"repositories,omitempty"`
+	HTML         *Link `json:"html,omitempty"`
+	Followers    *Link `json:"followers,omitempty"`
+	Avatar       *Link `json:"avatar,omitempty"`
+	Following    *Link `json:"following,omitempty"`
+	Snippets     *Link `json:"snippet,omitempty"`
 }
 
 // GetByID fetches a single user.

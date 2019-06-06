@@ -15,7 +15,7 @@ type HookEventTypes struct {
 
 // HookEventTypesLinks represents the "links" object in a Bitbucket hook event type.
 type HookEventTypesLinks struct {
-	Events *BitbucketLink `json:"events,omitempty"`
+	Events *Link `json:"events,omitempty"`
 }
 
 // HookEvents represents a collection of hook events.

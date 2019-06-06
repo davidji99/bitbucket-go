@@ -22,9 +22,9 @@ type TeamProject struct {
 }
 
 type TeamProjectLinks struct {
-	Self   *BitbucketLink `json:"self,omitempty"`
-	Html   *BitbucketLink `json:"html,omitempty"`
-	Avatar *BitbucketLink `json:"avatar,omitempty"`
+	Self   *Link `json:"self,omitempty"`
+	Html   *Link `json:"html,omitempty"`
+	Avatar *Link `json:"avatar,omitempty"`
 }
 
 type TeamProjectRequest struct {

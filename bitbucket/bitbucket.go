@@ -82,13 +82,13 @@ type service struct {
 	client *Client // TODO: rename this to API
 }
 
-// BitbucketLink represents a single link object from Bitbucket object links.
-type BitbucketLink struct {
+// Link represents a single link object from Bitbucket object links.
+type Link struct {
 	HRef *string `json:"href,omitempty"`
 }
 
-// BitbucketContent represents content found in a Bitbucket resource.
-type BitbucketContent struct {
+// Content represents content found in a Bitbucket resource.
+type Content struct {
 	Raw    *string `json:"raw,omitempty"`
 	Markup *string `json:"markup,omitempty"`
 	HTML   *string `json:"html,omitempty"`

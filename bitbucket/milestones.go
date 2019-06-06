@@ -26,7 +26,7 @@ type Milestone struct {
 
 // MilestoneLinks represents the "links" object in a Bitbucket milestone.
 type MilestoneLinks struct {
-	Self *BitbucketLink `json:"self,omitempty"`
+	Self *Link `json:"self,omitempty"`
 }
 
 // MilestoneRequest represents an existing milestone to be added to an issue or pull request.

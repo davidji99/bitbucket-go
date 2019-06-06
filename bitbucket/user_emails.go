@@ -18,7 +18,7 @@ type UserEmail struct {
 
 // UserEmailLinks represents the "links" object in a Bitbucket user email.
 type UserEmailLinks struct {
-	Self *BitbucketLink `json:"self,omitempty"`
+	Self *Link `json:"self,omitempty"`
 }
 
 // GetEmails returns all the authenticated user's email addresses. Both confirmed and unconfirmed.

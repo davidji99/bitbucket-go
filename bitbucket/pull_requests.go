@@ -26,7 +26,7 @@ type PullRequest struct {
 	ID                *int64             `json:"id,omitempty"`
 	Destination       *PullRequestBranch `json:"destination,omitempty"`
 	CreatedOn         *time.Time         `json:"created_on,omitempty"`
-	Summary           *BitbucketContent  `json:"summary,omitempty"`
+	Summary           *Content           `json:"summary,omitempty"`
 	Source            *PullRequestBranch `json:"source,omitempty"`
 	CommentCount      *int64             `json:"comment_count,omitempty"`
 	State             *string            `json:"state,omitempty"`
@@ -41,22 +41,22 @@ type PullRequest struct {
 
 // PullRequestLinks represents the "links" object in a Bitbucket pull request.
 type PullRequestLinks struct {
-	Decline  *BitbucketLink `json:"decline,omitempty"`
-	Commits  *BitbucketLink `json:"commits,omitempty"`
-	Self     *BitbucketLink `json:"self,omitempty"`
-	Comments *BitbucketLink `json:"comments,omitempty"`
-	Merge    *BitbucketLink `json:"merge,omitempty"`
-	HTML     *BitbucketLink `json:"html,omitempty"`
-	Activity *BitbucketLink `json:"activity,omitempty"`
-	Diff     *BitbucketLink `json:"diff,omitempty"`
-	Approve  *BitbucketLink `json:"approve,omitempty"`
-	Statuses *BitbucketLink `json:"statuses,omitempty"`
+	Decline  *Link `json:"decline,omitempty"`
+	Commits  *Link `json:"commits,omitempty"`
+	Self     *Link `json:"self,omitempty"`
+	Comments *Link `json:"comments,omitempty"`
+	Merge    *Link `json:"merge,omitempty"`
+	HTML     *Link `json:"html,omitempty"`
+	Activity *Link `json:"activity,omitempty"`
+	Diff     *Link `json:"diff,omitempty"`
+	Approve  *Link `json:"approve,omitempty"`
+	Statuses *Link `json:"statuses,omitempty"`
 }
 
 // PullRequestBody represents the body of a Bitbucket pull request.
 type PullRequestBody struct {
-	Description *BitbucketContent `json:"description,omitempty"`
-	Title       *BitbucketContent `json:"title,omitempty"`
+	Description *Content `json:"description,omitempty"`
+	Title       *Content `json:"title,omitempty"`
 }
 
 // PullRequestBranch represents a branch associated with the pull request.
@@ -120,27 +120,27 @@ type Branch struct {
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests#get
 func (p *PullRequestsService) List(owner, repoSlug string, opts ...interface{}) (*PullRequests, *Response, error) {
-	pullRequests := new(PullRequests)
+	result := new(PullRequests)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests", owner, repoSlug)
 	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
 
-	response, err := p.client.execute("GET", urlStr, pullRequests, nil)
+	response, err := p.client.execute("GET", urlStr, result, nil)
 
-	return pullRequests, response, err
+	return result, response, err
 }
 
 // Get a single pull request.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D
 func (p *PullRequestsService) Get(owner, repoSlug string, pullRequestId int64) (*PullRequest, *Response, error) {
-	pr := new(PullRequest)
+	result := new(PullRequest)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v", owner, repoSlug, pullRequestId)
-	response, err := p.client.execute("GET", urlStr, pr, nil)
+	response, err := p.client.execute("GET", urlStr, result, nil)
 
-	return pr, response, err
+	return result, response, err
 }
 
 // Create a new pull request.
@@ -149,11 +149,11 @@ func (p *PullRequestsService) Get(owner, repoSlug string, pullRequestId int64) (
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests#post
 func (p *PullRequestsService) Create(owner, repoSlug string, po NewPullRequestOpts) (*PullRequest, *Response, error) {
-	pr := new(PullRequest)
+	result := new(PullRequest)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/", owner, repoSlug)
-	response, err := p.client.execute("POST", urlStr, pr, po)
+	response, err := p.client.execute("POST", urlStr, result, po)
 
-	return pr, response, err
+	return result, response, err
 }
 
 // Update a pull request.
@@ -161,9 +161,9 @@ func (p *PullRequestsService) Create(owner, repoSlug string, po NewPullRequestOp
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D#put
 func (p *PullRequestsService) Update(owner, repoSlug string, pullRequestId int64, po UpdatePullRequestOpts) (*PullRequest, *Response, error) {
-	pr := new(PullRequest)
+	result := new(PullRequest)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v", owner, repoSlug, pullRequestId)
-	response, err := p.client.execute("PUT", urlStr, pr, po)
+	response, err := p.client.execute("PUT", urlStr, result, po)
 
-	return pr, response, err
+	return result, response, err
 }

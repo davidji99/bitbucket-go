@@ -43,8 +43,8 @@ type CodeFile struct {
 
 // SearchCodeFileLinks represents the "links" object in a Bitbucket search code result file.
 type SearchCodeFileLinks struct {
-	Self         *BitbucketLink `json:"self,omitempty"`
-	Repositories *BitbucketLink `json:"repositories,omitempty"`
+	Self         *Link `json:"self,omitempty"`
+	Repositories *Link `json:"repositories,omitempty"`
 }
 
 // CodeSearchOpts represents the query parameters available when searching for code.

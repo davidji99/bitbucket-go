@@ -27,9 +27,9 @@ type Ref struct {
 }
 
 type RefLinks struct {
-	Commits *BitbucketLink `json:"commits,omitempty"`
-	Self    *BitbucketLink `json:"self,omitempty"`
-	HTML    *BitbucketLink `json:"html,omitempty"`
+	Commits *Link `json:"commits,omitempty"`
+	Self    *Link `json:"self,omitempty"`
+	HTML    *Link `json:"html,omitempty"`
 }
 
 // ListAll returns the branches and tags in the repository.

@@ -9,46 +9,6 @@ import (
 	"time"
 )
 
-// GetHTML returns the HTML field if it's non-nil, zero value otherwise.
-func (b *BitbucketContent) GetHTML() string {
-	if b == nil || b.HTML == nil {
-		return ""
-	}
-	return *b.HTML
-}
-
-// GetMarkup returns the Markup field if it's non-nil, zero value otherwise.
-func (b *BitbucketContent) GetMarkup() string {
-	if b == nil || b.Markup == nil {
-		return ""
-	}
-	return *b.Markup
-}
-
-// GetRaw returns the Raw field if it's non-nil, zero value otherwise.
-func (b *BitbucketContent) GetRaw() string {
-	if b == nil || b.Raw == nil {
-		return ""
-	}
-	return *b.Raw
-}
-
-// GetType returns the Type field if it's non-nil, zero value otherwise.
-func (b *BitbucketContent) GetType() string {
-	if b == nil || b.Type == nil {
-		return ""
-	}
-	return *b.Type
-}
-
-// GetHRef returns the HRef field if it's non-nil, zero value otherwise.
-func (b *BitbucketLink) GetHRef() string {
-	if b == nil || b.HRef == nil {
-		return ""
-	}
-	return *b.HRef
-}
-
 // GetIsValid returns the IsValid field if it's non-nil, zero value otherwise.
 func (b *BMBranch) GetIsValid() bool {
 	if b == nil || b.IsValid == nil {
@@ -122,7 +82,7 @@ func (b *BMBranchUpdateOpts) GetUseMainbranch() bool {
 }
 
 // GetSelf returns the Self field.
-func (b *BMLinks) GetSelf() *BitbucketLink {
+func (b *BMLinks) GetSelf() *Link {
 	if b == nil {
 		return nil
 	}
@@ -274,7 +234,7 @@ func (b *BranchRestrictionRequest) GetPattern() string {
 }
 
 // GetSelf returns the Self field.
-func (b *BRLinks) GetSelf() *BitbucketLink {
+func (b *BRLinks) GetSelf() *Link {
 	if b == nil {
 		return nil
 	}
@@ -282,7 +242,7 @@ func (b *BRLinks) GetSelf() *BitbucketLink {
 }
 
 // GetHTML returns the HTML field.
-func (c *CCLinks) GetHTML() *BitbucketLink {
+func (c *CCLinks) GetHTML() *Link {
 	if c == nil {
 		return nil
 	}
@@ -290,7 +250,7 @@ func (c *CCLinks) GetHTML() *BitbucketLink {
 }
 
 // GetSelf returns the Self field.
-func (c *CCLinks) GetSelf() *BitbucketLink {
+func (c *CCLinks) GetSelf() *Link {
 	if c == nil {
 		return nil
 	}
@@ -319,6 +279,78 @@ func (c *CodeFile) GetType() string {
 		return ""
 	}
 	return *c.Type
+}
+
+// GetContent returns the Content field.
+func (c *Comment) GetContent() *Content {
+	if c == nil {
+		return nil
+	}
+	return c.Content
+}
+
+// GetCreatedOn returns the CreatedOn field if it's non-nil, zero value otherwise.
+func (c *Comment) GetCreatedOn() time.Time {
+	if c == nil || c.CreatedOn == nil {
+		return time.Time{}
+	}
+	return *c.CreatedOn
+}
+
+// GetID returns the ID field if it's non-nil, zero value otherwise.
+func (c *Comment) GetID() int64 {
+	if c == nil || c.ID == nil {
+		return 0
+	}
+	return *c.ID
+}
+
+// GetLinks returns the Links field.
+func (c *Comment) GetLinks() *CommentLinks {
+	if c == nil {
+		return nil
+	}
+	return c.Links
+}
+
+// GetType returns the Type field if it's non-nil, zero value otherwise.
+func (c *Comment) GetType() string {
+	if c == nil || c.Type == nil {
+		return ""
+	}
+	return *c.Type
+}
+
+// GetUpdatedOn returns the UpdatedOn field if it's non-nil, zero value otherwise.
+func (c *Comment) GetUpdatedOn() time.Time {
+	if c == nil || c.UpdatedOn == nil {
+		return time.Time{}
+	}
+	return *c.UpdatedOn
+}
+
+// GetUser returns the User field.
+func (c *Comment) GetUser() *User {
+	if c == nil {
+		return nil
+	}
+	return c.User
+}
+
+// GetHTML returns the HTML field.
+func (c *CommentLinks) GetHTML() *Link {
+	if c == nil {
+		return nil
+	}
+	return c.HTML
+}
+
+// GetSelf returns the Self field.
+func (c *CommentLinks) GetSelf() *Link {
+	if c == nil {
+		return nil
+	}
+	return c.Self
 }
 
 // GetAuthor returns the Author field.
@@ -370,7 +402,7 @@ func (c *Commit) GetRepository() *Repository {
 }
 
 // GetSummary returns the Summary field.
-func (c *Commit) GetSummary() *BitbucketContent {
+func (c *Commit) GetSummary() *Content {
 	if c == nil {
 		return nil
 	}
@@ -394,7 +426,7 @@ func (c *CommitComment) GetCommit() *Commit {
 }
 
 // GetContent returns the Content field.
-func (c *CommitComment) GetContent() *BitbucketContent {
+func (c *CommitComment) GetContent() *Content {
 	if c == nil {
 		return nil
 	}
@@ -458,7 +490,7 @@ func (c *CommitComment) GetUser() *User {
 }
 
 // GetContent returns the Content field.
-func (c *CommitCommentRequest) GetContent() *BitbucketContent {
+func (c *CommitCommentRequest) GetContent() *Content {
 	if c == nil {
 		return nil
 	}
@@ -466,7 +498,7 @@ func (c *CommitCommentRequest) GetContent() *BitbucketContent {
 }
 
 // GetApprove returns the Approve field.
-func (c *CommitLinks) GetApprove() *BitbucketLink {
+func (c *CommitLinks) GetApprove() *Link {
 	if c == nil {
 		return nil
 	}
@@ -474,7 +506,7 @@ func (c *CommitLinks) GetApprove() *BitbucketLink {
 }
 
 // GetComment returns the Comment field.
-func (c *CommitLinks) GetComment() *BitbucketLink {
+func (c *CommitLinks) GetComment() *Link {
 	if c == nil {
 		return nil
 	}
@@ -482,7 +514,7 @@ func (c *CommitLinks) GetComment() *BitbucketLink {
 }
 
 // GetDiff returns the Diff field.
-func (c *CommitLinks) GetDiff() *BitbucketLink {
+func (c *CommitLinks) GetDiff() *Link {
 	if c == nil {
 		return nil
 	}
@@ -490,7 +522,7 @@ func (c *CommitLinks) GetDiff() *BitbucketLink {
 }
 
 // GetHTML returns the HTML field.
-func (c *CommitLinks) GetHTML() *BitbucketLink {
+func (c *CommitLinks) GetHTML() *Link {
 	if c == nil {
 		return nil
 	}
@@ -498,7 +530,7 @@ func (c *CommitLinks) GetHTML() *BitbucketLink {
 }
 
 // GetSelf returns the Self field.
-func (c *CommitLinks) GetSelf() *BitbucketLink {
+func (c *CommitLinks) GetSelf() *Link {
 	if c == nil {
 		return nil
 	}
@@ -506,7 +538,7 @@ func (c *CommitLinks) GetSelf() *BitbucketLink {
 }
 
 // GetStatuses returns the Statuses field.
-func (c *CommitLinks) GetStatuses() *BitbucketLink {
+func (c *CommitLinks) GetStatuses() *Link {
 	if c == nil {
 		return nil
 	}
@@ -706,7 +738,7 @@ func (c *Component) GetType() string {
 }
 
 // GetSelf returns the Self field.
-func (c *ComponentLinks) GetSelf() *BitbucketLink {
+func (c *ComponentLinks) GetSelf() *Link {
 	if c == nil {
 		return nil
 	}
@@ -721,8 +753,40 @@ func (c *ComponentRequest) GetName() string {
 	return *c.Name
 }
 
+// GetHTML returns the HTML field if it's non-nil, zero value otherwise.
+func (c *Content) GetHTML() string {
+	if c == nil || c.HTML == nil {
+		return ""
+	}
+	return *c.HTML
+}
+
+// GetMarkup returns the Markup field if it's non-nil, zero value otherwise.
+func (c *Content) GetMarkup() string {
+	if c == nil || c.Markup == nil {
+		return ""
+	}
+	return *c.Markup
+}
+
+// GetRaw returns the Raw field if it's non-nil, zero value otherwise.
+func (c *Content) GetRaw() string {
+	if c == nil || c.Raw == nil {
+		return ""
+	}
+	return *c.Raw
+}
+
+// GetType returns the Type field if it's non-nil, zero value otherwise.
+func (c *Content) GetType() string {
+	if c == nil || c.Type == nil {
+		return ""
+	}
+	return *c.Type
+}
+
 // GetHTML returns the HTML field.
-func (c *CSLinks) GetHTML() *BitbucketLink {
+func (c *CSLinks) GetHTML() *Link {
 	if c == nil {
 		return nil
 	}
@@ -730,7 +794,7 @@ func (c *CSLinks) GetHTML() *BitbucketLink {
 }
 
 // GetSelf returns the Self field.
-func (c *CSLinks) GetSelf() *BitbucketLink {
+func (c *CSLinks) GetSelf() *Link {
 	if c == nil {
 		return nil
 	}
@@ -818,7 +882,7 @@ func (d *DeployKey) GetType() string {
 }
 
 // GetSelf returns the Self field.
-func (d *DeployKeyLinks) GetSelf() *BitbucketLink {
+func (d *DeployKeyLinks) GetSelf() *Link {
 	if d == nil {
 		return nil
 	}
@@ -839,6 +903,22 @@ func (d *DeployKeyRequest) GetLabel() string {
 		return ""
 	}
 	return *d.Label
+}
+
+// GetLinesAdded returns the LinesAdded field if it's non-nil, zero value otherwise.
+func (d *Diff) GetLinesAdded() int64 {
+	if d == nil || d.LinesAdded == nil {
+		return 0
+	}
+	return *d.LinesAdded
+}
+
+// GetLinesRemoved returns the LinesRemoved field if it's non-nil, zero value otherwise.
+func (d *Diff) GetLinesRemoved() int64 {
+	if d == nil || d.LinesRemoved == nil {
+		return 0
+	}
+	return *d.LinesRemoved
 }
 
 // GetNew returns the New field.
@@ -954,7 +1034,7 @@ func (d *DownloadArtifact) GetUser() *User {
 }
 
 // GetSelf returns the Self field.
-func (d *DownloadFileLinks) GetSelf() *BitbucketLink {
+func (d *DownloadFileLinks) GetSelf() *Link {
 	if d == nil {
 		return nil
 	}
@@ -962,7 +1042,7 @@ func (d *DownloadFileLinks) GetSelf() *BitbucketLink {
 }
 
 // GetHistory returns the History field.
-func (f *FileHistoryLinks) GetHistory() *BitbucketLink {
+func (f *FileHistoryLinks) GetHistory() *Link {
 	if f == nil {
 		return nil
 	}
@@ -970,7 +1050,7 @@ func (f *FileHistoryLinks) GetHistory() *BitbucketLink {
 }
 
 // GetMeta returns the Meta field.
-func (f *FileHistoryLinks) GetMeta() *BitbucketLink {
+func (f *FileHistoryLinks) GetMeta() *Link {
 	if f == nil {
 		return nil
 	}
@@ -978,7 +1058,7 @@ func (f *FileHistoryLinks) GetMeta() *BitbucketLink {
 }
 
 // GetSelf returns the Self field.
-func (f *FileHistoryLinks) GetSelf() *BitbucketLink {
+func (f *FileHistoryLinks) GetSelf() *Link {
 	if f == nil {
 		return nil
 	}
@@ -1114,7 +1194,7 @@ func (h *HookEventTypes) GetUser() *HookEventTypesLinks {
 }
 
 // GetEvents returns the Events field.
-func (h *HookEventTypesLinks) GetEvents() *BitbucketLink {
+func (h *HookEventTypesLinks) GetEvents() *Link {
 	if h == nil {
 		return nil
 	}
@@ -1306,7 +1386,7 @@ func (i *IssueContent) GetType() string {
 }
 
 // GetAttachments returns the Attachments field.
-func (i *IssueLinks) GetAttachments() *BitbucketLink {
+func (i *IssueLinks) GetAttachments() *Link {
 	if i == nil {
 		return nil
 	}
@@ -1314,7 +1394,7 @@ func (i *IssueLinks) GetAttachments() *BitbucketLink {
 }
 
 // GetComments returns the Comments field.
-func (i *IssueLinks) GetComments() *BitbucketLink {
+func (i *IssueLinks) GetComments() *Link {
 	if i == nil {
 		return nil
 	}
@@ -1322,7 +1402,7 @@ func (i *IssueLinks) GetComments() *BitbucketLink {
 }
 
 // GetHTML returns the HTML field.
-func (i *IssueLinks) GetHTML() *BitbucketLink {
+func (i *IssueLinks) GetHTML() *Link {
 	if i == nil {
 		return nil
 	}
@@ -1330,7 +1410,7 @@ func (i *IssueLinks) GetHTML() *BitbucketLink {
 }
 
 // GetSelf returns the Self field.
-func (i *IssueLinks) GetSelf() *BitbucketLink {
+func (i *IssueLinks) GetSelf() *Link {
 	if i == nil {
 		return nil
 	}
@@ -1338,7 +1418,7 @@ func (i *IssueLinks) GetSelf() *BitbucketLink {
 }
 
 // GetVote returns the Vote field.
-func (i *IssueLinks) GetVote() *BitbucketLink {
+func (i *IssueLinks) GetVote() *Link {
 	if i == nil {
 		return nil
 	}
@@ -1346,7 +1426,7 @@ func (i *IssueLinks) GetVote() *BitbucketLink {
 }
 
 // GetWatch returns the Watch field.
-func (i *IssueLinks) GetWatch() *BitbucketLink {
+func (i *IssueLinks) GetWatch() *Link {
 	if i == nil {
 		return nil
 	}
@@ -1441,6 +1521,14 @@ func (i *IssueRequestContentOpts) GetRaw() string {
 	return *i.Raw
 }
 
+// GetHRef returns the HRef field if it's non-nil, zero value otherwise.
+func (l *Link) GetHRef() string {
+	if l == nil || l.HRef == nil {
+		return ""
+	}
+	return *l.HRef
+}
+
 // GetID returns the ID field if it's non-nil, zero value otherwise.
 func (m *Milestone) GetID() int64 {
 	if m == nil || m.ID == nil {
@@ -1482,7 +1570,7 @@ func (m *Milestone) GetType() string {
 }
 
 // GetSelf returns the Self field.
-func (m *MilestoneLinks) GetSelf() *BitbucketLink {
+func (m *MilestoneLinks) GetSelf() *Link {
 	if m == nil {
 		return nil
 	}
@@ -1647,6 +1735,22 @@ func (p *PRApprovalActivity) GetUser() *User {
 		return nil
 	}
 	return p.User
+}
+
+// GetDeleted returns the Deleted field if it's non-nil, zero value otherwise.
+func (p *PRComment) GetDeleted() bool {
+	if p == nil || p.Deleted == nil {
+		return false
+	}
+	return *p.Deleted
+}
+
+// GetPullRequest returns the PullRequest field.
+func (p *PRComment) GetPullRequest() *PullRequest {
+	if p == nil {
+		return nil
+	}
+	return p.PullRequest
 }
 
 // GetAuthor returns the Author field.
@@ -1826,7 +1930,7 @@ func (p *PullRequest) GetState() string {
 }
 
 // GetSummary returns the Summary field.
-func (p *PullRequest) GetSummary() *BitbucketContent {
+func (p *PullRequest) GetSummary() *Content {
 	if p == nil {
 		return nil
 	}
@@ -1866,7 +1970,7 @@ func (p *PullRequest) GetUpdatedOn() string {
 }
 
 // GetDescription returns the Description field.
-func (p *PullRequestBody) GetDescription() *BitbucketContent {
+func (p *PullRequestBody) GetDescription() *Content {
 	if p == nil {
 		return nil
 	}
@@ -1874,7 +1978,7 @@ func (p *PullRequestBody) GetDescription() *BitbucketContent {
 }
 
 // GetTitle returns the Title field.
-func (p *PullRequestBody) GetTitle() *BitbucketContent {
+func (p *PullRequestBody) GetTitle() *Content {
 	if p == nil {
 		return nil
 	}
@@ -1906,7 +2010,7 @@ func (p *PullRequestBranch) GetRepository() *Repository {
 }
 
 // GetActivity returns the Activity field.
-func (p *PullRequestLinks) GetActivity() *BitbucketLink {
+func (p *PullRequestLinks) GetActivity() *Link {
 	if p == nil {
 		return nil
 	}
@@ -1914,7 +2018,7 @@ func (p *PullRequestLinks) GetActivity() *BitbucketLink {
 }
 
 // GetApprove returns the Approve field.
-func (p *PullRequestLinks) GetApprove() *BitbucketLink {
+func (p *PullRequestLinks) GetApprove() *Link {
 	if p == nil {
 		return nil
 	}
@@ -1922,7 +2026,7 @@ func (p *PullRequestLinks) GetApprove() *BitbucketLink {
 }
 
 // GetComments returns the Comments field.
-func (p *PullRequestLinks) GetComments() *BitbucketLink {
+func (p *PullRequestLinks) GetComments() *Link {
 	if p == nil {
 		return nil
 	}
@@ -1930,7 +2034,7 @@ func (p *PullRequestLinks) GetComments() *BitbucketLink {
 }
 
 // GetCommits returns the Commits field.
-func (p *PullRequestLinks) GetCommits() *BitbucketLink {
+func (p *PullRequestLinks) GetCommits() *Link {
 	if p == nil {
 		return nil
 	}
@@ -1938,7 +2042,7 @@ func (p *PullRequestLinks) GetCommits() *BitbucketLink {
 }
 
 // GetDecline returns the Decline field.
-func (p *PullRequestLinks) GetDecline() *BitbucketLink {
+func (p *PullRequestLinks) GetDecline() *Link {
 	if p == nil {
 		return nil
 	}
@@ -1946,7 +2050,7 @@ func (p *PullRequestLinks) GetDecline() *BitbucketLink {
 }
 
 // GetDiff returns the Diff field.
-func (p *PullRequestLinks) GetDiff() *BitbucketLink {
+func (p *PullRequestLinks) GetDiff() *Link {
 	if p == nil {
 		return nil
 	}
@@ -1954,7 +2058,7 @@ func (p *PullRequestLinks) GetDiff() *BitbucketLink {
 }
 
 // GetHTML returns the HTML field.
-func (p *PullRequestLinks) GetHTML() *BitbucketLink {
+func (p *PullRequestLinks) GetHTML() *Link {
 	if p == nil {
 		return nil
 	}
@@ -1962,7 +2066,7 @@ func (p *PullRequestLinks) GetHTML() *BitbucketLink {
 }
 
 // GetMerge returns the Merge field.
-func (p *PullRequestLinks) GetMerge() *BitbucketLink {
+func (p *PullRequestLinks) GetMerge() *Link {
 	if p == nil {
 		return nil
 	}
@@ -1970,7 +2074,7 @@ func (p *PullRequestLinks) GetMerge() *BitbucketLink {
 }
 
 // GetSelf returns the Self field.
-func (p *PullRequestLinks) GetSelf() *BitbucketLink {
+func (p *PullRequestLinks) GetSelf() *Link {
 	if p == nil {
 		return nil
 	}
@@ -1978,11 +2082,27 @@ func (p *PullRequestLinks) GetSelf() *BitbucketLink {
 }
 
 // GetStatuses returns the Statuses field.
-func (p *PullRequestLinks) GetStatuses() *BitbucketLink {
+func (p *PullRequestLinks) GetStatuses() *Link {
 	if p == nil {
 		return nil
 	}
 	return p.Statuses
+}
+
+// GetApproved returns the Approved field if it's non-nil, zero value otherwise.
+func (p *PullRequestReview) GetApproved() bool {
+	if p == nil || p.Approved == nil {
+		return false
+	}
+	return *p.Approved
+}
+
+// GetType returns the Type field if it's non-nil, zero value otherwise.
+func (p *PullRequestReview) GetType() string {
+	if p == nil || p.Type == nil {
+		return ""
+	}
+	return *p.Type
 }
 
 // GetDate returns the Date field if it's non-nil, zero value otherwise.
@@ -2042,7 +2162,7 @@ func (r *Ref) GetType() string {
 }
 
 // GetCommits returns the Commits field.
-func (r *RefLinks) GetCommits() *BitbucketLink {
+func (r *RefLinks) GetCommits() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2050,7 +2170,7 @@ func (r *RefLinks) GetCommits() *BitbucketLink {
 }
 
 // GetHTML returns the HTML field.
-func (r *RefLinks) GetHTML() *BitbucketLink {
+func (r *RefLinks) GetHTML() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2058,7 +2178,7 @@ func (r *RefLinks) GetHTML() *BitbucketLink {
 }
 
 // GetSelf returns the Self field.
-func (r *RefLinks) GetSelf() *BitbucketLink {
+func (r *RefLinks) GetSelf() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2306,7 +2426,7 @@ func (r *RepositoryHookRequest) GetURL() string {
 }
 
 // GetAvatar returns the Avatar field.
-func (r *RepositoryLinks) GetAvatar() *BitbucketLink {
+func (r *RepositoryLinks) GetAvatar() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2314,7 +2434,7 @@ func (r *RepositoryLinks) GetAvatar() *BitbucketLink {
 }
 
 // GetBranches returns the Branches field.
-func (r *RepositoryLinks) GetBranches() *BitbucketLink {
+func (r *RepositoryLinks) GetBranches() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2322,7 +2442,7 @@ func (r *RepositoryLinks) GetBranches() *BitbucketLink {
 }
 
 // GetCommits returns the Commits field.
-func (r *RepositoryLinks) GetCommits() *BitbucketLink {
+func (r *RepositoryLinks) GetCommits() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2330,7 +2450,7 @@ func (r *RepositoryLinks) GetCommits() *BitbucketLink {
 }
 
 // GetDownloads returns the Downloads field.
-func (r *RepositoryLinks) GetDownloads() *BitbucketLink {
+func (r *RepositoryLinks) GetDownloads() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2338,7 +2458,7 @@ func (r *RepositoryLinks) GetDownloads() *BitbucketLink {
 }
 
 // GetForks returns the Forks field.
-func (r *RepositoryLinks) GetForks() *BitbucketLink {
+func (r *RepositoryLinks) GetForks() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2346,7 +2466,7 @@ func (r *RepositoryLinks) GetForks() *BitbucketLink {
 }
 
 // GetHTML returns the HTML field.
-func (r *RepositoryLinks) GetHTML() *BitbucketLink {
+func (r *RepositoryLinks) GetHTML() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2354,7 +2474,7 @@ func (r *RepositoryLinks) GetHTML() *BitbucketLink {
 }
 
 // GetPullRequests returns the PullRequests field.
-func (r *RepositoryLinks) GetPullRequests() *BitbucketLink {
+func (r *RepositoryLinks) GetPullRequests() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2362,7 +2482,7 @@ func (r *RepositoryLinks) GetPullRequests() *BitbucketLink {
 }
 
 // GetSelf returns the Self field.
-func (r *RepositoryLinks) GetSelf() *BitbucketLink {
+func (r *RepositoryLinks) GetSelf() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2370,7 +2490,7 @@ func (r *RepositoryLinks) GetSelf() *BitbucketLink {
 }
 
 // GetSource returns the Source field.
-func (r *RepositoryLinks) GetSource() *BitbucketLink {
+func (r *RepositoryLinks) GetSource() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2378,7 +2498,7 @@ func (r *RepositoryLinks) GetSource() *BitbucketLink {
 }
 
 // GetTags returns the Tags field.
-func (r *RepositoryLinks) GetTags() *BitbucketLink {
+func (r *RepositoryLinks) GetTags() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2386,7 +2506,7 @@ func (r *RepositoryLinks) GetTags() *BitbucketLink {
 }
 
 // GetWatchers returns the Watchers field.
-func (r *RepositoryLinks) GetWatchers() *BitbucketLink {
+func (r *RepositoryLinks) GetWatchers() *Link {
 	if r == nil {
 		return nil
 	}
@@ -2458,7 +2578,7 @@ func (r *RepositoryRequest) GetSCM() string {
 }
 
 // GetRepositories returns the Repositories field.
-func (s *SearchCodeFileLinks) GetRepositories() *BitbucketLink {
+func (s *SearchCodeFileLinks) GetRepositories() *Link {
 	if s == nil {
 		return nil
 	}
@@ -2466,7 +2586,7 @@ func (s *SearchCodeFileLinks) GetRepositories() *BitbucketLink {
 }
 
 // GetSelf returns the Self field.
-func (s *SearchCodeFileLinks) GetSelf() *BitbucketLink {
+func (s *SearchCodeFileLinks) GetSelf() *Link {
 	if s == nil {
 		return nil
 	}
@@ -2690,7 +2810,7 @@ func (t *Team) GetWebsite() string {
 }
 
 // GetAvatar returns the Avatar field.
-func (t *TeamLinks) GetAvatar() *BitbucketLink {
+func (t *TeamLinks) GetAvatar() *Link {
 	if t == nil {
 		return nil
 	}
@@ -2698,7 +2818,7 @@ func (t *TeamLinks) GetAvatar() *BitbucketLink {
 }
 
 // GetFollowers returns the Followers field.
-func (t *TeamLinks) GetFollowers() *BitbucketLink {
+func (t *TeamLinks) GetFollowers() *Link {
 	if t == nil {
 		return nil
 	}
@@ -2706,7 +2826,7 @@ func (t *TeamLinks) GetFollowers() *BitbucketLink {
 }
 
 // GetFollowing returns the Following field.
-func (t *TeamLinks) GetFollowing() *BitbucketLink {
+func (t *TeamLinks) GetFollowing() *Link {
 	if t == nil {
 		return nil
 	}
@@ -2714,7 +2834,7 @@ func (t *TeamLinks) GetFollowing() *BitbucketLink {
 }
 
 // GetHooks returns the Hooks field.
-func (t *TeamLinks) GetHooks() *BitbucketLink {
+func (t *TeamLinks) GetHooks() *Link {
 	if t == nil {
 		return nil
 	}
@@ -2722,7 +2842,7 @@ func (t *TeamLinks) GetHooks() *BitbucketLink {
 }
 
 // GetHTML returns the HTML field.
-func (t *TeamLinks) GetHTML() *BitbucketLink {
+func (t *TeamLinks) GetHTML() *Link {
 	if t == nil {
 		return nil
 	}
@@ -2730,7 +2850,7 @@ func (t *TeamLinks) GetHTML() *BitbucketLink {
 }
 
 // GetMembers returns the Members field.
-func (t *TeamLinks) GetMembers() *BitbucketLink {
+func (t *TeamLinks) GetMembers() *Link {
 	if t == nil {
 		return nil
 	}
@@ -2738,7 +2858,7 @@ func (t *TeamLinks) GetMembers() *BitbucketLink {
 }
 
 // GetProjects returns the Projects field.
-func (t *TeamLinks) GetProjects() *BitbucketLink {
+func (t *TeamLinks) GetProjects() *Link {
 	if t == nil {
 		return nil
 	}
@@ -2746,7 +2866,7 @@ func (t *TeamLinks) GetProjects() *BitbucketLink {
 }
 
 // GetRepositories returns the Repositories field.
-func (t *TeamLinks) GetRepositories() *BitbucketLink {
+func (t *TeamLinks) GetRepositories() *Link {
 	if t == nil {
 		return nil
 	}
@@ -2754,7 +2874,7 @@ func (t *TeamLinks) GetRepositories() *BitbucketLink {
 }
 
 // GetSelf returns the Self field.
-func (t *TeamLinks) GetSelf() *BitbucketLink {
+func (t *TeamLinks) GetSelf() *Link {
 	if t == nil {
 		return nil
 	}
@@ -2762,7 +2882,7 @@ func (t *TeamLinks) GetSelf() *BitbucketLink {
 }
 
 // GetSnippets returns the Snippets field.
-func (t *TeamLinks) GetSnippets() *BitbucketLink {
+func (t *TeamLinks) GetSnippets() *Link {
 	if t == nil {
 		return nil
 	}
@@ -2882,7 +3002,7 @@ func (t *TeamProject) GetUUID() string {
 }
 
 // GetAvatar returns the Avatar field.
-func (t *TeamProjectLinks) GetAvatar() *BitbucketLink {
+func (t *TeamProjectLinks) GetAvatar() *Link {
 	if t == nil {
 		return nil
 	}
@@ -2890,7 +3010,7 @@ func (t *TeamProjectLinks) GetAvatar() *BitbucketLink {
 }
 
 // GetHtml returns the Html field.
-func (t *TeamProjectLinks) GetHtml() *BitbucketLink {
+func (t *TeamProjectLinks) GetHtml() *Link {
 	if t == nil {
 		return nil
 	}
@@ -2898,7 +3018,7 @@ func (t *TeamProjectLinks) GetHtml() *BitbucketLink {
 }
 
 // GetSelf returns the Self field.
-func (t *TeamProjectLinks) GetSelf() *BitbucketLink {
+func (t *TeamProjectLinks) GetSelf() *Link {
 	if t == nil {
 		return nil
 	}
@@ -3130,7 +3250,7 @@ func (u *UserEmail) GetType() string {
 }
 
 // GetSelf returns the Self field.
-func (u *UserEmailLinks) GetSelf() *BitbucketLink {
+func (u *UserEmailLinks) GetSelf() *Link {
 	if u == nil {
 		return nil
 	}
@@ -3186,7 +3306,7 @@ func (u *UserHook) GetUUID() string {
 }
 
 // GetAvatar returns the Avatar field.
-func (u *UserLinks) GetAvatar() *BitbucketLink {
+func (u *UserLinks) GetAvatar() *Link {
 	if u == nil {
 		return nil
 	}
@@ -3194,7 +3314,7 @@ func (u *UserLinks) GetAvatar() *BitbucketLink {
 }
 
 // GetFollowers returns the Followers field.
-func (u *UserLinks) GetFollowers() *BitbucketLink {
+func (u *UserLinks) GetFollowers() *Link {
 	if u == nil {
 		return nil
 	}
@@ -3202,7 +3322,7 @@ func (u *UserLinks) GetFollowers() *BitbucketLink {
 }
 
 // GetFollowing returns the Following field.
-func (u *UserLinks) GetFollowing() *BitbucketLink {
+func (u *UserLinks) GetFollowing() *Link {
 	if u == nil {
 		return nil
 	}
@@ -3210,7 +3330,7 @@ func (u *UserLinks) GetFollowing() *BitbucketLink {
 }
 
 // GetHooks returns the Hooks field.
-func (u *UserLinks) GetHooks() *BitbucketLink {
+func (u *UserLinks) GetHooks() *Link {
 	if u == nil {
 		return nil
 	}
@@ -3218,7 +3338,7 @@ func (u *UserLinks) GetHooks() *BitbucketLink {
 }
 
 // GetHTML returns the HTML field.
-func (u *UserLinks) GetHTML() *BitbucketLink {
+func (u *UserLinks) GetHTML() *Link {
 	if u == nil {
 		return nil
 	}
@@ -3226,7 +3346,7 @@ func (u *UserLinks) GetHTML() *BitbucketLink {
 }
 
 // GetRepositories returns the Repositories field.
-func (u *UserLinks) GetRepositories() *BitbucketLink {
+func (u *UserLinks) GetRepositories() *Link {
 	if u == nil {
 		return nil
 	}
@@ -3234,7 +3354,7 @@ func (u *UserLinks) GetRepositories() *BitbucketLink {
 }
 
 // GetSelf returns the Self field.
-func (u *UserLinks) GetSelf() *BitbucketLink {
+func (u *UserLinks) GetSelf() *Link {
 	if u == nil {
 		return nil
 	}
@@ -3242,7 +3362,7 @@ func (u *UserLinks) GetSelf() *BitbucketLink {
 }
 
 // GetSnippets returns the Snippets field.
-func (u *UserLinks) GetSnippets() *BitbucketLink {
+func (u *UserLinks) GetSnippets() *Link {
 	if u == nil {
 		return nil
 	}
@@ -3354,7 +3474,7 @@ func (u *UsersSSHKey) GetUUID() string {
 }
 
 // GetSelf returns the Self field.
-func (u *UsersSSHKeyLinks) GetSelf() *BitbucketLink {
+func (u *UsersSSHKeyLinks) GetSelf() *Link {
 	if u == nil {
 		return nil
 	}
@@ -3434,7 +3554,7 @@ func (v *Version) GetType() string {
 }
 
 // GetSelf returns the Self field.
-func (v *VersionLinks) GetSelf() *BitbucketLink {
+func (v *VersionLinks) GetSelf() *Link {
 	if v == nil {
 		return nil
 	}

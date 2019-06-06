@@ -31,7 +31,7 @@ type DeployKey struct {
 
 // DeployKeyLinks represents the "links" object in a Bitbucket deploy key.
 type DeployKeyLinks struct {
-	Self *BitbucketLink `json:"self,omitempty"`
+	Self *Link `json:"self,omitempty"`
 }
 
 // DeployKeyRequest represents a request to create/update a deploy/access key.

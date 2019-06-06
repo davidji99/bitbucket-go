@@ -19,10 +19,12 @@ type Diffs struct {
 
 // Diff represents a code diff on Bitbucket.
 type Diff struct {
-	Status *string   `json:"state,omitempty"`
-	Old    *CodeFile `json:"old,omitempty"`
-	New    *CodeFile `json:"new,omitempty"`
-	Type   *string   `json:"type,omitempty"`
+	Status       *string   `json:"state,omitempty"`
+	Old          *CodeFile `json:"old,omitempty"`
+	New          *CodeFile `json:"new,omitempty"`
+	LinesRemoved *int64    `json:"lines_removed,omitempty"`
+	LinesAdded   *int64    `json:"lines_added,omitempty"`
+	Type         *string   `json:"type,omitempty"`
 }
 
 // DiffGetOpts represents the query parameters available when getting the raw of a diff.

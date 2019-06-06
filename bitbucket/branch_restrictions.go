@@ -27,7 +27,7 @@ type BranchRestriction struct {
 
 // BRLinks represents the "links" object in a Bitbucket branch restriction.
 type BRLinks struct {
-	Self *BitbucketLink `json:"self,omitempty"`
+	Self *Link `json:"self,omitempty"`
 }
 
 type BRListOpts struct {

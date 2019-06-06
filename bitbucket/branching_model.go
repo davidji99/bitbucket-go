@@ -38,7 +38,7 @@ type BMBranchTypes struct {
 
 // BMLinks represents the "links" object in a Bitbucket branching model.
 type BMLinks struct {
-	Self *BitbucketLink `json:"self,omitempty"`
+	Self *Link `json:"self,omitempty"`
 }
 
 // BranchModelRequest represents a request to update an existing branching model.

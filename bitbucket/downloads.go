@@ -24,7 +24,7 @@ type DownloadArtifact struct {
 }
 
 type DownloadFileLinks struct {
-	Self *BitbucketLink `json:"self,omitempty"`
+	Self *Link `json:"self,omitempty"`
 }
 
 // List returns a list of download links associated with the repository.

@@ -11,13 +11,13 @@ type CommitService service
 // Commits represents a git commit in a Bitbucket repository.
 type Commit struct {
 	Rendered struct {
-		Message *BitbucketContent `json:"message,omitempty"`
+		Message *Content `json:"message,omitempty"`
 	} `json:"rendered,omitempty"`
 	Hash         *string              `json:"hash,omitempty"`
 	Repository   *Repository          `json:"repository,omitempty"`
 	Links        *CommitLinks         `json:"links,omitempty"`
 	Author       *User                `json:"author,omitempty"`
-	Summary      *BitbucketContent    `json:"summary,omitempty"`
+	Summary      *Content             `json:"summary,omitempty"`
 	Participants []*CommitParticipant `json:"participants,omitempty"`
 	Parents      []*Commit            `json:"parents,omitempty"`
 	Date         *time.Time           `json:"date,omitempty"`
@@ -34,12 +34,12 @@ type CommitParticipant struct {
 
 // CommitLinks represents the "links" object in a Bitbucket commit.
 type CommitLinks struct {
-	Self     *BitbucketLink `json:"self,omitempty"`
-	Comment  *BitbucketLink `json:"comment,omitempty"`
-	HTML     *BitbucketLink `json:"html,omitempty"`
-	Diff     *BitbucketLink `json:"diff,omitempty"`
-	Approve  *BitbucketLink `json:"approve,omitempty"`
-	Statuses *BitbucketLink `json:"statuses,omitempty"`
+	Self     *Link `json:"self,omitempty"`
+	Comment  *Link `json:"comment,omitempty"`
+	HTML     *Link `json:"html,omitempty"`
+	Diff     *Link `json:"diff,omitempty"`
+	Approve  *Link `json:"approve,omitempty"`
+	Statuses *Link `json:"statuses,omitempty"`
 }
 
 // GetCommit return the specified commit.

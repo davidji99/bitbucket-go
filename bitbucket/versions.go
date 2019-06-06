@@ -26,7 +26,7 @@ type Version struct {
 
 // VersionLinks represents the "links" object in a Bitbucket version.
 type VersionLinks struct {
-	Self *BitbucketLink `json:"self,omitempty"`
+	Self *Link `json:"self,omitempty"`
 }
 
 // VersionRequest represents an EXISTING version to be added to an issue or pull request.

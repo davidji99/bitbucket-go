@@ -15,9 +15,9 @@ type FileHistory struct {
 
 // FileHistoryLinks represents the "links" object in a Bitbucket file history.
 type FileHistoryLinks struct {
-	Self    *BitbucketLink `json:"self,omitempty"`
-	Meta    *BitbucketLink `json:"meta,omitempty"`
-	History *BitbucketLink `json:"history,omitempty"`
+	Self    *Link `json:"self,omitempty"`
+	Meta    *Link `json:"meta,omitempty"`
+	History *Link `json:"history,omitempty"`
 }
 
 // FileHistoryListOpts represents the unique query parameters for file history.

@@ -40,12 +40,12 @@ type Issue struct {
 
 // IssueLinks represents the "links" object in a Bitbucket issue.
 type IssueLinks struct {
-	Self        *BitbucketLink `json:"self,omitempty"`
-	Attachments *BitbucketLink `json:"attachments,omitempty"`
-	Watch       *BitbucketLink `json:"watch,omitempty"`
-	Comments    *BitbucketLink `json:"comments,omitempty"`
-	HTML        *BitbucketLink `json:"html,omitempty"`
-	Vote        *BitbucketLink `json:"vote,omitempty"`
+	Self        *Link `json:"self,omitempty"`
+	Attachments *Link `json:"attachments,omitempty"`
+	Watch       *Link `json:"watch,omitempty"`
+	Comments    *Link `json:"comments,omitempty"`
+	HTML        *Link `json:"html,omitempty"`
+	Vote        *Link `json:"vote,omitempty"`
 }
 
 // IssueContent represents the Description box in the Bitbucket issue UI.

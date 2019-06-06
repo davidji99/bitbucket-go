@@ -21,7 +21,7 @@ type UsersSSHKey struct {
 }
 
 type UsersSSHKeyLinks struct {
-	Self *BitbucketLink `json:"self,omitempty"`
+	Self *Link `json:"self,omitempty"`
 }
 
 // SSHKeyAddRequest represents a request to add a SSH key.

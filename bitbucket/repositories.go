@@ -55,17 +55,17 @@ type RepositoryCloneLink struct {
 // RepositoryLinks represents the "links" object in a Bitbucket repository.
 type RepositoryLinks struct {
 	Clone        []*RepositoryCloneLink `json:"clone,omitempty"`
-	Watchers     *BitbucketLink         `json:"watchers,omitempty"`
-	Branches     *BitbucketLink         `json:"branches,omitempty"`
-	Tags         *BitbucketLink         `json:"tags,omitempty"`
-	Commits      *BitbucketLink         `json:"commits,omitempty"`
-	Downloads    *BitbucketLink         `json:"downloads,omitempty"`
-	Source       *BitbucketLink         `json:"source,omitempty"`
-	HTML         *BitbucketLink         `json:"html,omitempty"`
-	Avatar       *BitbucketLink         `json:"avatar,omitempty"`
-	Forks        *BitbucketLink         `json:"forks,omitempty"`
-	Self         *BitbucketLink         `json:"self,omitempty"`
-	PullRequests *BitbucketLink         `json:"pull_requests,omitempty"`
+	Watchers     *Link                  `json:"watchers,omitempty"`
+	Branches     *Link                  `json:"branches,omitempty"`
+	Tags         *Link                  `json:"tags,omitempty"`
+	Commits      *Link                  `json:"commits,omitempty"`
+	Downloads    *Link                  `json:"downloads,omitempty"`
+	Source       *Link                  `json:"source,omitempty"`
+	HTML         *Link                  `json:"html,omitempty"`
+	Avatar       *Link                  `json:"avatar,omitempty"`
+	Forks        *Link                  `json:"forks,omitempty"`
+	Self         *Link                  `json:"self,omitempty"`
+	PullRequests *Link                  `json:"pull_requests,omitempty"`
 }
 
 // RepositoryListOpts represents the filters and query parameters available when listing repositories.

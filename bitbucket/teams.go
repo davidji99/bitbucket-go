@@ -30,16 +30,16 @@ type Team struct {
 
 // TeamLinks represents the "links" object in a Bitbucket team.
 type TeamLinks struct {
-	Self         *BitbucketLink `json:"self,omitempty"`
-	Hooks        *BitbucketLink `json:"hooks,omitempty"`
-	Repositories *BitbucketLink `json:"repositories,omitempty"`
-	Followers    *BitbucketLink `json:"followers,omitempty"`
-	HTML         *BitbucketLink `json:"html,omitempty"`
-	Avatar       *BitbucketLink `json:"avatar,omitempty"`
-	Following    *BitbucketLink `json:"following,omitempty"`
-	Members      *BitbucketLink `json:"members,omitempty"`
-	Projects     *BitbucketLink `json:"projects,omitempty"`
-	Snippets     *BitbucketLink `json:"snippets,omitempty"`
+	Self         *Link `json:"self,omitempty"`
+	Hooks        *Link `json:"hooks,omitempty"`
+	Repositories *Link `json:"repositories,omitempty"`
+	Followers    *Link `json:"followers,omitempty"`
+	HTML         *Link `json:"html,omitempty"`
+	Avatar       *Link `json:"avatar,omitempty"`
+	Following    *Link `json:"following,omitempty"`
+	Members      *Link `json:"members,omitempty"`
+	Projects     *Link `json:"projects,omitempty"`
+	Snippets     *Link `json:"snippets,omitempty"`
 }
 
 type TeamListOpts struct {
