@@ -3193,6 +3193,14 @@ func (u *User) GetType() string {
 	return *u.Type
 }
 
+// GetUsername returns the Username field if it's non-nil, zero value otherwise.
+func (u *User) GetUsername() string {
+	if u == nil || u.Username == nil {
+		return ""
+	}
+	return *u.Username
+}
+
 // GetUUID returns the UUID field if it's non-nil, zero value otherwise.
 func (u *User) GetUUID() string {
 	if u == nil || u.UUID == nil {

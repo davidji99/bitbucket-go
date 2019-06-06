@@ -12,7 +12,7 @@ type UserService service
 
 // User represents a Bitbucket user.
 type User struct {
-	//Username      *string    `json:"username,omitempty"`
+	Username      *string    `json:"username,omitempty"`
 	Website       *string    `json:"website,omitempty"`
 	DisplayName   *string    `json:"display_name,omitempty"`
 	UUID          *string    `json:"uuid,omitempty"`
