@@ -18,6 +18,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 const DEFAULT_PAGE_LENGTH = 10
@@ -25,11 +26,14 @@ const DEFAULT_PAGE_LENGTH = 10
 const (
 	apiBaseURL = "https://api.bitbucket.org/2.0"
 	userAgent  = "go-bitbucket"
+
+	defaultMediaType = "application/octet-stream"
 )
 
 // A Client manages communication with the Bitbucket API.
 type Client struct {
-	client *http.Client // HTTP client used to communicate with the API.
+	clientMu sync.Mutex   // clientMu protects the client during calls that modify the CheckRedirect func.
+	client   *http.Client // HTTP client used to communicate with the API.
 
 	// Base URL for API requests. Defaults to the public Bitbucket API, but can be
 	// set to a domain endpoint to use with GitHub Enterprise. BaseURL should
@@ -340,10 +344,6 @@ func (c *Client) doRequest(req *http.Request, v interface{}, emptyResponse bool)
 		defer resp.Body.Close()
 	}
 
-	if (resp.StatusCode != http.StatusOK) && (resp.StatusCode != http.StatusCreated) {
-		return nil, fmt.Errorf(resp.Status)
-	}
-
 	if emptyResponse {
 		return nil, nil
 	}
@@ -353,6 +353,28 @@ func (c *Client) doRequest(req *http.Request, v interface{}, emptyResponse bool)
 	}
 
 	response := newResponse(resp)
+
+	err = CheckResponse(resp)
+
+	if err != nil {
+		// Special case for AcceptedErrors. If an AcceptedError
+		// has been encountered, the response's payload will be
+		// added to the AcceptedError and returned.
+		//
+		// Issue #1022
+		aerr, ok := err.(*AcceptedError)
+		if ok {
+			b, readErr := ioutil.ReadAll(resp.Body)
+			if readErr != nil {
+				return response, readErr
+			}
+
+			aerr.Raw = b
+			return response, aerr
+		}
+
+		return response, err
+	}
 
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {

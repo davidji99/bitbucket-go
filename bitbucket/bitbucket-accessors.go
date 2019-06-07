@@ -9,6 +9,54 @@ import (
 	"time"
 )
 
+// GetDownloadCount returns the DownloadCount field if it's non-nil, zero value otherwise.
+func (a *Artifact) GetDownloadCount() int64 {
+	if a == nil || a.DownloadCount == nil {
+		return 0
+	}
+	return *a.DownloadCount
+}
+
+// GetLinks returns the Links field.
+func (a *Artifact) GetLinks() *DownloadFileLinks {
+	if a == nil {
+		return nil
+	}
+	return a.Links
+}
+
+// GetName returns the Name field if it's non-nil, zero value otherwise.
+func (a *Artifact) GetName() string {
+	if a == nil || a.Name == nil {
+		return ""
+	}
+	return *a.Name
+}
+
+// GetSize returns the Size field if it's non-nil, zero value otherwise.
+func (a *Artifact) GetSize() int64 {
+	if a == nil || a.Size == nil {
+		return 0
+	}
+	return *a.Size
+}
+
+// GetType returns the Type field if it's non-nil, zero value otherwise.
+func (a *Artifact) GetType() string {
+	if a == nil || a.Type == nil {
+		return ""
+	}
+	return *a.Type
+}
+
+// GetUser returns the User field.
+func (a *Artifact) GetUser() *User {
+	if a == nil {
+		return nil
+	}
+	return a.User
+}
+
 // GetIsValid returns the IsValid field if it's non-nil, zero value otherwise.
 func (b *BMBranch) GetIsValid() bool {
 	if b == nil || b.IsValid == nil {
@@ -985,54 +1033,6 @@ func (d *DiffGetOpts) GetPath() string {
 	return *d.Path
 }
 
-// GetDownloadCount returns the DownloadCount field if it's non-nil, zero value otherwise.
-func (d *DownloadArtifact) GetDownloadCount() int64 {
-	if d == nil || d.DownloadCount == nil {
-		return 0
-	}
-	return *d.DownloadCount
-}
-
-// GetLinks returns the Links field.
-func (d *DownloadArtifact) GetLinks() *DownloadFileLinks {
-	if d == nil {
-		return nil
-	}
-	return d.Links
-}
-
-// GetName returns the Name field if it's non-nil, zero value otherwise.
-func (d *DownloadArtifact) GetName() string {
-	if d == nil || d.Name == nil {
-		return ""
-	}
-	return *d.Name
-}
-
-// GetSize returns the Size field if it's non-nil, zero value otherwise.
-func (d *DownloadArtifact) GetSize() int64 {
-	if d == nil || d.Size == nil {
-		return 0
-	}
-	return *d.Size
-}
-
-// GetType returns the Type field if it's non-nil, zero value otherwise.
-func (d *DownloadArtifact) GetType() string {
-	if d == nil || d.Type == nil {
-		return ""
-	}
-	return *d.Type
-}
-
-// GetUser returns the User field.
-func (d *DownloadArtifact) GetUser() *User {
-	if d == nil {
-		return nil
-	}
-	return d.User
-}
-
 // GetSelf returns the Self field.
 func (d *DownloadFileLinks) GetSelf() *Link {
 	if d == nil {
@@ -1351,6 +1351,230 @@ func (i *Issue) GetWatches() int {
 		return 0
 	}
 	return *i.Watches
+}
+
+// GetCreatedOn returns the CreatedOn field if it's non-nil, zero value otherwise.
+func (i *IssueChange) GetCreatedOn() time.Time {
+	if i == nil || i.CreatedOn == nil {
+		return time.Time{}
+	}
+	return *i.CreatedOn
+}
+
+// GetID returns the ID field if it's non-nil, zero value otherwise.
+func (i *IssueChange) GetID() int64 {
+	if i == nil || i.ID == nil {
+		return 0
+	}
+	return *i.ID
+}
+
+// GetIssue returns the Issue field.
+func (i *IssueChange) GetIssue() *Issue {
+	if i == nil {
+		return nil
+	}
+	return i.Issue
+}
+
+// GetLinks returns the Links field.
+func (i *IssueChange) GetLinks() *IssueChangeLinks {
+	if i == nil {
+		return nil
+	}
+	return i.Links
+}
+
+// GetMessage returns the Message field.
+func (i *IssueChange) GetMessage() *Content {
+	if i == nil {
+		return nil
+	}
+	return i.Message
+}
+
+// GetType returns the Type field if it's non-nil, zero value otherwise.
+func (i *IssueChange) GetType() string {
+	if i == nil || i.Type == nil {
+		return ""
+	}
+	return *i.Type
+}
+
+// GetUser returns the User field.
+func (i *IssueChange) GetUser() *User {
+	if i == nil {
+		return nil
+	}
+	return i.User
+}
+
+// GetHTML returns the HTML field.
+func (i *IssueChangeLinks) GetHTML() *Link {
+	if i == nil {
+		return nil
+	}
+	return i.HTML
+}
+
+// GetSelf returns the Self field.
+func (i *IssueChangeLinks) GetSelf() *Link {
+	if i == nil {
+		return nil
+	}
+	return i.Self
+}
+
+// GetAssigneeAccountId returns the AssigneeAccountId field if it's non-nil, zero value otherwise.
+func (i *IssueChangeRequest) GetAssigneeAccountId() string {
+	if i == nil || i.AssigneeAccountId == nil {
+		return ""
+	}
+	return *i.AssigneeAccountId
+}
+
+// GetComponent returns the Component field if it's non-nil, zero value otherwise.
+func (i *IssueChangeRequest) GetComponent() string {
+	if i == nil || i.Component == nil {
+		return ""
+	}
+	return *i.Component
+}
+
+// GetContent returns the Content field if it's non-nil, zero value otherwise.
+func (i *IssueChangeRequest) GetContent() string {
+	if i == nil || i.Content == nil {
+		return ""
+	}
+	return *i.Content
+}
+
+// GetKind returns the Kind field if it's non-nil, zero value otherwise.
+func (i *IssueChangeRequest) GetKind() string {
+	if i == nil || i.Kind == nil {
+		return ""
+	}
+	return *i.Kind
+}
+
+// GetMessage returns the Message field if it's non-nil, zero value otherwise.
+func (i *IssueChangeRequest) GetMessage() string {
+	if i == nil || i.Message == nil {
+		return ""
+	}
+	return *i.Message
+}
+
+// GetMilestone returns the Milestone field if it's non-nil, zero value otherwise.
+func (i *IssueChangeRequest) GetMilestone() string {
+	if i == nil || i.Milestone == nil {
+		return ""
+	}
+	return *i.Milestone
+}
+
+// GetPriority returns the Priority field if it's non-nil, zero value otherwise.
+func (i *IssueChangeRequest) GetPriority() string {
+	if i == nil || i.Priority == nil {
+		return ""
+	}
+	return *i.Priority
+}
+
+// GetVersion returns the Version field if it's non-nil, zero value otherwise.
+func (i *IssueChangeRequest) GetVersion() string {
+	if i == nil || i.Version == nil {
+		return ""
+	}
+	return *i.Version
+}
+
+// GetContent returns the Content field.
+func (i *IssueComment) GetContent() *Content {
+	if i == nil {
+		return nil
+	}
+	return i.Content
+}
+
+// GetCreatedOn returns the CreatedOn field if it's non-nil, zero value otherwise.
+func (i *IssueComment) GetCreatedOn() time.Time {
+	if i == nil || i.CreatedOn == nil {
+		return time.Time{}
+	}
+	return *i.CreatedOn
+}
+
+// GetID returns the ID field if it's non-nil, zero value otherwise.
+func (i *IssueComment) GetID() int64 {
+	if i == nil || i.ID == nil {
+		return 0
+	}
+	return *i.ID
+}
+
+// GetIssue returns the Issue field.
+func (i *IssueComment) GetIssue() *Issue {
+	if i == nil {
+		return nil
+	}
+	return i.Issue
+}
+
+// GetLinks returns the Links field.
+func (i *IssueComment) GetLinks() *IssueCommentLinks {
+	if i == nil {
+		return nil
+	}
+	return i.Links
+}
+
+// GetType returns the Type field if it's non-nil, zero value otherwise.
+func (i *IssueComment) GetType() string {
+	if i == nil || i.Type == nil {
+		return ""
+	}
+	return *i.Type
+}
+
+// GetUpdatedOn returns the UpdatedOn field if it's non-nil, zero value otherwise.
+func (i *IssueComment) GetUpdatedOn() time.Time {
+	if i == nil || i.UpdatedOn == nil {
+		return time.Time{}
+	}
+	return *i.UpdatedOn
+}
+
+// GetUser returns the User field.
+func (i *IssueComment) GetUser() *User {
+	if i == nil {
+		return nil
+	}
+	return i.User
+}
+
+// GetHTML returns the HTML field.
+func (i *IssueCommentLinks) GetHTML() *Link {
+	if i == nil {
+		return nil
+	}
+	return i.HTML
+}
+
+// GetSelf returns the Self field.
+func (i *IssueCommentLinks) GetSelf() *Link {
+	if i == nil {
+		return nil
+	}
+	return i.Self
+}
+
+// GetContent returns the Content field.
+func (i *IssueCommentRequest) GetContent() *Content {
+	if i == nil {
+		return nil
+	}
+	return i.Content
 }
 
 // GetHtml returns the Html field if it's non-nil, zero value otherwise.

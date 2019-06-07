@@ -3,7 +3,11 @@ package bitbucket
 import (
 	"regexp"
 	"strconv"
+	"strings"
 )
+
+var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
+var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
 
 // parseForResourceId takes a resource's self link and appropriate regex to parse out the resource ID.
 // This is needed because there are few resource APIs that don't return the ID.
@@ -19,4 +23,11 @@ func parseForResourceId(regexExpression, selfLink string) *int64 {
 	}
 
 	return &id
+}
+
+// toSnakeCase takes a string and converts it to snake case.
+func toSnakeCase(str string) string {
+	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
+	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
+	return strings.ToLower(snake)
 }

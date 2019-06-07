@@ -90,8 +90,6 @@ type PullRequestListOpts struct {
 	// Valid options: MERGED, SUPERSEDED, OPEN, DECLINED. Case sensitive.
 	// By default, only OPEN pull requests are returned.
 	State []string `url:"state,omitempty"`
-
-	FilterSortOpts
 }
 
 // NewPullRequestSourceOpts represents the source branch for the new pull request.
@@ -114,7 +112,7 @@ type Branch struct {
 	Name *string `json:"name,omitempty"`
 }
 
-// List all pull requests for a given repository.
+// List returns all pull requests for a given repository.
 // Supports filtering by passing in a non-URI encoded query string. Reference: https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering
 // Example query string: source.repository.full_name != "main/repo" AND state = "OPEN" AND reviewers.username = "evzijst" AND destination.branch.name = "master"
 //
@@ -132,12 +130,33 @@ func (p *PullRequestsService) List(owner, repoSlug string, opts ...interface{}) 
 	return result, response, err
 }
 
-// Get a single pull request.
+// Get returns a single pull request.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D
-func (p *PullRequestsService) Get(owner, repoSlug string, pullRequestId int64) (*PullRequest, *Response, error) {
+func (p *PullRequestsService) Get(owner, repoSlug string, pullRequestId int64, opts ...interface{}) (*PullRequest, *Response, error) {
 	result := new(PullRequest)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v", owner, repoSlug, pullRequestId)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
+	response, err := p.client.execute("GET", urlStr, result, nil)
+
+	return result, response, err
+}
+
+// ListByUser returns all pull requests authored by the specified user.
+//
+// Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/pullrequests/%7Btarget_user%7D#get
+func (p *PullRequestsService) ListByUser(targetUser string, opts ...interface{}) (*PullRequests, *Response, error) {
+	result := new(PullRequests)
+	urlStr := p.client.requestUrl("/pullrequests/%s", targetUser)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := p.client.execute("GET", urlStr, result, nil)
 
 	return result, response, err
@@ -148,9 +167,14 @@ func (p *PullRequestsService) Get(owner, repoSlug string, pullRequestId int64) (
 // If the pull request's destination is not specified, it will default to the repository.mainbranch.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests#post
-func (p *PullRequestsService) Create(owner, repoSlug string, po NewPullRequestOpts) (*PullRequest, *Response, error) {
+func (p *PullRequestsService) Create(owner, repoSlug string, po NewPullRequestOpts, opts ...interface{}) (*PullRequest, *Response, error) {
 	result := new(PullRequest)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/", owner, repoSlug)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := p.client.execute("POST", urlStr, result, po)
 
 	return result, response, err
@@ -160,9 +184,14 @@ func (p *PullRequestsService) Create(owner, repoSlug string, po NewPullRequestOp
 // This can be used to change the pull request's branches or description. Only open pull requests can be mutated.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D#put
-func (p *PullRequestsService) Update(owner, repoSlug string, pullRequestId int64, po UpdatePullRequestOpts) (*PullRequest, *Response, error) {
+func (p *PullRequestsService) Update(owner, repoSlug string, pullRequestId int64, po UpdatePullRequestOpts, opts ...interface{}) (*PullRequest, *Response, error) {
 	result := new(PullRequest)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v", owner, repoSlug, pullRequestId)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := p.client.execute("PUT", urlStr, result, po)
 
 	return result, response, err

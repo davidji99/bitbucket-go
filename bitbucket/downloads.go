@@ -8,13 +8,15 @@ import "net/url"
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/downloads
 type DownloadsService service
 
-type Downloads struct {
+// Artifacts represents a collection of artifacts (or files).
+type Artifacts struct {
 	PaginationInfo
 
-	Values []*DownloadArtifact `json:"values,omitempty"`
+	Values []*Artifact `json:"values,omitempty"`
 }
 
-type DownloadArtifact struct {
+// Artifact represents a file on Bitbucket.
+type Artifact struct {
 	Name          *string            `json:"name,omitempty"`
 	Links         *DownloadFileLinks `json:"links,omitempty"`
 	DownloadCount *int64             `json:"downloads,omitempty"`
@@ -30,8 +32,8 @@ type DownloadFileLinks struct {
 // List returns a list of download links associated with the repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/downloads#get
-func (d *DownloadsService) List(owner, repoSlug string, opts ...interface{}) (*Downloads, *Response, error) {
-	downloads := new(Downloads)
+func (d *DownloadsService) List(owner, repoSlug string, opts ...interface{}) (*Artifacts, *Response, error) {
+	downloads := new(Artifacts)
 	urlStr := d.client.requestUrl("/repositories/%s/%s/downloads", owner, repoSlug)
 	urlStr, addOptErr := addOptions(urlStr, opts...)
 	if addOptErr != nil {
@@ -47,11 +49,9 @@ func (d *DownloadsService) List(owner, repoSlug string, opts ...interface{}) (*D
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/downloads/%7Bfilename%7D#delete
 func (d *DownloadsService) Delete(owner, repoSlug, fileName string) (*Response, error) {
-	encodedFileName := url.QueryEscape(fileName) // Encode the file name
-	urlStr := d.client.requestUrl("/repositories/%s/%s/downloads/%s", owner, repoSlug, encodedFileName)
+	escapedFilename := url.QueryEscape(fileName)
+	urlStr := d.client.requestUrl("/repositories/%s/%s/downloads/%s", owner, repoSlug, escapedFilename)
 	response, err := d.client.execute("DELETE", urlStr, nil, nil)
 
 	return response, err
 }
-
-// TODO: implement create, get#single

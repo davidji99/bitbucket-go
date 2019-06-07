@@ -101,9 +101,14 @@ func (i *IssuesService) List(owner, repoSlug string, opts ...interface{}) (*Issu
 // Get a single issue.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D#get
-func (i *IssuesService) Get(owner, repoSlug string, issueId int64) (*Issue, *Response, error) {
+func (i *IssuesService) Get(owner, repoSlug string, issueId int64, opts ...interface{}) (*Issue, *Response, error) {
 	issue := new(Issue)
 	urlStr := i.client.requestUrl("/repositories/%s/%s/issues/%v", owner, repoSlug, issueId)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := i.client.execute("GET", urlStr, issue, nil)
 
 	return issue, response, err
@@ -112,9 +117,14 @@ func (i *IssuesService) Get(owner, repoSlug string, issueId int64) (*Issue, *Res
 // Create a new issue.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues#post
-func (i *IssuesService) Create(owner, repoSlug string, io *IssueRequest) (*Issue, *Response, error) {
+func (i *IssuesService) Create(owner, repoSlug string, io *IssueRequest, opts ...interface{}) (*Issue, *Response, error) {
 	issue := new(Issue)
 	urlStr := i.client.requestUrl("/repositories/%s/%s/issues", owner, repoSlug)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := i.client.execute("POST", urlStr, issue, io)
 
 	return issue, response, err
@@ -123,9 +133,14 @@ func (i *IssuesService) Create(owner, repoSlug string, io *IssueRequest) (*Issue
 // Update an issue.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D#put
-func (i *IssuesService) Update(owner, repoSlug string, issueId int64, io *IssueRequest) (*Issue, *Response, error) {
+func (i *IssuesService) Update(owner, repoSlug string, issueId int64, io *IssueRequest, opts ...interface{}) (*Issue, *Response, error) {
 	issue := new(Issue)
 	urlStr := i.client.requestUrl("/repositories/%s/%s/issues/%v", owner, repoSlug, issueId)
+	urlStr, addOptErr := addOptions(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := i.client.execute("PUT", urlStr, issue, io)
 
 	return issue, response, err
