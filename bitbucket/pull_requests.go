@@ -82,6 +82,7 @@ type UpdatePullRequestOpts struct {
 	Description *string                        `json:"description,omitempty"`
 	Source      *NewPullRequestSourceOpts      `json:"source,omitempty"`
 	Destination *NewPullRequestDestinationOpts `json:"destination,omitempty"`
+	Reviewers   []*User                        `json:"reviewers,omitempty"`
 }
 
 // PullRequestListOpts represents the filters and query parameters available when listing pull requests.
