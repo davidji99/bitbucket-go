@@ -27,6 +27,7 @@ type IssueCommentLinks struct {
 	HTML *Link `json:"html,omitempty"`
 }
 
+// IssueCommentRequest represents a request to create/update an issue comment.
 type IssueCommentRequest struct {
 	Content *Content `json:"content,omitempty"`
 }

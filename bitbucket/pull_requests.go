@@ -2,12 +2,13 @@ package bitbucket
 
 import "time"
 
-// PullRequestService handles communication with the pull requests related
+// PullRequestsService handles communication with the pull requests related
 // methods of the Bitbucket API.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests
 type PullRequestsService service
 
+// PullRequests represents a collection of pull requests.
 type PullRequests struct {
 	PaginationInfo
 
