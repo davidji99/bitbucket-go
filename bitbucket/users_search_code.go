@@ -7,7 +7,7 @@ package bitbucket
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/search/code#get
 func (u *UsersService) SearchCode(userID string, opts ...interface{}) (*SearchCodeResults, *Response, error) {
 	results := new(SearchCodeResults)
-	urlStr := u.client.requestUrl("/users/%s/search/code", userID)
+	urlStr := u.client.requestURL("/users/%s/search/code", userID)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

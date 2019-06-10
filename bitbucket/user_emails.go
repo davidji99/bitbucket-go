@@ -26,7 +26,7 @@ type UserEmailLinks struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/emails/%7Bemail%7D#get
 func (u *UserService) GetEmails(opts ...interface{}) (*UserEmails, *Response, error) {
 	emails := new(UserEmails)
-	urlStr := u.client.requestUrl("/user/emails")
+	urlStr := u.client.requestURL("/user/emails")
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

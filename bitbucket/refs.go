@@ -44,7 +44,7 @@ type RefLinks struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/refs#get
 func (r *RefsService) ListAll(owner, repoSlug string, opts ...interface{}) (*Refs, *Response, error) {
 	result := new(Refs)
-	urlStr := r.client.requestUrl("/repositories/%s/%s/refs", owner, repoSlug)
+	urlStr := r.client.requestURL("/repositories/%s/%s/refs", owner, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

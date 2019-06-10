@@ -115,7 +115,7 @@ type RepositoryDeleteQueryParam struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories#get
 func (r *RepositoriesService) ListPublic(opts ...interface{}) (*Repositories, *Response, error) {
 	result := new(Repositories)
-	urlStr := r.client.requestUrl("/repositories")
+	urlStr := r.client.requestURL("/repositories")
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -133,7 +133,7 @@ func (r *RepositoriesService) ListPublic(opts ...interface{}) (*Repositories, *R
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D#get
 func (r *RepositoriesService) List(owner string, opts ...interface{}) (*Repositories, *Response, error) {
 	result := new(Repositories)
-	urlStr := r.client.requestUrl("/repositories/%s", owner)
+	urlStr := r.client.requestURL("/repositories/%s", owner)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -149,7 +149,7 @@ func (r *RepositoriesService) List(owner string, opts ...interface{}) (*Reposito
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#get
 func (r *RepositoriesService) Get(owner, repoSlug string, opts ...interface{}) (*Repository, *Response, error) {
 	result := new(Repository)
-	urlStr := r.client.requestUrl("/repositories/%s/%s", owner, repoSlug)
+	urlStr := r.client.requestURL("/repositories/%s/%s", owner, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -165,7 +165,7 @@ func (r *RepositoriesService) Get(owner, repoSlug string, opts ...interface{}) (
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#post
 func (r *RepositoriesService) Create(owner string, rr *RepositoryRequest) (*Repository, *Response, error) {
 	result := new(Repository)
-	urlStr := r.client.requestUrl("/repositories/%s/%s", owner, rr.GetName())
+	urlStr := r.client.requestURL("/repositories/%s/%s", owner, rr.GetName())
 	response, err := r.client.execute("POST", urlStr, result, rr)
 
 	return result, response, err
@@ -176,7 +176,7 @@ func (r *RepositoriesService) Create(owner string, rr *RepositoryRequest) (*Repo
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#put
 func (r *RepositoriesService) Update(owner, repoSlug string, rr *RepositoryRequest) (*Repository, *Response, error) {
 	result := new(Repository)
-	urlStr := r.client.requestUrl("/repositories/%s/%s", owner, repoSlug)
+	urlStr := r.client.requestURL("/repositories/%s/%s", owner, repoSlug)
 	response, err := r.client.execute("PUT", urlStr, result, rr)
 
 	return result, response, err
@@ -187,7 +187,7 @@ func (r *RepositoriesService) Update(owner, repoSlug string, rr *RepositoryReque
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#delete
 func (r *RepositoriesService) Delete(owner, repoSlug string, deleteOpt *RepositoryDeleteQueryParam) (*Response, error) {
-	urlStr := r.client.requestUrl("/repositories/%s/%s", owner, repoSlug)
+	urlStr := r.client.requestURL("/repositories/%s/%s", owner, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, deleteOpt)
 	if addOptErr != nil {
 		return nil, addOptErr

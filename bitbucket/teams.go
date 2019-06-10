@@ -58,7 +58,7 @@ type TeamListOpts struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams#get
 func (t *TeamsService) List(opts ...interface{}) (*Teams, *Response, error) {
 	teams := new(Teams)
-	urlStr := t.client.requestUrl("/teams")
+	urlStr := t.client.requestURL("/teams")
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -76,7 +76,7 @@ func (t *TeamsService) List(opts ...interface{}) (*Teams, *Response, error) {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D#get
 func (t *TeamsService) Get(teamUsername string, opts ...interface{}) (*Team, *Response, error) {
 	team := new(Team)
-	urlStr := t.client.requestUrl("/teams/%s", teamUsername)
+	urlStr := t.client.requestURL("/teams/%s", teamUsername)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

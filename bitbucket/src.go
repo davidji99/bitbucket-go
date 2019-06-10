@@ -49,7 +49,7 @@ func (s *SRCService) GetRaw(owner, repoSlug, nodeRev, path string,
 	opts ...interface{}) (fileContent *bytes.Buffer, folderContent *FileHistory, resp *Response, err error) {
 
 	encPath := (&url.URL{Path: path}).String()
-	urlStr := s.client.requestUrl("/repositories/%s/%s/src/%s/%s", owner, repoSlug, nodeRev, encPath)
+	urlStr := s.client.requestURL("/repositories/%s/%s/src/%s/%s", owner, repoSlug, nodeRev, encPath)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, nil, addOptErr
@@ -106,7 +106,7 @@ func (s *SRCService) GetMetadata(owner, repoSlug, nodeRev, path string, opts ...
 	formatQueryParam := &srcFormatOpts{Format: "meta"}
 	opts = append(opts, formatQueryParam)
 
-	urlStr := s.client.requestUrl("/repositories/%s/%s/src/%s/%s", owner, repoSlug, nodeRev, encPath)
+	urlStr := s.client.requestURL("/repositories/%s/%s/src/%s/%s", owner, repoSlug, nodeRev, encPath)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

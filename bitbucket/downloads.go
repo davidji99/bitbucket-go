@@ -35,7 +35,7 @@ type ArtifactFileLinks struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/downloads#get
 func (d *DownloadsService) List(owner, repoSlug string, opts ...interface{}) (*Artifacts, *Response, error) {
 	downloads := new(Artifacts)
-	urlStr := d.client.requestUrl("/repositories/%s/%s/downloads", owner, repoSlug)
+	urlStr := d.client.requestURL("/repositories/%s/%s/downloads", owner, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -51,7 +51,7 @@ func (d *DownloadsService) List(owner, repoSlug string, opts ...interface{}) (*A
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/downloads/%7Bfilename%7D#delete
 func (d *DownloadsService) Delete(owner, repoSlug, fileName string) (*Response, error) {
 	escapedFilename := url.QueryEscape(fileName)
-	urlStr := d.client.requestUrl("/repositories/%s/%s/downloads/%s", owner, repoSlug, escapedFilename)
+	urlStr := d.client.requestURL("/repositories/%s/%s/downloads/%s", owner, repoSlug, escapedFilename)
 	response, err := d.client.execute("DELETE", urlStr, nil, nil)
 
 	return response, err

@@ -9,7 +9,7 @@ package bitbucket
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/repositories#get
 func (u *UsersService) ListRepositories(userID string, opts ...interface{}) (*Repositories, *Response, error) {
 	repos := new(Repositories)
-	urlStr := u.client.requestUrl("/users/%s/repositories", userID)
+	urlStr := u.client.requestURL("/users/%s/repositories", userID)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

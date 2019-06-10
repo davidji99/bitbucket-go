@@ -121,7 +121,7 @@ type Branch struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests#get
 func (p *PullRequestsService) List(owner, repoSlug string, opts ...interface{}) (*PullRequests, *Response, error) {
 	result := new(PullRequests)
-	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests", owner, repoSlug)
+	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests", owner, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -135,9 +135,9 @@ func (p *PullRequestsService) List(owner, repoSlug string, opts ...interface{}) 
 // Get returns a single pull request.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D
-func (p *PullRequestsService) Get(owner, repoSlug string, pullRequestId int64, opts ...interface{}) (*PullRequest, *Response, error) {
+func (p *PullRequestsService) Get(owner, repoSlug string, pullRequestID int64, opts ...interface{}) (*PullRequest, *Response, error) {
 	result := new(PullRequest)
-	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v", owner, repoSlug, pullRequestId)
+	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests/%v", owner, repoSlug, pullRequestID)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -153,7 +153,7 @@ func (p *PullRequestsService) Get(owner, repoSlug string, pullRequestId int64, o
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/pullrequests/%7Btarget_user%7D#get
 func (p *PullRequestsService) ListByUser(targetUser string, opts ...interface{}) (*PullRequests, *Response, error) {
 	result := new(PullRequests)
-	urlStr := p.client.requestUrl("/pullrequests/%s", targetUser)
+	urlStr := p.client.requestURL("/pullrequests/%s", targetUser)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -171,7 +171,7 @@ func (p *PullRequestsService) ListByUser(targetUser string, opts ...interface{})
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests#post
 func (p *PullRequestsService) Create(owner, repoSlug string, po *CreatePullRequestOpts) (*PullRequest, *Response, error) {
 	result := new(PullRequest)
-	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests", owner, repoSlug)
+	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests", owner, repoSlug)
 	response, err := p.client.execute("POST", urlStr, result, po)
 
 	return result, response, err
@@ -181,9 +181,9 @@ func (p *PullRequestsService) Create(owner, repoSlug string, po *CreatePullReque
 // This can be used to change the pull request's branches or description. Only open pull requests can be mutated.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D#put
-func (p *PullRequestsService) Update(owner, repoSlug string, pullRequestId int64, po *UpdatePullRequestOpts) (*PullRequest, *Response, error) {
+func (p *PullRequestsService) Update(owner, repoSlug string, pullRequestID int64, po *UpdatePullRequestOpts) (*PullRequest, *Response, error) {
 	result := new(PullRequest)
-	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v", owner, repoSlug, pullRequestId)
+	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests/%v", owner, repoSlug, pullRequestID)
 	response, err := p.client.execute("PUT", urlStr, result, po)
 
 	return result, response, err

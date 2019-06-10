@@ -33,7 +33,7 @@ type FileHistoryListOpts struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/filehistory/%7Bnode%7D/%7Bpath%7D#get
 func (fh *FileHistoryService) Get(owner, repoSlug, nodeRev, path string, opts ...interface{}) (*FileHistory, *Response, error) {
 	result := new(FileHistory)
-	urlStr := fh.client.requestUrl("/repositories/%s/%s/filehistory/%s/%s", owner, repoSlug, nodeRev, path)
+	urlStr := fh.client.requestURL("/repositories/%s/%s/filehistory/%s/%s", owner, repoSlug, nodeRev, path)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

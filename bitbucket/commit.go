@@ -50,7 +50,7 @@ type CommitLinks struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D#get
 func (c *CommitService) Get(owner, repoSlug, sha string, opts ...interface{}) (*Commit, *Response, error) {
 	results := new(Commit)
-	urlStr := c.client.requestUrl("/repositories/%s/%s/commit/%s", owner, repoSlug, sha)
+	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s", owner, repoSlug, sha)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

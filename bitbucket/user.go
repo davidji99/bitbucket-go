@@ -23,7 +23,7 @@ type User struct {
 	Location      *string    `json:"location,omitempty"`
 	AccountStatus *string    `json:"account_status,omitempty"`
 	Type          *string    `json:"type,omitempty"`
-	AccountId     *string    `json:"account_id,omitempty"`
+	AccountID     *string    `json:"account_id,omitempty"`
 }
 
 // Get returns the currently authenticated user.
@@ -31,7 +31,7 @@ type User struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/user#get
 func (u *UserService) Get() (*User, *Response, error) {
 	user := new(User)
-	urlStr := u.client.requestUrl("/user")
+	urlStr := u.client.requestURL("/user")
 	response, err := u.client.execute("GET", urlStr, user, nil)
 
 	return user, response, err

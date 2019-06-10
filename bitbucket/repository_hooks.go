@@ -33,7 +33,7 @@ type RepositoryHookRequest struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/hooks#get
 func (r *RepositoriesService) ListHooks(owner, repoSlug string, opts ...interface{}) (*RepositoryHooks, *Response, error) {
 	result := new(RepositoryHooks)
-	urlStr := r.client.requestUrl("/repositories/%s/%s/hooks", owner, repoSlug)
+	urlStr := r.client.requestURL("/repositories/%s/%s/hooks", owner, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -49,7 +49,7 @@ func (r *RepositoriesService) ListHooks(owner, repoSlug string, opts ...interfac
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/hooks#post
 func (r *RepositoriesService) CreateHook(owner, repoSlug string, rho *RepositoryHookRequest) (*RepositoryHook, *Response, error) {
 	result := new(RepositoryHook)
-	urlStr := r.client.requestUrl("/repositories/%s/%s/hooks", owner, repoSlug)
+	urlStr := r.client.requestURL("/repositories/%s/%s/hooks", owner, repoSlug)
 	response, err := r.client.execute("POST", urlStr, result, rho)
 
 	return result, response, err
@@ -60,7 +60,7 @@ func (r *RepositoriesService) CreateHook(owner, repoSlug string, rho *Repository
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/hooks/%7Buid%7D#get
 func (r *RepositoriesService) GetHook(owner, repoSlug, uid string, opts ...interface{}) (*RepositoryHook, *Response, error) {
 	result := new(RepositoryHook)
-	urlStr := r.client.requestUrl("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid)
+	urlStr := r.client.requestURL("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -76,7 +76,7 @@ func (r *RepositoriesService) GetHook(owner, repoSlug, uid string, opts ...inter
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/hooks/%7Buid%7D#put
 func (r *RepositoriesService) UpdateHook(owner, repoSlug, uid string, rho *RepositoryHookRequest) (*RepositoryHook, *Response, error) {
 	result := new(RepositoryHook)
-	urlStr := r.client.requestUrl("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid)
+	urlStr := r.client.requestURL("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid)
 	response, err := r.client.execute("PUT", urlStr, result, rho)
 
 	return result, response, err
@@ -87,7 +87,7 @@ func (r *RepositoriesService) UpdateHook(owner, repoSlug, uid string, rho *Repos
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/hooks/%7Buid%7D#delete
 func (r *RepositoriesService) DeleteHook(owner, repoSlug, uid string) (*Response, error) {
-	urlStr := r.client.requestUrl("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid)
+	urlStr := r.client.requestURL("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid)
 	response, err := r.client.execute("DELETE", urlStr, nil, nil)
 
 	return response, err

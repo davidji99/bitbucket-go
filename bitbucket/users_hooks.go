@@ -27,7 +27,7 @@ type UserHook struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/hooks#get
 func (u *UsersService) ListHooks(userID string, opts ...interface{}) (*UserHooks, *Response, error) {
 	hooks := new(UserHooks)
-	urlStr := u.client.requestUrl("/users/%s/hooks", userID)
+	urlStr := u.client.requestURL("/users/%s/hooks", userID)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -45,7 +45,7 @@ func (u *UsersService) ListHooks(userID string, opts ...interface{}) (*UserHooks
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/hooks/%7Buid%7D#get
 func (u *UsersService) GetHook(userID, hookID string, opts ...interface{}) (*UserHook, *Response, error) {
 	hook := new(UserHook)
-	urlStr := u.client.requestUrl("/users/%s/hooks/%s", userID, hookID)
+	urlStr := u.client.requestURL("/users/%s/hooks/%s", userID, hookID)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -62,7 +62,7 @@ func (u *UsersService) GetHook(userID, hookID string, opts ...interface{}) (*Use
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/hooks/%7Buid%7D#delete
 func (u *UsersService) DeleteHook(userID, hookID string) (*Response, error) {
-	urlStr := u.client.requestUrl("/users/%s/hooks/%s", userID, hookID)
+	urlStr := u.client.requestURL("/users/%s/hooks/%s", userID, hookID)
 	response, err := u.client.execute("DELETE", urlStr, nil, nil)
 
 	return response, err

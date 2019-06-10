@@ -11,7 +11,7 @@ type DefaultReviewersService service
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/default-reviewers#get
 func (dr *DefaultReviewersService) List(owner, repoSlug string, opts ...interface{}) (*Users, *Response, error) {
 	result := new(Users)
-	urlStr := dr.client.requestUrl("/repositories/%s/%s/default-reviewers", owner, repoSlug)
+	urlStr := dr.client.requestURL("/repositories/%s/%s/default-reviewers", owner, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -31,7 +31,7 @@ func (dr *DefaultReviewersService) List(owner, repoSlug string, opts ...interfac
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/default-reviewers/%7Btarget_username%7D#get
 func (dr *DefaultReviewersService) Get(owner, repoSlug, userID string, opts ...interface{}) (*User, *Response, error) {
 	result := new(User)
-	urlStr := dr.client.requestUrl("/repositories/%s/%s/default-reviewers/%s", owner, repoSlug, userID)
+	urlStr := dr.client.requestURL("/repositories/%s/%s/default-reviewers/%s", owner, repoSlug, userID)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -50,7 +50,7 @@ func (dr *DefaultReviewersService) Get(owner, repoSlug, userID string, opts ...i
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/default-reviewers/%7Btarget_username%7D#put
 func (dr *DefaultReviewersService) Add(owner, repoSlug, userID string) (*User, *Response, error) {
 	result := new(User)
-	urlStr := dr.client.requestUrl("/repositories/%s/%s/default-reviewers/%s", owner, repoSlug, userID)
+	urlStr := dr.client.requestURL("/repositories/%s/%s/default-reviewers/%s", owner, repoSlug, userID)
 	response, err := dr.client.execute("PUT", urlStr, result, nil)
 
 	return result, response, err
@@ -63,7 +63,7 @@ func (dr *DefaultReviewersService) Add(owner, repoSlug, userID string) (*User, *
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/default-reviewers/%7Btarget_username%7D#delete
 func (dr *DefaultReviewersService) Remove(owner, repoSlug, userID string) (*Response, error) {
-	urlStr := dr.client.requestUrl("/repositories/%s/%s/default-reviewers/%s", owner, repoSlug, userID)
+	urlStr := dr.client.requestURL("/repositories/%s/%s/default-reviewers/%s", owner, repoSlug, userID)
 	response, err := dr.client.execute("DELETE", urlStr, nil, nil)
 
 	return response, err

@@ -22,7 +22,7 @@ type UserTeamsPermission struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/permissions/teams#get
 func (u *UserService) ListTeamsPerms(opts ...interface{}) (*UserTeamsPermissions, *Response, error) {
 	perms := new(UserTeamsPermissions)
-	urlStr := u.client.requestUrl("/user/permissions/teams")
+	urlStr := u.client.requestURL("/user/permissions/teams")
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

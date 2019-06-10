@@ -8,7 +8,7 @@ package bitbucket
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/approve#post
 func (c *CommitService) Approve(owner, repoSlug, sha string) (*CommitParticipant, *Response, error) {
 	results := new(CommitParticipant)
-	urlStr := c.client.requestUrl("/repositories/%s/%s/commit/%s/approve", owner, repoSlug, sha)
+	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s/approve", owner, repoSlug, sha)
 	response, err := c.client.execute("POST", urlStr, results, nil)
 
 	return results, response, err
@@ -21,7 +21,7 @@ func (c *CommitService) Approve(owner, repoSlug, sha string) (*CommitParticipant
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/approve#delete
 func (c *CommitService) UnApprove(owner, repoSlug, sha string) (*Response, error) {
-	urlStr := c.client.requestUrl("/repositories/%s/%s/commit/%s/approve", owner, repoSlug, sha)
+	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s/approve", owner, repoSlug, sha)
 	response, err := c.client.execute("DELETE", urlStr, nil, nil)
 
 	return response, err

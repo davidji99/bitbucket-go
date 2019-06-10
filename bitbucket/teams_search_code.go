@@ -7,7 +7,7 @@ package bitbucket
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/search/code#get
 func (t *TeamsService) SearchCode(teamUsername string, opts ...interface{}) (*SearchCodeResults, *Response, error) {
 	results := new(SearchCodeResults)
-	urlStr := t.client.requestUrl("/teams/%s/search/code", teamUsername)
+	urlStr := t.client.requestURL("/teams/%s/search/code", teamUsername)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

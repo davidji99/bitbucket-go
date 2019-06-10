@@ -1,6 +1,6 @@
 package bitbucket
 
-const milestoneSelfUrl = `http[sS]?:\/\/.*\/2.0\/repositories\/.*\/.*\/milestones/(\d+)`
+const milestoneSelfURL = `http[sS]?:\/\/.*\/2.0\/repositories\/.*\/.*\/milestones/(\d+)`
 
 // MilestonesService handles communication with the milestone related methods
 // of the Bitbucket API.
@@ -40,7 +40,7 @@ type MilestoneRequest struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/milestones#get
 func (m *MilestonesService) List(owner, repoSlug string, opts ...interface{}) (*Milestones, *Response, error) {
 	result := new(Milestones)
-	urlStr := m.client.requestUrl("/repositories/%s/%s/milestones", owner, repoSlug)
+	urlStr := m.client.requestURL("/repositories/%s/%s/milestones", owner, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -50,7 +50,7 @@ func (m *MilestonesService) List(owner, repoSlug string, opts ...interface{}) (*
 
 	// Parse and store the milestonoe id
 	for _, milestone := range result.Values {
-		milestone.ID = parseForResourceId(milestoneSelfUrl, *milestone.Links.Self.HRef)
+		milestone.ID = parseForResourceID(milestoneSelfURL, *milestone.Links.Self.HRef)
 	}
 
 	return result, response, err
@@ -62,7 +62,7 @@ func (m *MilestonesService) List(owner, repoSlug string, opts ...interface{}) (*
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/milestones/%7Bmilestone_id%7D#get
 func (m *MilestonesService) Get(owner, repoSlug string, milestoneID int64, opts ...interface{}) (*Milestone, *Response, error) {
 	result := new(Milestone)
-	urlStr := m.client.requestUrl("/repositories/%s/%s/milestones/%v", owner, repoSlug, milestoneID)
+	urlStr := m.client.requestURL("/repositories/%s/%s/milestones/%v", owner, repoSlug, milestoneID)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -71,7 +71,7 @@ func (m *MilestonesService) Get(owner, repoSlug string, milestoneID int64, opts 
 	response, err := m.client.execute("GET", urlStr, result, nil)
 
 	// Parse and store the milestone id
-	result.ID = parseForResourceId(milestoneSelfUrl, *result.Links.Self.HRef)
+	result.ID = parseForResourceID(milestoneSelfURL, *result.Links.Self.HRef)
 
 	return result, response, err
 }

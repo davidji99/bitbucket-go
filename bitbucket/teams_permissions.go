@@ -38,7 +38,7 @@ type TeamRepoPermission struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/permissions#get
 func (t *TeamsService) ListPermissions(teamUsername string, opts ...interface{}) (*TeamPermissions, *Response, error) {
 	result := new(TeamPermissions)
-	urlStr := t.client.requestUrl("/teams/%s/permissions", teamUsername)
+	urlStr := t.client.requestURL("/teams/%s/permissions", teamUsername)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -57,7 +57,7 @@ func (t *TeamsService) ListPermissions(teamUsername string, opts ...interface{})
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/permissions/repositories#get
 func (t *TeamsService) ListRepositoryPermissions(teamUsername string, opts ...interface{}) (*TeamRepoPermissions, *Response, error) {
 	result := new(TeamRepoPermissions)
-	urlStr := t.client.requestUrl("/teams/%s/permissions/repositories", teamUsername)
+	urlStr := t.client.requestURL("/teams/%s/permissions/repositories", teamUsername)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -76,7 +76,7 @@ func (t *TeamsService) ListRepositoryPermissions(teamUsername string, opts ...in
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/permissions/repositories/%7Brepo_slug%7D#get
 func (t *TeamsService) GetRepositoryPermissions(teamUsername, repoSlug string, opts ...interface{}) (*TeamRepoPermissions, *Response, error) {
 	result := new(TeamRepoPermissions)
-	urlStr := t.client.requestUrl("/teams/%s/permissions/repositories/%s", teamUsername, repoSlug)
+	urlStr := t.client.requestURL("/teams/%s/permissions/repositories/%s", teamUsername, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

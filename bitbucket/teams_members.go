@@ -8,7 +8,7 @@ package bitbucket
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/members#get
 func (t *TeamsService) ListMembers(teamUsername string, opts ...interface{}) (*Users, *Response, error) {
 	result := new(Users)
-	urlStr := t.client.requestUrl("/teams/%s/members", teamUsername)
+	urlStr := t.client.requestURL("/teams/%s/members", teamUsername)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

@@ -26,7 +26,7 @@ type ForkRequest struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/forks#get
 func (f *ForksService) List(owner, repoSlug string, opts ...interface{}) (*Repositories, *Response, error) {
 	result := new(Repositories)
-	urlStr := f.client.requestUrl("/repositories/%s/%s/forks", owner, repoSlug)
+	urlStr := f.client.requestURL("/repositories/%s/%s/forks", owner, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -46,7 +46,7 @@ func (f *ForksService) List(owner, repoSlug string, opts ...interface{}) (*Repos
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/forks#post
 func (f *ForksService) Create(owner, repoSlug string, fo *ForkRequest) (*Repository, *Response, error) {
 	result := new(Repository)
-	urlStr := f.client.requestUrl("/repositories/%s/%s/forks", owner, repoSlug)
+	urlStr := f.client.requestURL("/repositories/%s/%s/forks", owner, repoSlug)
 	response, err := f.client.execute("POST", urlStr, result, fo)
 
 	return result, response, err

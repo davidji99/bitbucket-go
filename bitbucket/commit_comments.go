@@ -32,9 +32,7 @@ type CCLinks struct {
 // CommitCommentRequest represents a new commit comment.
 type CommitCommentRequest struct {
 	Content       *Content `json:"content,omitempty"`
-	ParentComment struct {
-		Id *int64 `json:"id,omitempty"`
-	} `json:"parent,omitempty"`
+	ParentComment *CommitComment `json:"parent,omitempty"`
 }
 
 // ListComments returns the commit's comments.
@@ -45,7 +43,7 @@ type CommitCommentRequest struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/comments#get
 func (c *CommitService) ListComments(owner, repoSlug, sha string, opts ...interface{}) (*CommitComments, *Response, error) {
 	results := new(CommitComments)
-	urlStr := c.client.requestUrl("/repositories/%s/%s/commit/%s/comments", owner, repoSlug, sha)
+	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s/comments", owner, repoSlug, sha)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -61,7 +59,7 @@ func (c *CommitService) ListComments(owner, repoSlug, sha string, opts ...interf
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/comments#post
 func (c *CommitService) CreateComment(owner, repoSlug, sha string, co *CommitCommentRequest) (*CommitComment, *Response, error) {
 	results := new(CommitComment)
-	urlStr := c.client.requestUrl("/repositories/%s/%s/commit/%s/comments", owner, repoSlug, sha)
+	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s/comments", owner, repoSlug, sha)
 	response, err := c.client.execute("POST", urlStr, results, co)
 
 	return results, response, err
@@ -72,7 +70,7 @@ func (c *CommitService) CreateComment(owner, repoSlug, sha string, co *CommitCom
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/comments/%7Bcomment_id%7D#get
 func (c *CommitService) GetComment(owner, repoSlug, sha string, cID int64, opts ...interface{}) (*CommitComment, *Response, error) {
 	results := new(CommitComment)
-	urlStr := c.client.requestUrl("/repositories/%s/%s/commit/%s/comments/%v", owner, repoSlug, sha, cID)
+	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s/comments/%v", owner, repoSlug, sha, cID)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

@@ -32,7 +32,7 @@ type IssueChangeLinks struct {
 
 // IssueChangeRequest represents a request to create change on an issue.
 type IssueChangeRequest struct {
-	AssigneeAccountId *string
+	AssigneeAccountID *string
 	Kind              *string
 	Priority          *string
 	Component         *string
@@ -48,7 +48,7 @@ type IssueChangeRequest struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D/changes#get
 func (i *IssuesService) ListChanges(owner, repoSlug string, id int64, opts ...interface{}) (*IssueChanges, *Response, error) {
 	result := new(IssueChanges)
-	urlStr := i.client.requestUrl("/repositories/%s/%s/issues/%v/changes", owner, repoSlug, id)
+	urlStr := i.client.requestURL("/repositories/%s/%s/issues/%v/changes", owner, repoSlug, id)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -64,7 +64,7 @@ func (i *IssuesService) ListChanges(owner, repoSlug string, id int64, opts ...in
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D/changes/%7Bchange_id%7D#get
 func (i *IssuesService) GetChange(owner, repoSlug string, id, changeID int64, opts ...interface{}) (*IssueChange, *Response, error) {
 	result := new(IssueChange)
-	urlStr := i.client.requestUrl("/repositories/%s/%s/issues/%v/changes/%v", owner, repoSlug, id, changeID)
+	urlStr := i.client.requestURL("/repositories/%s/%s/issues/%v/changes/%v", owner, repoSlug, id, changeID)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -80,7 +80,7 @@ func (i *IssuesService) GetChange(owner, repoSlug string, id, changeID int64, op
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D/changes#post
 func (i *IssuesService) CreateChange(owner, repoSlug string, id int64, io *IssueChangeRequest) (*IssueChange, *Response, error) {
 	result := new(IssueChange)
-	urlStr := i.client.requestUrl("/repositories/%s/%s/issues/%v/changes", owner, repoSlug, id)
+	urlStr := i.client.requestURL("/repositories/%s/%s/issues/%v/changes", owner, repoSlug, id)
 	response, err := i.client.execute("POST", urlStr, result, io.buildChangeRequestBody())
 
 	return result, response, err

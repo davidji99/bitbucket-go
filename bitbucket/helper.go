@@ -9,10 +9,10 @@ import (
 var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
 var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
 
-// parseForResourceId takes a resource's self link and appropriate regex to parse out the resource ID.
+// parseForResourceID takes a resource's self link and appropriate regex to parse out the resource ID.
 // This is needed because there are few resource APIs that don't return the ID.
 // Returns an int64 value for the resource's ID.
-func parseForResourceId(regexExpression, selfLink string) *int64 {
+func parseForResourceID(regexExpression, selfLink string) *int64 {
 	id := int64(0)
 	regex := regexp.MustCompile(regexExpression)
 	result := regex.FindStringSubmatch(selfLink)

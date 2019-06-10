@@ -40,7 +40,7 @@ type SSHKeyAddRequest struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/ssh-keys#get
 func (u *UsersService) ListSSHKeys(userID string, opts ...interface{}) (*UsersSSHKeys, *Response, error) {
 	sshKeys := new(UsersSSHKeys)
-	urlStr := u.client.requestUrl("/users/%s/ssh-keys", userID)
+	urlStr := u.client.requestURL("/users/%s/ssh-keys", userID)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -58,7 +58,7 @@ func (u *UsersService) ListSSHKeys(userID string, opts ...interface{}) (*UsersSS
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/ssh-keys#post
 func (u *UsersService) AddSSHKey(userID string, newKey *SSHKeyAddRequest) (*UsersSSHKey, *Response, error) {
 	sshKey := new(UsersSSHKey)
-	urlStr := u.client.requestUrl("/users/%s/ssh-keys", userID)
+	urlStr := u.client.requestURL("/users/%s/ssh-keys", userID)
 	response, err := u.client.execute("POST", urlStr, sshKey, newKey)
 
 	return sshKey, response, err

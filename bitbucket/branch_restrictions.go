@@ -52,7 +52,7 @@ type BranchRestrictionListOpts struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/branch-restrictions#get
 func (br *BranchRestrictionsService) List(owner, repoSlug string, opts ...interface{}) (*BranchRestrictions, *Response, error) {
 	result := new(BranchRestrictions)
-	urlStr := br.client.requestUrl("/repositories/%s/%s/branch-restrictions", owner, repoSlug)
+	urlStr := br.client.requestURL("/repositories/%s/%s/branch-restrictions", owner, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -68,7 +68,7 @@ func (br *BranchRestrictionsService) List(owner, repoSlug string, opts ...interf
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/branch-restrictions/%7Bid%7D#get
 func (br *BranchRestrictionsService) Get(owner, repoSlug, id string, opts ...interface{}) (*BranchRestriction, *Response, error) {
 	result := new(BranchRestriction)
-	urlStr := br.client.requestUrl("/repositories/%s/%s/branch-restrictions/%s", owner, repoSlug, id)
+	urlStr := br.client.requestURL("/repositories/%s/%s/branch-restrictions/%s", owner, repoSlug, id)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -85,7 +85,7 @@ func (br *BranchRestrictionsService) Get(owner, repoSlug, id string, opts ...int
 func (br *BranchRestrictionsService) Update(owner, repoSlug string, brID int64, bo *BRRequest) (*BranchRestriction, *Response, error) {
 
 	result := new(BranchRestriction)
-	urlStr := br.client.requestUrl("/repositories/%s/%s/branch-restrictions/%v", owner, repoSlug, brID)
+	urlStr := br.client.requestURL("/repositories/%s/%s/branch-restrictions/%v", owner, repoSlug, brID)
 	response, err := br.client.execute("PUT", urlStr, result, bo)
 
 	return result, response, err
@@ -96,7 +96,7 @@ func (br *BranchRestrictionsService) Update(owner, repoSlug string, brID int64, 
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/branch-restrictions#post
 func (br *BranchRestrictionsService) Create(owner, repoSlug string, bo *BRRequest) (*BranchRestriction, *Response, error) {
 	result := new(BranchRestriction)
-	urlStr := br.client.requestUrl("/repositories/%s/%s/branch-restrictions", owner, repoSlug)
+	urlStr := br.client.requestURL("/repositories/%s/%s/branch-restrictions", owner, repoSlug)
 	response, err := br.client.execute("POST", urlStr, result, bo)
 
 	return result, response, err
@@ -106,7 +106,7 @@ func (br *BranchRestrictionsService) Create(owner, repoSlug string, bo *BRReques
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/branch-restrictions/%7Bid%7D#delete
 func (br *BranchRestrictionsService) Delete(owner, repoSlug string, brID int64) (*Response, error) {
-	urlStr := br.client.requestUrl("/repositories/%s/%s/branch-restrictions/%v", owner, repoSlug, brID)
+	urlStr := br.client.requestURL("/repositories/%s/%s/branch-restrictions/%v", owner, repoSlug, brID)
 	response, err := br.client.execute("DELETE", urlStr, nil, nil)
 
 	return response, err

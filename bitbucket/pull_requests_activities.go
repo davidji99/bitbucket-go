@@ -48,7 +48,7 @@ type PRApprovalActivity struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/activity#get
 func (p *PullRequestsService) ListActivity(owner, repoSlug string, opts ...interface{}) (*PRActivities, *Response, error) {
 	result := new(PRActivities)
-	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/activity", owner, repoSlug)
+	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests/activity", owner, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -62,9 +62,9 @@ func (p *PullRequestsService) ListActivity(owner, repoSlug string, opts ...inter
 // GetActivity returns a paginated list of a single pull request's activity log in a repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D/activity#get
-func (p *PullRequestsService) GetActivity(owner, repoSlug string, pullRequestId int64, opts ...interface{}) (*PRActivities, *Response, error) {
+func (p *PullRequestsService) GetActivity(owner, repoSlug string, pullRequestID int64, opts ...interface{}) (*PRActivities, *Response, error) {
 	result := new(PRActivities)
-	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v/activity", owner, repoSlug, pullRequestId)
+	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests/%v/activity", owner, repoSlug, pullRequestID)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

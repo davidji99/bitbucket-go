@@ -40,7 +40,7 @@ type DiffGetOpts struct {
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/diff/%7Bspec%7D#get
 func (d *DiffService) GetRaw(owner, repoSlug, spec string) (*bytes.Buffer, *Response, error) {
-	urlStr := d.client.requestUrl("/repositories/%s/%s/diff/%s", owner, repoSlug, spec)
+	urlStr := d.client.requestURL("/repositories/%s/%s/diff/%s", owner, repoSlug, spec)
 
 	req, reqErr := d.client.newRequest("GET", urlStr, nil, nil)
 	if reqErr != nil {
@@ -60,7 +60,7 @@ func (d *DiffService) GetRaw(owner, repoSlug, spec string) (*bytes.Buffer, *Resp
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/diffstat/%7Bspec%7D#get
 func (d *DiffService) Get(owner, repoSlug, spec string, opts ...interface{}) (*Diffs, *Response, error) {
 	result := new(Diffs)
-	urlStr := d.client.requestUrl("/repositories/%s/%s/diffstat/%s", owner, repoSlug, spec)
+	urlStr := d.client.requestURL("/repositories/%s/%s/diffstat/%s", owner, repoSlug, spec)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

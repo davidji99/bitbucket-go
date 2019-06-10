@@ -32,7 +32,7 @@ type UserLinks struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D#get
 func (u *UsersService) GetByID(userID string, opts ...interface{}) (*User, *Response, error) {
 	user := new(User)
-	urlStr := u.client.requestUrl("/users/%s", userID)
+	urlStr := u.client.requestURL("/users/%s", userID)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

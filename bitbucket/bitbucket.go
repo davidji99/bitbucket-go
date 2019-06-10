@@ -143,11 +143,11 @@ func NewOAuthClientCredentials(i, s string) *Client {
 }
 
 // NewOAuth creates a new oauth.
-func NewOAuth(clientId, clientSecret string) *Client {
-	a := &auth{appID: clientId, secret: clientSecret}
+func NewOAuth(clientID, clientSecret string) *Client {
+	a := &auth{appID: clientID, secret: clientSecret}
 	ctx := context.Background()
 	conf := &oauth2.Config{
-		ClientID:     clientId,
+		ClientID:     clientID,
 		ClientSecret: clientSecret,
 		Endpoint:     bitbucket.Endpoint,
 	}
@@ -242,7 +242,7 @@ func injectClient(a *auth) *Client {
 	return c
 }
 
-func (c *Client) requestUrl(template string, args ...interface{}) string {
+func (c *Client) requestURL(template string, args ...interface{}) string {
 	if len(args) == 1 && args[0] == "" {
 		return c.BaseURL + template
 	}
@@ -251,7 +251,7 @@ func (c *Client) requestUrl(template string, args ...interface{}) string {
 
 func (c *Client) newRequest(method string, urlStr string, v, body interface{}) (*http.Request, error) {
 	// Use pagination if changed from default value
-	const DEC_RADIX = 10
+	const DecRadix = 10
 	if strings.Contains(urlStr, "/repositories/") {
 		if c.Pagelen != DefaultPageLength {
 			urlObj, err := url.Parse(urlStr)
@@ -259,7 +259,7 @@ func (c *Client) newRequest(method string, urlStr string, v, body interface{}) (
 				return nil, err
 			}
 			q := urlObj.Query()
-			q.Set("pagelen", strconv.FormatUint(c.Pagelen, DEC_RADIX))
+			q.Set("pagelen", strconv.FormatUint(c.Pagelen, DecRadix))
 			urlObj.RawQuery = q.Encode()
 			urlStr = urlObj.String()
 		}

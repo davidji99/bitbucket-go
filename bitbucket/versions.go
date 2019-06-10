@@ -1,6 +1,6 @@
 package bitbucket
 
-const versionSelfUrlRegex = `http[sS]?:\/\/.*\/2.0\/repositories\/.*\/.*\/versions/(\d+)`
+const versionSelfURLRegex = `http[sS]?:\/\/.*\/2.0\/repositories\/.*\/.*\/versions/(\d+)`
 
 // VersionsService handles communication with the version related methods
 // of the Bitbucket API.
@@ -40,7 +40,7 @@ type VersionRequest struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/versions#get
 func (v *VersionsService) List(owner, repoSlug string, opts ...interface{}) (*Versions, *Response, error) {
 	versions := new(Versions)
-	urlStr := v.client.requestUrl("/repositories/%s/%s/versions", owner, repoSlug)
+	urlStr := v.client.requestURL("/repositories/%s/%s/versions", owner, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -50,7 +50,7 @@ func (v *VersionsService) List(owner, repoSlug string, opts ...interface{}) (*Ve
 
 	// Parse and store the version id
 	for _, version := range versions.Values {
-		version.ID = parseForResourceId(versionSelfUrlRegex, *version.Links.Self.HRef)
+		version.ID = parseForResourceID(versionSelfURLRegex, *version.Links.Self.HRef)
 	}
 
 	return versions, response, err
@@ -62,7 +62,7 @@ func (v *VersionsService) List(owner, repoSlug string, opts ...interface{}) (*Ve
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/versions/%7Bversion_id%7D#get
 func (v *VersionsService) Get(owner, repoSlug string, versionID int64, opts ...interface{}) (*Version, *Response, error) {
 	version := new(Version)
-	urlStr := v.client.requestUrl("/repositories/%s/%s/versions/%v", owner, repoSlug, versionID)
+	urlStr := v.client.requestURL("/repositories/%s/%s/versions/%v", owner, repoSlug, versionID)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -71,7 +71,7 @@ func (v *VersionsService) Get(owner, repoSlug string, versionID int64, opts ...i
 	response, err := v.client.execute("GET", urlStr, version, nil)
 
 	// Parse and store the version id
-	version.ID = parseForResourceId(versionSelfUrlRegex, *version.Links.Self.HRef)
+	version.ID = parseForResourceID(versionSelfURLRegex, *version.Links.Self.HRef)
 
 	return version, response, err
 }

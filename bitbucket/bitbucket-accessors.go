@@ -569,6 +569,14 @@ func (c *CommitCommentRequest) GetContent() *Content {
 	return c.Content
 }
 
+// GetParentComment returns the ParentComment field.
+func (c *CommitCommentRequest) GetParentComment() *CommitComment {
+	if c == nil {
+		return nil
+	}
+	return c.ParentComment
+}
+
 // GetApprove returns the Approve field.
 func (c *CommitLinks) GetApprove() *Link {
 	if c == nil {
@@ -1505,12 +1513,12 @@ func (i *IssueChangeLinks) GetSelf() *Link {
 	return i.Self
 }
 
-// GetAssigneeAccountId returns the AssigneeAccountId field if it's non-nil, zero value otherwise.
-func (i *IssueChangeRequest) GetAssigneeAccountId() string {
-	if i == nil || i.AssigneeAccountId == nil {
+// GetAssigneeAccountID returns the AssigneeAccountID field if it's non-nil, zero value otherwise.
+func (i *IssueChangeRequest) GetAssigneeAccountID() string {
+	if i == nil || i.AssigneeAccountID == nil {
 		return ""
 	}
-	return *i.AssigneeAccountId
+	return *i.AssigneeAccountID
 }
 
 // GetComponent returns the Component field if it's non-nil, zero value otherwise.
@@ -1657,12 +1665,12 @@ func (i *IssueCommentRequest) GetContent() *Content {
 	return i.Content
 }
 
-// GetHtml returns the Html field if it's non-nil, zero value otherwise.
-func (i *IssueContent) GetHtml() string {
-	if i == nil || i.Html == nil {
+// GetHTML returns the HTML field if it's non-nil, zero value otherwise.
+func (i *IssueContent) GetHTML() string {
+	if i == nil || i.HTML == nil {
 		return ""
 	}
-	return *i.Html
+	return *i.HTML
 }
 
 // GetMarkup returns the Markup field if it's non-nil, zero value otherwise.
@@ -3265,12 +3273,12 @@ func (t *TeamProjectLinks) GetAvatar() *Link {
 	return t.Avatar
 }
 
-// GetHtml returns the Html field.
-func (t *TeamProjectLinks) GetHtml() *Link {
+// GetHTML returns the HTML field.
+func (t *TeamProjectLinks) GetHTML() *Link {
 	if t == nil {
 		return nil
 	}
-	return t.Html
+	return t.HTML
 }
 
 // GetSelf returns the Self field.
@@ -3377,12 +3385,12 @@ func (u *UpdatePullRequestOpts) GetTitle() string {
 	return *u.Title
 }
 
-// GetAccountId returns the AccountId field if it's non-nil, zero value otherwise.
-func (u *User) GetAccountId() string {
-	if u == nil || u.AccountId == nil {
+// GetAccountID returns the AccountID field if it's non-nil, zero value otherwise.
+func (u *User) GetAccountID() string {
+	if u == nil || u.AccountID == nil {
 		return ""
 	}
-	return *u.AccountId
+	return *u.AccountID
 }
 
 // GetAccountStatus returns the AccountStatus field if it's non-nil, zero value otherwise.

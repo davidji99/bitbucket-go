@@ -6,7 +6,7 @@ package bitbucket
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/refs/tags#get
 func (r *RefsService) ListTags(owner, repoSlug string, opts ...interface{}) (*Refs, *Response, error) {
 	result := new(Refs)
-	urlStr := r.client.requestUrl("/repositories/%s/%s/refs/tags", owner, repoSlug)
+	urlStr := r.client.requestURL("/repositories/%s/%s/refs/tags", owner, repoSlug)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -22,7 +22,7 @@ func (r *RefsService) ListTags(owner, repoSlug string, opts ...interface{}) (*Re
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/refs/tags#post
 func (r *RefsService) CreateTag(owner, repoSlug string, ro *RefRequest) (*Ref, *Response, error) {
 	result := new(Ref)
-	urlStr := r.client.requestUrl("/repositories/%s/%s/refs/tags", owner, repoSlug)
+	urlStr := r.client.requestURL("/repositories/%s/%s/refs/tags", owner, repoSlug)
 	response, err := r.client.execute("POST", urlStr, result, ro)
 
 	return result, response, err
@@ -33,7 +33,7 @@ func (r *RefsService) CreateTag(owner, repoSlug string, ro *RefRequest) (*Ref, *
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/refs/tags/%7Bname%7D#get
 func (r *RefsService) GetTag(owner, repoSlug, name string, opts ...interface{}) (*Ref, *Response, error) {
 	result := new(Ref)
-	urlStr := r.client.requestUrl("/repositories/%s/%s/refs/tags/%s", owner, repoSlug, name)
+	urlStr := r.client.requestURL("/repositories/%s/%s/refs/tags/%s", owner, repoSlug, name)
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -48,7 +48,7 @@ func (r *RefsService) GetTag(owner, repoSlug, name string, opts ...interface{}) 
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/refs/tags/%7Bname%7D#delete
 func (r *RefsService) DeleteTag(owner, repoSlug, name string) (*Response, error) {
-	urlStr := r.client.requestUrl("/repositories/%s/%s/refs/tags/%s", owner, repoSlug, name)
+	urlStr := r.client.requestURL("/repositories/%s/%s/refs/tags/%s", owner, repoSlug, name)
 	response, err := r.client.execute("DELETE", urlStr, nil, nil)
 
 	return response, err

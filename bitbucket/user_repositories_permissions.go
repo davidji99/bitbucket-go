@@ -23,7 +23,7 @@ type UserRepositoriesPermission struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/permissions/repositories#get
 func (u *UserService) ListRepositoryPerms(opts ...interface{}) (*UserRepositoriesPermissions, *Response, error) {
 	perms := new(UserRepositoriesPermissions)
-	urlStr := u.client.requestUrl("/user/permissions/repositories")
+	urlStr := u.client.requestURL("/user/permissions/repositories")
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr

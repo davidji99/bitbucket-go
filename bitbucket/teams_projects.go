@@ -26,7 +26,7 @@ type TeamProject struct {
 // TeamProjectLinks represents the "links" object in a Bitbucket team project.
 type TeamProjectLinks struct {
 	Self   *Link `json:"self,omitempty"`
-	Html   *Link `json:"html,omitempty"`
+	HTML   *Link `json:"html,omitempty"`
 	Avatar *Link `json:"avatar,omitempty"`
 }
 
@@ -43,7 +43,7 @@ type TeamProjectRequest struct {
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/projects/#get
 func (t *TeamsService) ListProjects(teamUsername string, opts ...interface{}) (*TeamProjects, *Response, error) {
 	result := new(TeamProjects)
-	urlStr := t.client.requestUrl("/teams/%s/projects/", teamUsername) // Trailing slash is required!
+	urlStr := t.client.requestURL("/teams/%s/projects/", teamUsername) // Trailing slash is required!
 	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
@@ -59,7 +59,7 @@ func (t *TeamsService) ListProjects(teamUsername string, opts ...interface{}) (*
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/projects/#post
 func (t *TeamsService) CreateProject(teamUsername string, po *TeamProjectRequest) (*TeamProject, *Response, error) {
 	result := new(TeamProject)
-	urlStr := t.client.requestUrl("/teams/%s/projects/", teamUsername) // Trailing slash is required!
+	urlStr := t.client.requestURL("/teams/%s/projects/", teamUsername) // Trailing slash is required!
 	response, err := t.client.execute("POST", urlStr, result, po)
 
 	return result, response, err
@@ -70,7 +70,7 @@ func (t *TeamsService) CreateProject(teamUsername string, po *TeamProjectRequest
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/projects/%7Bproject_key%7D#put
 func (t *TeamsService) UpdateProject(teamUsername, projectKey string, po *TeamProjectRequest) (*TeamProject, *Response, error) {
 	result := new(TeamProject)
-	urlStr := t.client.requestUrl("/teams/%s/projects/%s", teamUsername, projectKey)
+	urlStr := t.client.requestURL("/teams/%s/projects/%s", teamUsername, projectKey)
 	response, err := t.client.execute("PUT", urlStr, result, po)
 
 	return result, response, err
@@ -80,7 +80,7 @@ func (t *TeamsService) UpdateProject(teamUsername, projectKey string, po *TeamPr
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/projects/%7Bproject_key%7D#delete
 func (t *TeamsService) DeleteProject(teamUsername, projectKey string) (*Response, error) {
-	urlStr := t.client.requestUrl("/teams/%s/projects/%s", teamUsername, projectKey)
+	urlStr := t.client.requestURL("/teams/%s/projects/%s", teamUsername, projectKey)
 	response, err := t.client.execute("DELETE", urlStr, nil, nil)
 
 	return response, err
