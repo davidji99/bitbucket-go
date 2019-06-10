@@ -18,7 +18,7 @@ func (a *Artifact) GetDownloadCount() int64 {
 }
 
 // GetLinks returns the Links field.
-func (a *Artifact) GetLinks() *DownloadFileLinks {
+func (a *Artifact) GetLinks() *ArtifactFileLinks {
 	if a == nil {
 		return nil
 	}
@@ -55,6 +55,14 @@ func (a *Artifact) GetUser() *User {
 		return nil
 	}
 	return a.User
+}
+
+// GetSelf returns the Self field.
+func (a *ArtifactFileLinks) GetSelf() *Link {
+	if a == nil {
+		return nil
+	}
+	return a.Self
 }
 
 // GetIsValid returns the IsValid field if it's non-nil, zero value otherwise.
@@ -1095,14 +1103,6 @@ func (d *DiffGetOpts) GetPath() string {
 		return ""
 	}
 	return *d.Path
-}
-
-// GetSelf returns the Self field.
-func (d *DownloadFileLinks) GetSelf() *Link {
-	if d == nil {
-		return nil
-	}
-	return d.Self
 }
 
 // GetHistory returns the History field.

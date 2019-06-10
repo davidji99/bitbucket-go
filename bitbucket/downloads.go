@@ -18,14 +18,15 @@ type Artifacts struct {
 // Artifact represents a file on Bitbucket.
 type Artifact struct {
 	Name          *string            `json:"name,omitempty"`
-	Links         *DownloadFileLinks `json:"links,omitempty"`
+	Links         *ArtifactFileLinks `json:"links,omitempty"`
 	DownloadCount *int64             `json:"downloads,omitempty"`
 	User          *User              `json:"user,omitempty"`
 	Type          *string            `json:"type,omitempty"`
 	Size          *int64             `json:"size,omitempty"`
 }
 
-type DownloadFileLinks struct {
+// ArtifactFileLinks represents the "links" object in a Bitbucket artifact.
+type ArtifactFileLinks struct {
 	Self *Link `json:"self,omitempty"`
 }
 

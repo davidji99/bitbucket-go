@@ -133,7 +133,7 @@ func (i *IssuesService) Update(owner, repoSlug string, issueId int64, io *IssueR
 	return result, response, err
 }
 
-// Deletes the specified issue. This requires write access to the repository.
+// Delete the specified issue. This requires write access to the repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D#delete
 func (i *IssuesService) Delete(owner, repoSlug string, issueId int64) (*Response, error) {

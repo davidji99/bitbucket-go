@@ -2,7 +2,7 @@ package bitbucket
 
 import "time"
 
-// UsersService handles communication with the user related methods
+// UserService handles communication with the user related methods
 // of the Bitbucket API.
 //
 // This service only deals with returning information about the authenticated user.
@@ -26,7 +26,7 @@ type User struct {
 	AccountId     *string    `json:"account_id,omitempty"`
 }
 
-// GetCurrent returns the currently logged in user.
+// Get returns the currently authenticated user.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/user#get
 func (u *UserService) Get() (*User, *Response, error) {

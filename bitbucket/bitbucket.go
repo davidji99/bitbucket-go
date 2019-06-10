@@ -21,13 +21,12 @@ import (
 	"sync"
 )
 
-const DEFAULT_PAGE_LENGTH = 10
+// DefaultPageLength represents the default page length returned from API calls.
+const DefaultPageLength = 10
 
 const (
 	apiBaseURL = "https://api.bitbucket.org/2.0"
 	userAgent  = "go-bitbucket"
-
-	defaultMediaType = "application/octet-stream"
 )
 
 // A Client manages communication with the Bitbucket API.
@@ -124,7 +123,7 @@ type PaginationInfo struct {
 	Previous *string `json:"previous,omitempty"`
 }
 
-// Uses the Client Credentials Grant oauth2 flow to authenticate to Bitbucket
+// NewOAuthClientCredentials uses the Client Credentials Grant oauth2 flow to authenticate to Bitbucket
 func NewOAuthClientCredentials(i, s string) *Client {
 	a := &auth{appID: i, secret: s}
 	ctx := context.Background()
@@ -143,12 +142,13 @@ func NewOAuthClientCredentials(i, s string) *Client {
 
 }
 
-func NewOAuth(i, s string) *Client {
-	a := &auth{appID: i, secret: s}
+// NewOAuth creates a new oauth.
+func NewOAuth(clientId, clientSecret string) *Client {
+	a := &auth{appID: clientId, secret: clientSecret}
 	ctx := context.Background()
 	conf := &oauth2.Config{
-		ClientID:     i,
-		ClientSecret: s,
+		ClientID:     clientId,
+		ClientSecret: clientSecret,
 		Endpoint:     bitbucket.Endpoint,
 	}
 
@@ -193,23 +193,27 @@ func NewOAuthWithCode(i, s, c string) (*Client, string) {
 	return injectClient(a), tok.AccessToken
 }
 
+// NewOAuthToken creates a new oauth with otken.
 func NewOAuthToken(t oauth2.Token) *Client {
 	a := &auth{token: t}
 	return injectClient(a)
 }
 
+// NewOAuthbearerToken creates a new oauth with the bearer token.
 func NewOAuthbearerToken(t string) *Client {
 	a := &auth{bearerToken: t}
 	return injectClient(a)
 }
 
+// NewBasicAuth creates a new client using username and preferably an app password.
 func NewBasicAuth(u, p string) *Client {
 	a := &auth{user: u, password: p}
 	return injectClient(a)
 }
 
+// injectClient adds all resouce services to the client.
 func injectClient(a *auth) *Client {
-	c := &Client{Auth: a, Pagelen: DEFAULT_PAGE_LENGTH, BaseURL: apiBaseURL, UserAgent: userAgent, client: new(http.Client)}
+	c := &Client{Auth: a, Pagelen: DefaultPageLength, BaseURL: apiBaseURL, UserAgent: userAgent, client: new(http.Client)}
 	c.common.client = c
 	c.BranchRestrictions = (*BranchRestrictionsService)(&c.common)
 	c.Commit = (*CommitService)(&c.common)
@@ -249,7 +253,7 @@ func (c *Client) newRequest(method string, urlStr string, v, body interface{}) (
 	// Use pagination if changed from default value
 	const DEC_RADIX = 10
 	if strings.Contains(urlStr, "/repositories/") {
-		if c.Pagelen != DEFAULT_PAGE_LENGTH {
+		if c.Pagelen != DefaultPageLength {
 			urlObj, err := url.Parse(urlStr)
 			if err != nil {
 				return nil, err
@@ -375,6 +379,7 @@ func (c *Client) addAuthHeaders(req *http.Request) {
 	return
 }
 
+// Response represents a response returned from this client.
 type Response struct {
 	*http.Response
 
@@ -390,6 +395,7 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
+// ErrorResponse represents an error response.
 type ErrorResponse struct {
 	Body     []byte
 	Response *http.Response

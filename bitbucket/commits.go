@@ -31,7 +31,7 @@ func (c *CommitsService) List(owner, repoSlug string, opts ...interface{}) (*Com
 	return result, response, err
 }
 
-// Get a commit revision.
+// ListSafe returns a commit revision.
 //
 // NOTE: Identical to GET /repositories/{username}/{repo_slug}/commits,
 // except that POST allows clients to place the include and exclude parameters in the request body to avoid URL length issues.

@@ -3,7 +3,10 @@ package bitbucket
 import "time"
 
 const (
-	UpdateActivity   = "update"
+	// UpdateActivity represents an update activity to a pull request.
+	UpdateActivity = "update"
+
+	// ApprovalActivity represents an update activity to a pull request.
 	ApprovalActivity = "approval"
 )
 

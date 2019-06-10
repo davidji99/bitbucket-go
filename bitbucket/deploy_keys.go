@@ -2,7 +2,7 @@ package bitbucket
 
 import "time"
 
-// DeployKeys handles communication with the deploy keys related methods
+// DeployKeysService handles communication with the deploy keys related methods
 // of the Bitbucket API.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/deploy-keys

@@ -8,7 +8,7 @@ import "time"
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit
 type CommitService service
 
-// Commits represents a git commit in a Bitbucket repository.
+// Commit represents a git commit in a Bitbucket repository.
 type Commit struct {
 	Rendered     *CommitMessageContent `json:"rendered,omitempty"`
 	Hash         *string               `json:"hash,omitempty"`
@@ -23,6 +23,7 @@ type Commit struct {
 	Type         *string               `json:"type,omitempty"`
 }
 
+// CommitMessageContent represents the commit's message.
 type CommitMessageContent struct {
 	Message *Content `json:"message,omitempty"`
 }
@@ -44,7 +45,7 @@ type CommitLinks struct {
 	Statuses *Link `json:"statuses,omitempty"`
 }
 
-// GetCommit return the specified commit.
+// Get return the specified commit.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D#get
 func (c *CommitService) Get(owner, repoSlug, sha string, opts ...interface{}) (*Commit, *Response, error) {

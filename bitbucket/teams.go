@@ -42,6 +42,7 @@ type TeamLinks struct {
 	Snippets     *Link `json:"snippets,omitempty"`
 }
 
+// TeamListOpts represents the query parameters available to getting all Teams.
 type TeamListOpts struct {
 	// Filters the teams based on the authenticated user's role on each team:
 	//  - member: returns a list of all the teams which the caller is a member of at least one team group or repository owned by the team.
