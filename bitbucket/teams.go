@@ -48,8 +48,6 @@ type TeamListOpts struct {
 	//  - contributor: returns a list of teams which the caller has write access to at least one repository owned by the team.
 	//  - admin: returns a list teams which the caller has team administrator access.
 	Role string `url:"role,omitempty"`
-
-	ListOpts
 }
 
 // List returns all the teams that the authenticated user is associated with.
@@ -60,7 +58,7 @@ type TeamListOpts struct {
 func (t *TeamsService) List(opts ...interface{}) (*Teams, *Response, error) {
 	teams := new(Teams)
 	urlStr := t.client.requestUrl("/teams")
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -75,9 +73,14 @@ func (t *TeamsService) List(opts ...interface{}) (*Teams, *Response, error) {
 // If the team's profile is private, location, website and created_on elements are omitted.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D#get
-func (t *TeamsService) Get(teamUsername string) (*Team, *Response, error) {
+func (t *TeamsService) Get(teamUsername string, opts ...interface{}) (*Team, *Response, error) {
 	team := new(Team)
 	urlStr := t.client.requestUrl("/teams/%s", teamUsername)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := t.client.execute("GET", urlStr, team, nil)
 
 	return team, response, err

@@ -8,7 +8,7 @@ package bitbucket
 func (u *UsersService) SearchCode(userID string, opts ...interface{}) (*SearchCodeResults, *Response, error) {
 	results := new(SearchCodeResults)
 	urlStr := u.client.requestUrl("/users/%s/search/code", userID)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

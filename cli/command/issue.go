@@ -69,7 +69,7 @@ func Issues(bbcli *cli2.BBCli) cli.Command {
 						Priority: NewStringPointer(c.String("priority")),
 					}
 
-					result, _, err := api.Issues.Create(c.String("owner"), c.String("repo"), newIssueOpts)
+					result, _, err := api.Issues.List(c.String("owner"), c.String("repo"), newIssueOpts)
 					if err != nil {
 						return err
 					}

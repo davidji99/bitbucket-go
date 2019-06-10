@@ -35,7 +35,7 @@ type DownloadFileLinks struct {
 func (d *DownloadsService) List(owner, repoSlug string, opts ...interface{}) (*Artifacts, *Response, error) {
 	downloads := new(Artifacts)
 	urlStr := d.client.requestUrl("/repositories/%s/%s/downloads", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

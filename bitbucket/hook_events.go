@@ -6,18 +6,6 @@ package bitbucket
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/hook_events
 type HookEventsService service
 
-// HookEventTypes represents hook events.
-type HookEventTypes struct {
-	Repository *HookEventTypesLinks `json:"repository,omitempty"`
-	Team       *HookEventTypesLinks `json:"team,omitempty"`
-	User       *HookEventTypesLinks `json:"user,omitempty"`
-}
-
-// HookEventTypesLinks represents the "links" object in a Bitbucket hook event type.
-type HookEventTypesLinks struct {
-	Events *Link `json:"events,omitempty"`
-}
-
 // HookEvents represents a collection of hook events.
 type HookEvents struct {
 	PaginationInfo
@@ -33,13 +21,25 @@ type HookEvent struct {
 	Label       *string `json:"label,omitempty"`
 }
 
+// HookEventTypes represents hook events.
+type HookEventTypes struct {
+	Repository *HookEventTypesLinks `json:"repository,omitempty"`
+	Team       *HookEventTypesLinks `json:"team,omitempty"`
+	User       *HookEventTypesLinks `json:"user,omitempty"`
+}
+
+// HookEventTypesLinks represents the "links" object in a Bitbucket hook event type.
+type HookEventTypesLinks struct {
+	Events *Link `json:"events,omitempty"`
+}
+
 // List returns the webhook resource or subject types on which webhooks can be registered.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/hook_events#get
 func (h *HookEventsService) List(opts ...interface{}) (*HookEventTypes, *Response, error) {
 	result := new(HookEventTypes)
 	urlStr := h.client.requestUrl("/hook_events")
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -55,7 +55,7 @@ func (h *HookEventsService) List(opts ...interface{}) (*HookEventTypes, *Respons
 func (h *HookEventsService) Get(subjectType string, opts ...interface{}) (*HookEvents, *Response, error) {
 	result := new(HookEvents)
 	urlStr := h.client.requestUrl("/hook_events/%s", subjectType)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

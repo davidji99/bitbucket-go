@@ -27,7 +27,7 @@ type UserEmailLinks struct {
 func (u *UserService) GetEmails(opts ...interface{}) (*UserEmails, *Response, error) {
 	emails := new(UserEmails)
 	urlStr := u.client.requestUrl("/user/emails")
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

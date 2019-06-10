@@ -29,11 +29,12 @@ type SRCMetadata struct {
 type SRCGetOpts struct {
 	// If provided, returns the contents of the repository and its subdirectories recursively
 	// until the specified max_depth of nested directories. When omitted, this defaults to 1.
-	MaxDepth *int64 `url:"max_depth,omitempty"`
+	MaxDepth int64 `url:"max_depth,omitempty"`
 }
 
-// srcFormatOpts represents the URL parameters to get the metadata. This is unexported by default
-// in order to promote the distinction between the GetRaw and GetMetadata functions below.
+// srcFormatOpts represents the URL parameters to get the metadata.
+//
+// This is unexported by default in order to promote the distinction between the GetRaw and GetMetadata functions below.
 type srcFormatOpts struct {
 	Format string `url:"format,omitempty"`
 }
@@ -49,7 +50,7 @@ func (s *SRCService) GetRaw(owner, repoSlug, nodeRev, path string,
 
 	encPath := (&url.URL{Path: path}).String()
 	urlStr := s.client.requestUrl("/repositories/%s/%s/src/%s/%s", owner, repoSlug, nodeRev, encPath)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, nil, addOptErr
 	}
@@ -102,11 +103,11 @@ func (s *SRCService) GetMetadata(owner, repoSlug, nodeRev, path string, opts ...
 	encPath := (&url.URL{Path: path}).String()
 
 	// Add format=meta URL parameter by default
-	formatOpt := &srcFormatOpts{Format: "meta"}
-	opts = append(opts, formatOpt)
+	formatQueryParam := &srcFormatOpts{Format: "meta"}
+	opts = append(opts, formatQueryParam)
 
 	urlStr := s.client.requestUrl("/repositories/%s/%s/src/%s/%s", owner, repoSlug, nodeRev, encPath)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

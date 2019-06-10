@@ -17,12 +17,8 @@ type ForkRequest struct {
 	Description *string               `json:"description,omitempty"`
 	HasWiki     *bool                 `json:"has_wiki,omitempty"`
 	HasIssues   *string               `json:"has_issues,omitempty"`
-	Parent      struct {
-		FullName *string `json:"full_name,omitempty"`
-	} `json:"parent,omitempty"`
-	Owner struct {
-		Username *string `json:"username,omitempty"`
-	} `json:"owner,omitempty"`
+	Parent      *Repository           `json:"parent,omitempty"`
+	Owner       *User                 `json:"owner,omitempty"`
 }
 
 // List returns a paginated list of all the forks of the specified repository.
@@ -31,7 +27,7 @@ type ForkRequest struct {
 func (f *ForksService) List(owner, repoSlug string, opts ...interface{}) (*Repositories, *Response, error) {
 	result := new(Repositories)
 	urlStr := f.client.requestUrl("/repositories/%s/%s/forks", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -48,14 +44,9 @@ func (f *ForksService) List(owner, repoSlug string, opts ...interface{}) (*Repos
 // The 'owner' & 'repoSlug' parameters represent the repository you want to fork into your account.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/forks#post
-func (f *ForksService) Create(owner, repoSlug string, fo *ForkRequest, opts ...interface{}) (*Repository, *Response, error) {
+func (f *ForksService) Create(owner, repoSlug string, fo *ForkRequest) (*Repository, *Response, error) {
 	result := new(Repository)
 	urlStr := f.client.requestUrl("/repositories/%s/%s/forks", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
 	response, err := f.client.execute("POST", urlStr, result, fo)
 
 	return result, response, err

@@ -15,7 +15,7 @@ type RefRequest struct {
 func (r *RefsService) ListBranches(owner, repoSlug string, opts ...interface{}) (*Refs, *Response, error) {
 	result := new(Refs)
 	urlStr := r.client.requestUrl("/repositories/%s/%s/refs/branches", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -30,14 +30,9 @@ func (r *RefsService) ListBranches(owner, repoSlug string, opts ...interface{}) 
 // The branch name should not include any prefixes (e.g. refs/heads).
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/refs/branches#post
-func (r *RefsService) CreateBranch(owner, repoSlug string, ro *RefRequest, opts ...interface{}) (*Ref, *Response, error) {
+func (r *RefsService) CreateBranch(owner, repoSlug string, ro *RefRequest) (*Ref, *Response, error) {
 	result := new(Ref)
 	urlStr := r.client.requestUrl("/repositories/%s/%s/refs/branches", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
 	response, err := r.client.execute("POST", urlStr, result, ro)
 
 	return result, response, err
@@ -49,7 +44,7 @@ func (r *RefsService) CreateBranch(owner, repoSlug string, ro *RefRequest, opts 
 func (r *RefsService) GetBranch(owner, repoSlug, name string, opts ...interface{}) (*Ref, *Response, error) {
 	result := new(Ref)
 	urlStr := r.client.requestUrl("/repositories/%s/%s/refs/branches/%s", owner, repoSlug, name)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -64,7 +59,7 @@ func (r *RefsService) GetBranch(owner, repoSlug, name string, opts ...interface{
 // The main branch is not allowed to be deleted and will return a 400 response.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/refs/branches/%7Bname%7D#delete
-func (r *RefsService) DeleteBranch(owner, repoSlug, name string, opts ...interface{}) (*Response, error) {
+func (r *RefsService) DeleteBranch(owner, repoSlug, name string) (*Response, error) {
 	urlStr := r.client.requestUrl("/repositories/%s/%s/refs/branches/%s", owner, repoSlug, name)
 	response, err := r.client.execute("DELETE", urlStr, nil, nil)
 

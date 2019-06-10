@@ -41,8 +41,8 @@ type BMLinks struct {
 	Self *Link `json:"self,omitempty"`
 }
 
-// BranchModelRequest represents a request to update an existing branching model.
-type BranchModelRequest struct {
+// BMRequest represents a request to update an existing branching model.
+type BMRequest struct {
 	Development *BMBranchUpdateOpts `json:"development,omitempty"`
 	Production  *BMBranchUpdateOpts `json:"production,omitempty"`
 	BranchTypes []*BMBranchTypes    `json:"branch_types,omitempty"`
@@ -64,7 +64,7 @@ type BMBranchUpdateOpts struct {
 func (bm *BranchingModelService) Get(owner, repoSlug string, opts ...interface{}) (*BranchingModel, *Response, error) {
 	result := new(BranchingModel)
 	urlStr := bm.client.requestUrl("/repositories/%s/%s/issues/branching-model", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -82,7 +82,7 @@ func (bm *BranchingModelService) Get(owner, repoSlug string, opts ...interface{}
 func (bm *BranchingModelService) GetRaw(owner, repoSlug string, opts ...interface{}) (*BranchingModel, *Response, error) {
 	result := new(BranchingModel)
 	urlStr := bm.client.requestUrl("/repositories/%s/%s/issues/branching-model/settings", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -95,14 +95,9 @@ func (bm *BranchingModelService) GetRaw(owner, repoSlug string, opts ...interfac
 // Update update the branching model configuration for a repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/branching-model/settings#put
-func (bm *BranchingModelService) Update(owner, repoSlug string, bo *BranchModelRequest, opts ...interface{}) (*BranchingModel, *Response, error) {
+func (bm *BranchingModelService) Update(owner, repoSlug string, bo *BMRequest) (*BranchingModel, *Response, error) {
 	result := new(BranchingModel)
 	urlStr := bm.client.requestUrl("/repositories/%s/%s/issues/branching-model/settings", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
 	response, err := bm.client.execute("PUT", urlStr, result, bo)
 
 	return result, response, err

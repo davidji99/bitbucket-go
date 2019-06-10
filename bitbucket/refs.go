@@ -8,12 +8,14 @@ import "time"
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/refs
 type RefsService service
 
+// Refs represents a collection of refs.
 type Refs struct {
 	PaginationInfo
 
 	Values []*Ref `json:"values,omitempty"`
 }
 
+// Ref represents the branches and tags in a repository.
 type Ref struct {
 	Heads                []*Commit  `json:"heads,omitempty"`
 	Date                 *time.Time `json:"date,omitempty"`
@@ -26,6 +28,7 @@ type Ref struct {
 	Target               *Commit    `json:"target,omitempty"`
 }
 
+// RefLinks represents the "links" object in a ref.
 type RefLinks struct {
 	Commits *Link `json:"commits,omitempty"`
 	Self    *Link `json:"self,omitempty"`
@@ -42,7 +45,7 @@ type RefLinks struct {
 func (r *RefsService) ListAll(owner, repoSlug string, opts ...interface{}) (*Refs, *Response, error) {
 	result := new(Refs)
 	urlStr := r.client.requestUrl("/repositories/%s/%s/refs", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

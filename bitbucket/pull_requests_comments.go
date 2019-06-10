@@ -23,7 +23,7 @@ type PRComment struct {
 func (p *PullRequestsService) ListComments(owner, repoSlug string, pullRequestId int64, opts ...interface{}) (*PRComments, *Response, error) {
 	result := new(PRComments)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v/comments", owner, repoSlug, pullRequestId)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -36,16 +36,9 @@ func (p *PullRequestsService) ListComments(owner, repoSlug string, pullRequestId
 // CreateComment creates a new pull request comment.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D/comments#post
-func (p *PullRequestsService) CreateComment(owner, repoSlug string, pullRequestId int64, po *Content,
-	opts ...interface{}) (*PRComment, *Response, error) {
-
+func (p *PullRequestsService) CreateComment(owner, repoSlug string, pullRequestId int64, po *Content) (*PRComment, *Response, error) {
 	result := new(PRComment)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v/comments", owner, repoSlug, pullRequestId)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
 	response, err := p.client.execute("POST", urlStr, result, po)
 
 	return result, response, err
@@ -57,7 +50,7 @@ func (p *PullRequestsService) CreateComment(owner, repoSlug string, pullRequestI
 func (p *PullRequestsService) GetComment(owner, repoSlug string, prID, cID int64, opts ...interface{}) (*PRComment, *Response, error) {
 	result := new(PRComment)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v/comments/%v", owner, repoSlug, prID, cID)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -70,16 +63,9 @@ func (p *PullRequestsService) GetComment(owner, repoSlug string, prID, cID int64
 // UpdateComment updates a specific pull request comment.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D/comments#put
-func (p *PullRequestsService) UpdateComment(owner, repoSlug string, prID, cID int64, po *Content,
-	opts ...interface{}) (*PRComment, *Response, error) {
-
+func (p *PullRequestsService) UpdateComment(owner, repoSlug string, prID, cID int64, po *Content) (*PRComment, *Response, error) {
 	result := new(PRComment)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v/comments/%v", owner, repoSlug, prID, cID)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
 	response, err := p.client.execute("PUT", urlStr, result, po)
 
 	return result, response, err
@@ -88,7 +74,7 @@ func (p *PullRequestsService) UpdateComment(owner, repoSlug string, prID, cID in
 // DeleteComment updates a specific pull request comment.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D/comments#delete
-func (p *PullRequestsService) DeleteComment(owner, repoSlug string, prID, cID int64, opts ...interface{}) (*Response, error) {
+func (p *PullRequestsService) DeleteComment(owner, repoSlug string, prID, cID int64) (*Response, error) {
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v/comments/%v", owner, repoSlug, prID, cID)
 	response, err := p.client.execute("DELETE", urlStr, nil, nil)
 

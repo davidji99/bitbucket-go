@@ -41,7 +41,7 @@ type VersionRequest struct {
 func (v *VersionsService) List(owner, repoSlug string, opts ...interface{}) (*Versions, *Response, error) {
 	versions := new(Versions)
 	urlStr := v.client.requestUrl("/repositories/%s/%s/versions", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -60,9 +60,14 @@ func (v *VersionsService) List(owner, repoSlug string, opts ...interface{}) (*Ve
 // NOTE: The version ID is a numerical value, not the version name, that is visible in the links.self.href object.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/versions/%7Bversion_id%7D#get
-func (v *VersionsService) Get(owner, repoSlug string, versionID int64) (*Version, *Response, error) {
+func (v *VersionsService) Get(owner, repoSlug string, versionID int64, opts ...interface{}) (*Version, *Response, error) {
 	version := new(Version)
 	urlStr := v.client.requestUrl("/repositories/%s/%s/versions/%v", owner, repoSlug, versionID)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := v.client.execute("GET", urlStr, version, nil)
 
 	// Parse and store the version id

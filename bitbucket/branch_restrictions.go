@@ -13,7 +13,7 @@ type BranchRestrictions struct {
 	Values []*BranchRestriction `json:"values,omitempty"`
 }
 
-// BranchRestriction represents a branch restriction.
+// BranchRestriction represents a Bitbucket repository branch restriction.
 type BranchRestriction struct {
 	ID              *int64   `json:"id,omitempty"`
 	Kind            *string  `json:"kind,omitempty"`
@@ -30,22 +30,21 @@ type BRLinks struct {
 	Self *Link `json:"self,omitempty"`
 }
 
-type BRListOpts struct {
+// BRRequest represents a request to create/update a branch restriction.
+type BRRequest struct {
+	Kind            *string `json:"kind,omitempty"`
+	BranchMatchKind *string `json:"branch_match_kind,omitempty"`
+	BranchType      *string `json:"branch_type,omitempty"`
+	Pattern         *string `json:"pattern,omitempty"`
+}
+
+// BranchRestrictionListOpts represents the query parameters available to listing all branch restrictions.
+type BranchRestrictionListOpts struct {
 	// Branch restrictions of this type
 	Kind string `url:"kind,omitempty"`
 
 	// Branch restrictions applied to branches of this pattern
 	Pattern string `url:"pattern,omitempty"`
-
-	ListOpts
-}
-
-// BRRequest represents a request to create/update a branch restriction.
-type BranchRestrictionRequest struct {
-	Kind            *string `json:"kind,omitempty"`
-	BranchMatchKind *string `json:"branch_match_kind,omitempty"`
-	BranchType      *string `json:"branch_type,omitempty"`
-	Pattern         *string `json:"pattern,omitempty"`
 }
 
 // List returns a paginated list of all branch restrictions on the repository.
@@ -54,7 +53,7 @@ type BranchRestrictionRequest struct {
 func (br *BranchRestrictionsService) List(owner, repoSlug string, opts ...interface{}) (*BranchRestrictions, *Response, error) {
 	result := new(BranchRestrictions)
 	urlStr := br.client.requestUrl("/repositories/%s/%s/branch-restrictions", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -64,12 +63,17 @@ func (br *BranchRestrictionsService) List(owner, repoSlug string, opts ...interf
 	return result, response, err
 }
 
-// Get Returns a specific branch restriction rule.
+// Get Returns a specific branch restriction.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/branch-restrictions/%7Bid%7D#get
-func (br *BranchRestrictionsService) Get(owner, repoSlug, id string) (*BranchRestriction, *Response, error) {
+func (br *BranchRestrictionsService) Get(owner, repoSlug, id string, opts ...interface{}) (*BranchRestriction, *Response, error) {
 	result := new(BranchRestriction)
 	urlStr := br.client.requestUrl("/repositories/%s/%s/branch-restrictions/%s", owner, repoSlug, id)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := br.client.execute("GET", urlStr, result, nil)
 
 	return result, response, err
@@ -78,7 +82,8 @@ func (br *BranchRestrictionsService) Get(owner, repoSlug, id string) (*BranchRes
 // Update updates an existing branch restriction rule.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/branch-restrictions/%7Bid%7D#put
-func (br *BranchRestrictionsService) Update(owner, repoSlug string, brID int64, bo *BranchRestrictionRequest) (*BranchRestriction, *Response, error) {
+func (br *BranchRestrictionsService) Update(owner, repoSlug string, brID int64, bo *BRRequest) (*BranchRestriction, *Response, error) {
+
 	result := new(BranchRestriction)
 	urlStr := br.client.requestUrl("/repositories/%s/%s/branch-restrictions/%v", owner, repoSlug, brID)
 	response, err := br.client.execute("PUT", urlStr, result, bo)
@@ -89,7 +94,7 @@ func (br *BranchRestrictionsService) Update(owner, repoSlug string, brID int64, 
 // Create creates a new branch restriction rule for a repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/branch-restrictions#post
-func (br *BranchRestrictionsService) Create(owner, repoSlug string, bo *BranchRestrictionRequest) (*BranchRestriction, *Response, error) {
+func (br *BranchRestrictionsService) Create(owner, repoSlug string, bo *BRRequest) (*BranchRestriction, *Response, error) {
 	result := new(BranchRestriction)
 	urlStr := br.client.requestUrl("/repositories/%s/%s/branch-restrictions", owner, repoSlug)
 	response, err := br.client.execute("POST", urlStr, result, bo)

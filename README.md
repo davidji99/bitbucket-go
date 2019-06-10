@@ -18,36 +18,88 @@ go get github.com/davidji99/go-bitbucket
 
 ## Usage
 
+### Sample: 
 ```go
 package main
 
 import (
         "fmt"
 
-        "github.com/davidji99/go-bitbucket"
+        "github.com/davidji99/go-bitbucket/bitbucket"
 )
 
 func main() {
+        client := bitbucket.NewBasicAuth("<USERNAME>", "<PASSWORD>")
+        
+        title := "new issue"
+        description := "new issue description"
+        baseBranch := "master"
+        sourceBranch := "bugFix/fix-this-issue"
+        closeSourceBranch := true
 
-        c := bitbucket.NewBasicAuth("username", "password")
-
-        opt := &bitbucket.PullRequestsOptions{
-                Owner:             "your-team",
-                RepoSlug:          "awesome-project",
-                SourceBranch:      "develop",
-                DestinationBranch: "master",
-                Title:             "fix bug. #9999",
-                CloseSourceBranch: true,
+        createOpts := &bitbucket.CreatePullRequestOpts{
+            Title:       &title,
+            Description: &description,
+            Destination: &bitbucket.NewPullRequestDestinationOpts{
+                Branch: &bitbucket.Branch{Name: &baseBranch},
+            },
+            Source: &bitbucket.NewPullRequestSourceOpts{
+                Branch: &bitbucket.Branch{Name: &sourceBranch},
+            },
+            CloseSourceBranch: &closeSourceBranch,
         }
 
-        res, err := c.Repositories.PullRequests.Create(opt)
-        if err != nil {
-                panic(err)
+        newPullRequest, response, createErr := client.PullRequests.Create("<ORG>", "<REPO_SLUG>", createOpts)
+        if createErr != nil {
+        	panic(createErr)
+        }
+        
+        if response.StatusCode == 201 {
+            fmt.Println("Pull request created!")
         }
 
-        fmt.Println(res) 
+        fmt.Println(newPullRequest.GetLinks().GetSelf().GetHRef())
 }
 ```
+
+### Query Parameters:
+In addition to resource specific query parameters, Bitbucket offers what I like to call 'generic' query parameters that 
+are not tied to a specific resource. These query parameters are:
+- List `?page=1&pagelen=35`
+- [Filter & Sort](https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering#query-sort) `?q=source.repository.full_name+%21%3D+%22main%2Frepo%22`
+- [Partial Response](https://developer.atlassian.com/bitbucket/api/2/reference/meta/partial-response) `?fields=values.id,values.reviewers.username`
+
+Not all of the above will work with every resource/endpoint so please refer to the official [Bitbucket APIv2 documentation](https://developer.atlassian.com/bitbucket/api/2/reference).
+
+Users can mix and match generic parameters with resource parameters or even create their own `struct` for query parameters.
+
+Example usage of query parameters:
+```go
+api := bitbucket.NewBasicAuth("<USER>", "<APP_PASSWORD>")
+
+opts1 := &bitbucket.PartialRespOpts{
+    Fields: "-values.links",
+}
+
+opts2 := &bitbucket.FilterSortOpts{
+    Query: "destination.branch.name = \"master\"",
+}
+
+opts3 := &bitbucket.PullRequestListOpts{
+    State: []string{"OPEN"},
+}
+
+result, _, err := api.PullRequests.List(c.String("<ORG>", "<REPO_SLUG>", opts1, opts2, opts3)
+if err != nil {
+    return err
+}
+
+for _, i := range result.Values {
+    fmt.Println(i.GetPriority())
+    fmt.Println(i.GetLinks().GetSelf().GetHRef())
+}
+```
+which will return all pull requests that are `open`, with no links in the results, and whose destination branch in `master`.
 
 ## FAQ
 - Only supports Bitbucket APIv2.

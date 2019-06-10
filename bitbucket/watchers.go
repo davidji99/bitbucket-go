@@ -12,7 +12,7 @@ type WatchersService service
 func (w *WatchersService) List(owner, repoSlug string, opts ...interface{}) (*Users, *Response, error) {
 	results := new(Users)
 	urlStr := w.client.requestUrl("/repositories/%s/%s/watchers", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

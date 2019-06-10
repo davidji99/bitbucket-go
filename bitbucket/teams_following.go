@@ -6,7 +6,7 @@ package bitbucket
 func (t *TeamsService) ListFollowing(teamUsername string, opts ...interface{}) (*Users, *Response, error) {
 	result := new(Users)
 	urlStr := t.client.requestUrl("/teams/%s/following", teamUsername)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

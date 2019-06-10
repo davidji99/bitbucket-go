@@ -6,7 +6,7 @@ package bitbucket
 func (t *TeamsService) ListTeamRepositories(teamUsername string, opts ...interface{}) (*Repositories, *Response, error) {
 	result := new(Repositories)
 	urlStr := t.client.requestUrl("/teams/%s/repositories", teamUsername)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

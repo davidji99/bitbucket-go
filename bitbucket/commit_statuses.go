@@ -45,7 +45,7 @@ type CommitStatusRequest struct {
 func (c *CommitService) ListStatuses(owner, repoSlug, sha string, opts ...interface{}) (*CommitStatuses, *Response, error) {
 	results := new(CommitStatuses)
 	urlStr := c.client.requestUrl("/repositories/%s/%s/commit/%s/statuses", owner, repoSlug, sha)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -58,14 +58,9 @@ func (c *CommitService) ListStatuses(owner, repoSlug, sha string, opts ...interf
 // CreateStatus creates a new build status against the specified commit.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/statuses/build#post
-func (c *CommitService) CreateStatus(owner, repoSlug, sha string, co *CommitStatusRequest, opts ...interface{}) (*CommitStatus, *Response, error) {
+func (c *CommitService) CreateStatus(owner, repoSlug, sha string, co *CommitStatusRequest) (*CommitStatus, *Response, error) {
 	results := new(CommitStatus)
 	urlStr := c.client.requestUrl("/repositories/%s/%s/commit/%s/statuses/build", owner, repoSlug, sha)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
 	response, err := c.client.execute("POST", urlStr, results, co)
 
 	return results, response, err
@@ -74,15 +69,10 @@ func (c *CommitService) CreateStatus(owner, repoSlug, sha string, co *CommitStat
 // UpdateStatus update the current status of a build status object on the specific commit.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/statuses/build/%7Bkey%7D#put
-func (c *CommitService) UpdateStatus(owner, repoSlug, sha, key string, co *CommitStatusRequest, opts ...interface{}) (*CommitStatus, *Response, error) {
+func (c *CommitService) UpdateStatus(owner, repoSlug, sha, key string, co *CommitStatusRequest) (*CommitStatus, *Response, error) {
 	results := new(CommitStatus)
 	urlStr := c.client.requestUrl("/repositories/%s/%s/commit/%s/statuses/build/%s", owner, repoSlug, sha, key)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
-	response, err := c.client.execute("POST", urlStr, results, co)
+	response, err := c.client.execute("PUT", urlStr, results, co)
 
 	return results, response, err
 }
@@ -93,12 +83,12 @@ func (c *CommitService) UpdateStatus(owner, repoSlug, sha, key string, co *Commi
 func (c *CommitService) GetStatusByBuild(owner, repoSlug, sha, key string, opts ...interface{}) (*CommitStatus, *Response, error) {
 	results := new(CommitStatus)
 	urlStr := c.client.requestUrl("/repositories/%s/%s/commit/%s/statuses/build/%s", owner, repoSlug, sha, key)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
 
-	response, err := c.client.execute("POST", urlStr, results, nil)
+	response, err := c.client.execute("GET", urlStr, results, nil)
 
 	return results, response, err
 }

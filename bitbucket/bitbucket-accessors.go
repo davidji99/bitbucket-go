@@ -137,6 +137,22 @@ func (b *BMLinks) GetSelf() *Link {
 	return b.Self
 }
 
+// GetDevelopment returns the Development field.
+func (b *BMRequest) GetDevelopment() *BMBranchUpdateOpts {
+	if b == nil {
+		return nil
+	}
+	return b.Development
+}
+
+// GetProduction returns the Production field.
+func (b *BMRequest) GetProduction() *BMBranchUpdateOpts {
+	if b == nil {
+		return nil
+	}
+	return b.Production
+}
+
 // GetName returns the Name field if it's non-nil, zero value otherwise.
 func (b *Branch) GetName() string {
 	if b == nil || b.Name == nil {
@@ -175,22 +191,6 @@ func (b *BranchingModel) GetType() string {
 		return ""
 	}
 	return *b.Type
-}
-
-// GetDevelopment returns the Development field.
-func (b *BranchModelRequest) GetDevelopment() *BMBranchUpdateOpts {
-	if b == nil {
-		return nil
-	}
-	return b.Development
-}
-
-// GetProduction returns the Production field.
-func (b *BranchModelRequest) GetProduction() *BMBranchUpdateOpts {
-	if b == nil {
-		return nil
-	}
-	return b.Production
 }
 
 // GetBranchMatchKind returns the BranchMatchKind field if it's non-nil, zero value otherwise.
@@ -249,8 +249,16 @@ func (b *BranchRestriction) GetValue() int64 {
 	return *b.Value
 }
 
+// GetSelf returns the Self field.
+func (b *BRLinks) GetSelf() *Link {
+	if b == nil {
+		return nil
+	}
+	return b.Self
+}
+
 // GetBranchMatchKind returns the BranchMatchKind field if it's non-nil, zero value otherwise.
-func (b *BranchRestrictionRequest) GetBranchMatchKind() string {
+func (b *BRRequest) GetBranchMatchKind() string {
 	if b == nil || b.BranchMatchKind == nil {
 		return ""
 	}
@@ -258,7 +266,7 @@ func (b *BranchRestrictionRequest) GetBranchMatchKind() string {
 }
 
 // GetBranchType returns the BranchType field if it's non-nil, zero value otherwise.
-func (b *BranchRestrictionRequest) GetBranchType() string {
+func (b *BRRequest) GetBranchType() string {
 	if b == nil || b.BranchType == nil {
 		return ""
 	}
@@ -266,7 +274,7 @@ func (b *BranchRestrictionRequest) GetBranchType() string {
 }
 
 // GetKind returns the Kind field if it's non-nil, zero value otherwise.
-func (b *BranchRestrictionRequest) GetKind() string {
+func (b *BRRequest) GetKind() string {
 	if b == nil || b.Kind == nil {
 		return ""
 	}
@@ -274,19 +282,11 @@ func (b *BranchRestrictionRequest) GetKind() string {
 }
 
 // GetPattern returns the Pattern field if it's non-nil, zero value otherwise.
-func (b *BranchRestrictionRequest) GetPattern() string {
+func (b *BRRequest) GetPattern() string {
 	if b == nil || b.Pattern == nil {
 		return ""
 	}
 	return *b.Pattern
-}
-
-// GetSelf returns the Self field.
-func (b *BRLinks) GetSelf() *Link {
-	if b == nil {
-		return nil
-	}
-	return b.Self
 }
 
 // GetHTML returns the HTML field.
@@ -441,6 +441,14 @@ func (c *Commit) GetMessage() string {
 	return *c.Message
 }
 
+// GetRendered returns the Rendered field.
+func (c *Commit) GetRendered() *CommitMessageContent {
+	if c == nil {
+		return nil
+	}
+	return c.Rendered
+}
+
 // GetRepository returns the Repository field.
 func (c *Commit) GetRepository() *Repository {
 	if c == nil {
@@ -511,6 +519,14 @@ func (c *CommitComment) GetLinks() *CCLinks {
 		return nil
 	}
 	return c.Links
+}
+
+// GetParent returns the Parent field.
+func (c *CommitComment) GetParent() *CommitComment {
+	if c == nil {
+		return nil
+	}
+	return c.Parent
 }
 
 // GetType returns the Type field if it's non-nil, zero value otherwise.
@@ -591,6 +607,14 @@ func (c *CommitLinks) GetStatuses() *Link {
 		return nil
 	}
 	return c.Statuses
+}
+
+// GetMessage returns the Message field.
+func (c *CommitMessageContent) GetMessage() *Content {
+	if c == nil {
+		return nil
+	}
+	return c.Message
 }
 
 // GetParticipatedOn returns the ParticipatedOn field if it's non-nil, zero value otherwise.
@@ -831,6 +855,46 @@ func (c *Content) GetType() string {
 		return ""
 	}
 	return *c.Type
+}
+
+// GetCloseSourceBranch returns the CloseSourceBranch field if it's non-nil, zero value otherwise.
+func (c *CreatePullRequestOpts) GetCloseSourceBranch() bool {
+	if c == nil || c.CloseSourceBranch == nil {
+		return false
+	}
+	return *c.CloseSourceBranch
+}
+
+// GetDescription returns the Description field if it's non-nil, zero value otherwise.
+func (c *CreatePullRequestOpts) GetDescription() string {
+	if c == nil || c.Description == nil {
+		return ""
+	}
+	return *c.Description
+}
+
+// GetDestination returns the Destination field.
+func (c *CreatePullRequestOpts) GetDestination() *NewPullRequestDestinationOpts {
+	if c == nil {
+		return nil
+	}
+	return c.Destination
+}
+
+// GetSource returns the Source field.
+func (c *CreatePullRequestOpts) GetSource() *NewPullRequestSourceOpts {
+	if c == nil {
+		return nil
+	}
+	return c.Source
+}
+
+// GetTitle returns the Title field if it's non-nil, zero value otherwise.
+func (c *CreatePullRequestOpts) GetTitle() string {
+	if c == nil || c.Title == nil {
+		return ""
+	}
+	return *c.Title
 }
 
 // GetHTML returns the HTML field.
@@ -1127,6 +1191,22 @@ func (f *ForkRequest) GetName() string {
 		return ""
 	}
 	return *f.Name
+}
+
+// GetOwner returns the Owner field.
+func (f *ForkRequest) GetOwner() *User {
+	if f == nil {
+		return nil
+	}
+	return f.Owner
+}
+
+// GetParent returns the Parent field.
+func (f *ForkRequest) GetParent() *Repository {
+	if f == nil {
+		return nil
+	}
+	return f.Parent
 }
 
 // GetSCM returns the SCM field if it's non-nil, zero value otherwise.
@@ -1815,46 +1895,6 @@ func (n *NewPullRequestDestinationOpts) GetBranch() *Branch {
 		return nil
 	}
 	return n.Branch
-}
-
-// GetCloseSourceBranch returns the CloseSourceBranch field if it's non-nil, zero value otherwise.
-func (n *NewPullRequestOpts) GetCloseSourceBranch() bool {
-	if n == nil || n.CloseSourceBranch == nil {
-		return false
-	}
-	return *n.CloseSourceBranch
-}
-
-// GetDescription returns the Description field if it's non-nil, zero value otherwise.
-func (n *NewPullRequestOpts) GetDescription() string {
-	if n == nil || n.Description == nil {
-		return ""
-	}
-	return *n.Description
-}
-
-// GetDestination returns the Destination field.
-func (n *NewPullRequestOpts) GetDestination() *NewPullRequestDestinationOpts {
-	if n == nil {
-		return nil
-	}
-	return n.Destination
-}
-
-// GetSource returns the Source field.
-func (n *NewPullRequestOpts) GetSource() *NewPullRequestSourceOpts {
-	if n == nil {
-		return nil
-	}
-	return n.Source
-}
-
-// GetTitle returns the Title field if it's non-nil, zero value otherwise.
-func (n *NewPullRequestOpts) GetTitle() string {
-	if n == nil || n.Title == nil {
-		return ""
-	}
-	return *n.Title
 }
 
 // GetUUID returns the UUID field if it's non-nil, zero value otherwise.
@@ -2887,14 +2927,6 @@ func (s *SearchMatch) GetText() string {
 		return ""
 	}
 	return *s.Text
-}
-
-// GetMaxDepth returns the MaxDepth field if it's non-nil, zero value otherwise.
-func (s *SRCGetOpts) GetMaxDepth() int64 {
-	if s == nil || s.MaxDepth == nil {
-		return 0
-	}
-	return *s.MaxDepth
 }
 
 // GetCommit returns the Commit field.

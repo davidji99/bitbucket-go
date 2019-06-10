@@ -8,7 +8,7 @@ import (
 
 func TestAddOptions_NoOpts(t *testing.T) {
 	urlStr := fmt.Sprintf("/repositories/%s/%s", "bOrg", "bRepo")
-	urlStr, addOptErr := addOptions(urlStr)
+	urlStr, addOptErr := addQueryParams(urlStr)
 
 	assert.Nil(t, addOptErr)
 	assert.Equal(t, "/repositories/bOrg/bRepo", urlStr)
@@ -20,7 +20,7 @@ func TestAddOptionsRedux_OneOpt(t *testing.T) {
 		Pagelen: int64(5),
 	}
 	urlStr := fmt.Sprintf("/repositories/%s/%s", "bOrg", "bRepo")
-	urlStr, addOptErr := addOptions(urlStr, opt)
+	urlStr, addOptErr := addQueryParams(urlStr, opt)
 
 	assert.Nil(t, addOptErr)
 	assert.Equal(t, "/repositories/bOrg/bRepo?page=2&pagelen=5", urlStr)
@@ -38,7 +38,7 @@ func TestAddOptionsRedux_MultipleOpts(t *testing.T) {
 	}
 
 	urlStr := fmt.Sprintf("/repositories/%s/%s", "bOrg", "bRepo")
-	urlStr, addOptErr := addOptions(urlStr, opt1, opt2)
+	urlStr, addOptErr := addQueryParams(urlStr, opt1, opt2)
 
 	assert.Nil(t, addOptErr)
 	assert.Equal(t, "/repositories/bOrg/bRepo?page=2&pagelen=5&q=source.repository.full_name+%21%3D+%22main%2Frepo%22+AND+state+%3D+%22OPEN%22&sort=updated_on", urlStr)

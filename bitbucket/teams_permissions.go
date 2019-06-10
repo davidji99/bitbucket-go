@@ -1,11 +1,13 @@
 package bitbucket
 
+// TeamPermissions represents a collection of team permissions.
 type TeamPermissions struct {
 	PaginationInfo
 
 	Values []*TeamPermission `json:"values,omitempty"`
 }
 
+// TeamPermission represents a team permission.
 type TeamPermission struct {
 	Permission *string `json:"permission,omitempty"`
 	Type       *string `json:"type,omitempty"`
@@ -13,12 +15,14 @@ type TeamPermission struct {
 	Team       *Team   `json:"team,omitempty"`
 }
 
+// TeamRepoPermissions represents a collection of team repository permissions.
 type TeamRepoPermissions struct {
 	PaginationInfo
 
 	Values []*TeamRepoPermission `json:"values,omitempty"`
 }
 
+// TeamRepoPermission represents a team repository permission.
 type TeamRepoPermission struct {
 	Permission *string     `json:"permission,omitempty"`
 	Type       *string     `json:"type,omitempty"`
@@ -35,7 +39,7 @@ type TeamRepoPermission struct {
 func (t *TeamsService) ListPermissions(teamUsername string, opts ...interface{}) (*TeamPermissions, *Response, error) {
 	result := new(TeamPermissions)
 	urlStr := t.client.requestUrl("/teams/%s/permissions", teamUsername)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -54,7 +58,7 @@ func (t *TeamsService) ListPermissions(teamUsername string, opts ...interface{})
 func (t *TeamsService) ListRepositoryPermissions(teamUsername string, opts ...interface{}) (*TeamRepoPermissions, *Response, error) {
 	result := new(TeamRepoPermissions)
 	urlStr := t.client.requestUrl("/teams/%s/permissions/repositories", teamUsername)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -73,7 +77,7 @@ func (t *TeamsService) ListRepositoryPermissions(teamUsername string, opts ...in
 func (t *TeamsService) GetRepositoryPermissions(teamUsername, repoSlug string, opts ...interface{}) (*TeamRepoPermissions, *Response, error) {
 	result := new(TeamRepoPermissions)
 	urlStr := t.client.requestUrl("/teams/%s/permissions/repositories/%s", teamUsername, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

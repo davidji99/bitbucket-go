@@ -37,7 +37,7 @@ type IssueCommentRequest struct {
 func (i *IssuesService) ListComments(owner, repoSlug string, id int64, opts ...interface{}) (*IssueComments, *Response, error) {
 	result := new(IssueComments)
 	urlStr := i.client.requestUrl("/repositories/%s/%s/issues/%v/comments", owner, repoSlug, id)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -50,14 +50,9 @@ func (i *IssuesService) ListComments(owner, repoSlug string, id int64, opts ...i
 // CreateComment creates a new issue comment.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D/comments#post
-func (i *IssuesService) CreateComment(owner, repoSlug string, id int64, io *IssueCommentRequest, opts ...interface{}) (*IssueComment, *Response, error) {
+func (i *IssuesService) CreateComment(owner, repoSlug string, id int64, io *IssueCommentRequest) (*IssueComment, *Response, error) {
 	result := new(IssueComment)
 	urlStr := i.client.requestUrl("/repositories/%s/%s/issues/%v/comments", owner, repoSlug, id)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
 	response, err := i.client.execute("POST", urlStr, result, io)
 
 	return result, response, err
@@ -69,7 +64,7 @@ func (i *IssuesService) CreateComment(owner, repoSlug string, id int64, io *Issu
 func (i *IssuesService) GetComment(owner, repoSlug string, id, commentID int64, opts ...interface{}) (*IssueComment, *Response, error) {
 	result := new(IssueComment)
 	urlStr := i.client.requestUrl("/repositories/%s/%s/issues/%v/comments/%v", owner, repoSlug, id, commentID)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -82,14 +77,9 @@ func (i *IssuesService) GetComment(owner, repoSlug string, id, commentID int64, 
 // UpdateComment updates an existing issue comment.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D/comments/%7Bcomment_id%7D#put
-func (i *IssuesService) UpdateComment(owner, repoSlug string, id, commentID int64, io *IssueCommentRequest, opts ...interface{}) (*IssueComment, *Response, error) {
+func (i *IssuesService) UpdateComment(owner, repoSlug string, id, commentID int64, io *IssueCommentRequest) (*IssueComment, *Response, error) {
 	result := new(IssueComment)
 	urlStr := i.client.requestUrl("/repositories/%s/%s/issues/%v/comments/%v", owner, repoSlug, id, commentID)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
 	response, err := i.client.execute("PUT", urlStr, result, io)
 
 	return result, response, err

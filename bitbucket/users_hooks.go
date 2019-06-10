@@ -28,7 +28,7 @@ type UserHook struct {
 func (u *UsersService) ListHooks(userID string, opts ...interface{}) (*UserHooks, *Response, error) {
 	hooks := new(UserHooks)
 	urlStr := u.client.requestUrl("/users/%s/hooks", userID)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -43,9 +43,14 @@ func (u *UsersService) ListHooks(userID string, opts ...interface{}) (*UserHooks
 // Accepts the user's UUID, account_id, or username. Recommend to use UUID or account_id.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/hooks/%7Buid%7D#get
-func (u *UsersService) GetHook(userID, hookID string) (*UserHook, *Response, error) {
+func (u *UsersService) GetHook(userID, hookID string, opts ...interface{}) (*UserHook, *Response, error) {
 	hook := new(UserHook)
 	urlStr := u.client.requestUrl("/users/%s/hooks/%s", userID, hookID)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := u.client.execute("GET", urlStr, hook, nil)
 
 	return hook, response, err
@@ -56,10 +61,9 @@ func (u *UsersService) GetHook(userID, hookID string) (*UserHook, *Response, err
 // Accepts the user's UUID, account_id, or username. Recommend to use UUID or account_id.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/hooks/%7Buid%7D#delete
-func (u *UsersService) DeleteHook(userID, hookID string) (*UserHook, *Response, error) {
-	hook := new(UserHook)
+func (u *UsersService) DeleteHook(userID, hookID string) (*Response, error) {
 	urlStr := u.client.requestUrl("/users/%s/hooks/%s", userID, hookID)
-	response, err := u.client.execute("DELETE", urlStr, hook, nil)
+	response, err := u.client.execute("DELETE", urlStr, nil, nil)
 
-	return hook, response, err
+	return response, err
 }

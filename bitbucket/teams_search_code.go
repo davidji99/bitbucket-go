@@ -8,7 +8,7 @@ package bitbucket
 func (t *TeamsService) SearchCode(teamUsername string, opts ...interface{}) (*SearchCodeResults, *Response, error) {
 	results := new(SearchCodeResults)
 	urlStr := t.client.requestUrl("/teams/%s/search/code", teamUsername)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

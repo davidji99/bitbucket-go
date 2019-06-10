@@ -6,7 +6,7 @@ package bitbucket
 func (p *PullRequestsService) ListStatuses(owner, repoSlug string, pid int64, opts ...interface{}) (*CommitStatuses, *Response, error) {
 	result := new(CommitStatuses)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v/statuses", owner, repoSlug, pid)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

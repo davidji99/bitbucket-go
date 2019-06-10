@@ -47,10 +47,8 @@ type SearchCodeFileLinks struct {
 	Repositories *Link `json:"repositories,omitempty"`
 }
 
-// CodeSearchOpts represents the query parameters available when searching for code.
-type CodeSearchOpts struct {
+// CodeSearchQueryParams represents the query parameters available when searching for code.
+type CodeSearchQueryParams struct {
 	// The search query
 	SearchQuery string `url:"search_query,omitempty"`
-
-	ListOpts
 }

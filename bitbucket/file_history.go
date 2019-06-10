@@ -24,7 +24,7 @@ type FileHistoryLinks struct {
 type FileHistoryListOpts struct {
 	// When true, Bitbucket will follow the history of the file across renames (this is the default behavior).
 	// This can be turned off by specifying false.
-	Renames string `url:"renames,omitempty"`
+	Renames bool `url:"renames,omitempty"`
 }
 
 // Get returns a paginated list of commits that modified the specified file.
@@ -34,7 +34,7 @@ type FileHistoryListOpts struct {
 func (fh *FileHistoryService) Get(owner, repoSlug, nodeRev, path string, opts ...interface{}) (*FileHistory, *Response, error) {
 	result := new(FileHistory)
 	urlStr := fh.client.requestUrl("/repositories/%s/%s/filehistory/%s/%s", owner, repoSlug, nodeRev, path)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

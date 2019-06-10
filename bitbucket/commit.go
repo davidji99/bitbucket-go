@@ -10,19 +10,21 @@ type CommitService service
 
 // Commits represents a git commit in a Bitbucket repository.
 type Commit struct {
-	Rendered struct {
-		Message *Content `json:"message,omitempty"`
-	} `json:"rendered,omitempty"`
-	Hash         *string              `json:"hash,omitempty"`
-	Repository   *Repository          `json:"repository,omitempty"`
-	Links        *CommitLinks         `json:"links,omitempty"`
-	Author       *User                `json:"author,omitempty"`
-	Summary      *Content             `json:"summary,omitempty"`
-	Participants []*CommitParticipant `json:"participants,omitempty"`
-	Parents      []*Commit            `json:"parents,omitempty"`
-	Date         *time.Time           `json:"date,omitempty"`
-	Message      *string              `json:"message,omitempty"`
-	Type         *string              `json:"type,omitempty"`
+	Rendered     *CommitMessageContent `json:"rendered,omitempty"`
+	Hash         *string               `json:"hash,omitempty"`
+	Repository   *Repository           `json:"repository,omitempty"`
+	Links        *CommitLinks          `json:"links,omitempty"`
+	Author       *User                 `json:"author,omitempty"`
+	Summary      *Content              `json:"summary,omitempty"`
+	Participants []*CommitParticipant  `json:"participants,omitempty"`
+	Parents      []*Commit             `json:"parents,omitempty"`
+	Date         *time.Time            `json:"date,omitempty"`
+	Message      *string               `json:"message,omitempty"`
+	Type         *string               `json:"type,omitempty"`
+}
+
+type CommitMessageContent struct {
+	Message *Content `json:"message,omitempty"`
 }
 
 // CommitParticipant represents a user that interacted with a commit.
@@ -48,7 +50,7 @@ type CommitLinks struct {
 func (c *CommitService) Get(owner, repoSlug, sha string, opts ...interface{}) (*Commit, *Response, error) {
 	results := new(Commit)
 	urlStr := c.client.requestUrl("/repositories/%s/%s/commit/%s", owner, repoSlug, sha)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

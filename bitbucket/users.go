@@ -30,9 +30,14 @@ type UserLinks struct {
 // Accepts the user's UUID, account_id, or username. Recommend to use UUID or account_id.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D#get
-func (u *UsersService) GetByID(userID string) (*User, *Response, error) {
+func (u *UsersService) GetByID(userID string, opts ...interface{}) (*User, *Response, error) {
 	user := new(User)
 	urlStr := u.client.requestUrl("/users/%s", userID)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := u.client.execute("GET", urlStr, user, nil)
 
 	return user, response, err

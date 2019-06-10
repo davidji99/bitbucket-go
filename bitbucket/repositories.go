@@ -68,8 +68,8 @@ type RepositoryLinks struct {
 	PullRequests *Link                  `json:"pull_requests,omitempty"`
 }
 
-// RepositoryListOpts represents the filters and query parameters available when listing repositories.
-type RepositoryListOpts struct {
+// RepositoryListQueryParams represents the filters and query parameters available when listing repositories.
+type RepositoryListQueryParams struct {
 	// Filters the result based on the authenticated user's role on each repository.
 	// Valid roles:
 	// - member: returns repositories to which the user has explicit read access
@@ -77,8 +77,6 @@ type RepositoryListOpts struct {
 	// - admin: returns repositories to which the user has explicit administrator access
 	// - owner: returns all repositories owned by the current user
 	Role string `url:"role,omitempty"`
-
-	FilterSortOpts
 }
 
 // RepositoryRequest represents a request to create/update a repository.
@@ -104,7 +102,8 @@ type RepositoryRequest struct {
 	} `json:"project,omitempty"`
 }
 
-type RepositoryDeleteOpts struct {
+// RepositoryDeleteQueryParam represents the query parameter available when deleting a repository.
+type RepositoryDeleteQueryParam struct {
 	//If a repository has been moved to a new location, use this parameter to show users a friendly message
 	// in the Bitbucket UI that the repository has moved to a new location.
 	// However, a GET to this endpoint will still return a 404.
@@ -112,14 +111,12 @@ type RepositoryDeleteOpts struct {
 }
 
 // ListPublic returns all public repositories.
-// Supports filtering by passing in a non-URI encoded query string. Reference: https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering
-// Example query string: parent.owner.username = "bitbucket"
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories#get
 func (r *RepositoriesService) ListPublic(opts ...interface{}) (*Repositories, *Response, error) {
 	result := new(Repositories)
 	urlStr := r.client.requestUrl("/repositories")
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -130,15 +127,14 @@ func (r *RepositoriesService) ListPublic(opts ...interface{}) (*Repositories, *R
 }
 
 // List all repositories owned by the specified account or UUID.
+//
 // Accepts a query parameter for 'role.
-// Supports filtering by passing in a non-URI encoded query string. Reference: https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering
-// Example query string: parent.owner.username = "bitbucket"
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D#get
 func (r *RepositoriesService) List(owner string, opts ...interface{}) (*Repositories, *Response, error) {
 	result := new(Repositories)
 	urlStr := r.client.requestUrl("/repositories/%s", owner)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -151,9 +147,14 @@ func (r *RepositoriesService) List(owner string, opts ...interface{}) (*Reposito
 // Get a single repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#get
-func (r *RepositoriesService) Get(owner, repoSlug string) (*Repository, *Response, error) {
+func (r *RepositoriesService) Get(owner, repoSlug string, opts ...interface{}) (*Repository, *Response, error) {
 	result := new(Repository)
 	urlStr := r.client.requestUrl("/repositories/%s/%s", owner, repoSlug)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
 	response, err := r.client.execute("GET", urlStr, result, nil)
 
 	return result, response, err
@@ -185,8 +186,13 @@ func (r *RepositoriesService) Update(owner, repoSlug string, rr *RepositoryReque
 // This is an irreversible operation.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#delete
-func (r *RepositoriesService) Delete(owner, repoSlug string) (*Response, error) {
+func (r *RepositoriesService) Delete(owner, repoSlug string, deleteOpt *RepositoryDeleteQueryParam) (*Response, error) {
 	urlStr := r.client.requestUrl("/repositories/%s/%s", owner, repoSlug)
+	urlStr, addOptErr := addQueryParams(urlStr, deleteOpt)
+	if addOptErr != nil {
+		return nil, addOptErr
+	}
+
 	response, err := r.client.execute("DELETE", urlStr, nil, nil)
 
 	return response, err

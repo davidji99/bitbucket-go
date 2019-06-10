@@ -13,7 +13,7 @@ type PatchService service
 // represents the source and the second commit the destination).
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/patch/%7Bspec%7D#get
-func (p *PatchService) GetRaw(owner, repoSlug, spec string) (interface{}, *Response, error) {
+func (p *PatchService) GetRaw(owner, repoSlug, spec string) (*bytes.Buffer, *Response, error) {
 	urlStr := p.client.requestUrl("/repositories/%s/%s/patch/%s", owner, repoSlug, spec)
 	req, reqErr := p.client.newRequest("GET", urlStr, nil, nil)
 	if reqErr != nil {
@@ -23,5 +23,5 @@ func (p *PatchService) GetRaw(owner, repoSlug, spec string) (interface{}, *Respo
 	var buff bytes.Buffer
 	response, err := p.client.doRequest(req, &buff, false)
 
-	return buff.String(), response, err
+	return &buff, response, err
 }

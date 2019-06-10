@@ -46,7 +46,7 @@ type DeployKeyRequest struct {
 func (dk *DeployKeysService) List(owner, repoSlug string, opts ...interface{}) (*DeployKeys, *Response, error) {
 	result := new(DeployKeys)
 	urlStr := dk.client.requestUrl("/repositories/%s/%s/deploy-keys", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -59,14 +59,9 @@ func (dk *DeployKeysService) List(owner, repoSlug string, opts ...interface{}) (
 // Add creates a new deploy key in a repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/deploy-keys#post
-func (dk *DeployKeysService) Add(owner, repoSlug string, do *DeployKeyRequest, opts ...interface{}) (*DeployKey, *Response, error) {
+func (dk *DeployKeysService) Add(owner, repoSlug string, do *DeployKeyRequest) (*DeployKey, *Response, error) {
 	result := new(DeployKey)
 	urlStr := dk.client.requestUrl("/repositories/%s/%s/deploy-keys", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
 	response, err := dk.client.execute("POST", urlStr, result, do)
 
 	return result, response, err
@@ -78,7 +73,7 @@ func (dk *DeployKeysService) Add(owner, repoSlug string, do *DeployKeyRequest, o
 func (dk *DeployKeysService) Get(owner, repoSlug string, keyID int64, opts ...interface{}) (*DeployKey, *Response, error) {
 	result := new(DeployKey)
 	urlStr := dk.client.requestUrl("/repositories/%s/%s/deploy-keys/%v", owner, repoSlug, keyID)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -94,16 +89,9 @@ func (dk *DeployKeysService) Get(owner, repoSlug string, keyID int64, opts ...in
 // For security reasons, you can't modify the contents of an access key. To update, delete and re-add the key.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/deploy-keys/%7Bkey_id%7D#put
-func (dk *DeployKeysService) Update(owner, repoSlug string, keyID int64, do *DeployKeyRequest,
-	opts ...interface{}) (*DeployKey, *Response, error) {
-
+func (dk *DeployKeysService) Update(owner, repoSlug string, keyID int64, do *DeployKeyRequest) (*DeployKey, *Response, error) {
 	result := new(DeployKey)
 	urlStr := dk.client.requestUrl("/repositories/%s/%s/deploy-keys/%v", owner, repoSlug, keyID)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
 	response, err := dk.client.execute("PUT", urlStr, result, do)
 
 	return result, response, err

@@ -7,6 +7,7 @@ type UserTeamsPermissions struct {
 	Values []*UserTeamsPermission `json:"values,omitempty"`
 }
 
+// UserTeamsPermission represents a user's team permission.
 type UserTeamsPermission struct {
 	Type       *string `json:"type,omitempty"`
 	User       *User   `json:"user,omitempty"`
@@ -18,13 +19,11 @@ type UserTeamsPermission struct {
 //
 // If a user is a member of multiple groups with distinct roles, only the highest level is returned.
 //
-// Supports filtering by passing in a non-URI encoded query string. Reference: https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering
-//
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/permissions/teams#get
-func (u *UserService) ListTeamsPerms(opts ...interface{}) (*UserRepositoriesPermissions, *Response, error) {
-	perms := new(UserRepositoriesPermissions)
-	urlStr := u.client.requestUrl("/user/permissions/repositories")
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+func (u *UserService) ListTeamsPerms(opts ...interface{}) (*UserTeamsPermissions, *Response, error) {
+	perms := new(UserTeamsPermissions)
+	urlStr := u.client.requestUrl("/user/permissions/teams")
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

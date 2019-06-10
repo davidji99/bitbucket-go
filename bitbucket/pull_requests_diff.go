@@ -27,7 +27,7 @@ func (p *PullRequestsService) GetDiffRaw(owner, repoSlug string, pid int64) (*by
 func (p *PullRequestsService) GetDiff(owner, repoSlug string, pid int64, opts ...interface{}) (*Diffs, *Response, error) {
 	result := new(Diffs)
 	urlStr := p.client.requestUrl("/repositories/%s/%s/pullrequests/%v/diffstat", owner, repoSlug, pid)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

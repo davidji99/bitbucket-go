@@ -39,34 +39,39 @@ type MilestoneRequest struct {
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/milestones#get
 func (m *MilestonesService) List(owner, repoSlug string, opts ...interface{}) (*Milestones, *Response, error) {
-	milestones := new(Milestones)
+	result := new(Milestones)
 	urlStr := m.client.requestUrl("/repositories/%s/%s/milestones", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
 
-	response, err := m.client.execute("GET", urlStr, milestones, nil)
+	response, err := m.client.execute("GET", urlStr, result, nil)
 
 	// Parse and store the milestonoe id
-	for _, milestone := range milestones.Values {
+	for _, milestone := range result.Values {
 		milestone.ID = parseForResourceId(milestoneSelfUrl, *milestone.Links.Self.HRef)
 	}
 
-	return milestones, response, err
+	return result, response, err
 }
 
-// Get a single milestone.
+// Get returns a single milestone.
 // NOTE: The milestone ID is a numerical value, not the component name, that is visible in the links.self.href object.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/milestones/%7Bmilestone_id%7D#get
-func (m *MilestonesService) Get(owner, repoSlug string, milestoneID int64) (*Milestone, *Response, error) {
-	milestone := new(Milestone)
+func (m *MilestonesService) Get(owner, repoSlug string, milestoneID int64, opts ...interface{}) (*Milestone, *Response, error) {
+	result := new(Milestone)
 	urlStr := m.client.requestUrl("/repositories/%s/%s/milestones/%v", owner, repoSlug, milestoneID)
-	response, err := m.client.execute("GET", urlStr, milestone, nil)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
+	if addOptErr != nil {
+		return nil, nil, addOptErr
+	}
+
+	response, err := m.client.execute("GET", urlStr, result, nil)
 
 	// Parse and store the milestone id
-	milestone.ID = parseForResourceId(milestoneSelfUrl, *milestone.Links.Self.HRef)
+	result.ID = parseForResourceId(milestoneSelfUrl, *result.Links.Self.HRef)
 
-	return milestone, response, err
+	return result, response, err
 }

@@ -12,7 +12,7 @@ type DefaultReviewersService service
 func (dr *DefaultReviewersService) List(owner, repoSlug string, opts ...interface{}) (*Users, *Response, error) {
 	result := new(Users)
 	urlStr := dr.client.requestUrl("/repositories/%s/%s/default-reviewers", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -32,7 +32,7 @@ func (dr *DefaultReviewersService) List(owner, repoSlug string, opts ...interfac
 func (dr *DefaultReviewersService) Get(owner, repoSlug, userID string, opts ...interface{}) (*User, *Response, error) {
 	result := new(User)
 	urlStr := dr.client.requestUrl("/repositories/%s/%s/default-reviewers/%s", owner, repoSlug, userID)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -48,14 +48,9 @@ func (dr *DefaultReviewersService) Get(owner, repoSlug, userID string, opts ...i
 // Accepts the user's UUID, account_id, or username. Recommend to use UUID or account_id.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/default-reviewers/%7Btarget_username%7D#put
-func (dr *DefaultReviewersService) Add(owner, repoSlug, userID string, opts ...interface{}) (*User, *Response, error) {
+func (dr *DefaultReviewersService) Add(owner, repoSlug, userID string) (*User, *Response, error) {
 	result := new(User)
 	urlStr := dr.client.requestUrl("/repositories/%s/%s/default-reviewers/%s", owner, repoSlug, userID)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
 	response, err := dr.client.execute("PUT", urlStr, result, nil)
 
 	return result, response, err

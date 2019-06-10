@@ -34,7 +34,7 @@ type RepositoryHookRequest struct {
 func (r *RepositoriesService) ListHooks(owner, repoSlug string, opts ...interface{}) (*RepositoryHooks, *Response, error) {
 	result := new(RepositoryHooks)
 	urlStr := r.client.requestUrl("/repositories/%s/%s/hooks", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -47,16 +47,9 @@ func (r *RepositoriesService) ListHooks(owner, repoSlug string, opts ...interfac
 // CreateHook creates a new webhook on the specified repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/hooks#post
-func (r *RepositoriesService) CreateHook(owner, repoSlug string, rho *RepositoryHookRequest,
-	opts ...interface{}) (*RepositoryHook, *Response, error) {
-
+func (r *RepositoriesService) CreateHook(owner, repoSlug string, rho *RepositoryHookRequest) (*RepositoryHook, *Response, error) {
 	result := new(RepositoryHook)
 	urlStr := r.client.requestUrl("/repositories/%s/%s/hooks", owner, repoSlug)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
 	response, err := r.client.execute("POST", urlStr, result, rho)
 
 	return result, response, err
@@ -68,7 +61,7 @@ func (r *RepositoriesService) CreateHook(owner, repoSlug string, rho *Repository
 func (r *RepositoriesService) GetHook(owner, repoSlug, uid string, opts ...interface{}) (*RepositoryHook, *Response, error) {
 	result := new(RepositoryHook)
 	urlStr := r.client.requestUrl("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}
@@ -81,16 +74,9 @@ func (r *RepositoriesService) GetHook(owner, repoSlug, uid string, opts ...inter
 // UpdateHook updates the specified webhook subscription.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/hooks/%7Buid%7D#put
-func (r *RepositoriesService) UpdateHook(owner, repoSlug, uid string, rho *RepositoryHookRequest,
-	opts ...interface{}) (*RepositoryHook, *Response, error) {
-
+func (r *RepositoriesService) UpdateHook(owner, repoSlug, uid string, rho *RepositoryHookRequest) (*RepositoryHook, *Response, error) {
 	result := new(RepositoryHook)
 	urlStr := r.client.requestUrl("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
-	}
-
 	response, err := r.client.execute("PUT", urlStr, result, rho)
 
 	return result, response, err

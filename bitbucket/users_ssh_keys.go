@@ -2,12 +2,14 @@ package bitbucket
 
 import "time"
 
+// UsersSSHKeys represents a collection of user ssh keys.
 type UsersSSHKeys struct {
 	PaginationInfo
 
 	Values []*UsersSSHKey `json:"values,omitempty"`
 }
 
+// UsersSSHKey represents a user ssh key added to Bitbucket.
 type UsersSSHKey struct {
 	Comment   *string           `json:"comment,omitempty"`
 	CreatedOn *time.Time        `json:"created_on,omitempty"`
@@ -20,6 +22,7 @@ type UsersSSHKey struct {
 	UUID      *string           `json:"uuid,omitempty"`
 }
 
+// UsersSSHKeyLinks represents the "links" object in a Bitbucket user ssh key.
 type UsersSSHKeyLinks struct {
 	Self *Link `json:"self,omitempty"`
 }
@@ -38,7 +41,7 @@ type SSHKeyAddRequest struct {
 func (u *UsersService) ListSSHKeys(userID string, opts ...interface{}) (*UsersSSHKeys, *Response, error) {
 	sshKeys := new(UsersSSHKeys)
 	urlStr := u.client.requestUrl("/users/%s/ssh-keys", userID)
-	urlStr, addOptErr := addOptions(urlStr, opts...)
+	urlStr, addOptErr := addQueryParams(urlStr, opts...)
 	if addOptErr != nil {
 		return nil, nil, addOptErr
 	}

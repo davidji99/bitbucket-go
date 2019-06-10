@@ -124,40 +124,6 @@ type PaginationInfo struct {
 	Previous *string `json:"previous,omitempty"`
 }
 
-// FilterSortOpts represents the querying and sorting mechanism available
-// to certain Bitbucket API resources that return multiple results in a response.
-//
-// Bitbucket API Docs: https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering#query-sort
-type FilterSortOpts struct {
-	// Query is the raw non-URL encoded query string.
-	// Note that the entire query string is put in the Query field.
-	// This library will take care of URL encoding the string for you.
-	Query string `url:"q,omitempty"`
-
-	// In principle, every field that can be queried can also be used as a key for sorting.
-	// By default the sort order is ascending. To reverse the order, prefix the field name with a hyphen (e.g. ?sort=-updated_on).
-	// Only one field can be sorted on. Compound fields (e.g. sort on state first, followed by updated_on) are not supported.
-	Sort string `url:"sort,omitempty"`
-}
-
-// ListOpts specifies the optional parameters to various List methods that support pagination.
-type ListOpts struct {
-	// For paginated result sets, page of results to retrieve.
-	Page int64 `url:"page,omitempty"`
-
-	// For paginated result sets, the number of results to include per page.
-	// Globally, the minimum length is 10 and the maximum is 100. Some APIs may specify a different default.
-	Pagelen int64 `url:"pagelen,omitempty"`
-}
-
-// PartialRespOpts represents the URL parameter to request a partial response and to add or remove
-// specific fields from a response.
-//
-// Bitbucket API Docs: https://developer.atlassian.com/bitbucket/api/2/reference/meta/partial-response
-type PartialRespOpts struct {
-	Fields string `url:"fields,omitempty"`
-}
-
 // Uses the Client Credentials Grant oauth2 flow to authenticate to Bitbucket
 func NewOAuthClientCredentials(i, s string) *Client {
 	a := &auth{appID: i, secret: s}
@@ -484,33 +450,11 @@ func parseError(raw interface{}) string {
 	}
 }
 
-//// addOptions adds the parameters in opt as URL query parameters to s. opt
-//// must be a struct whose fields may contain "url" tags.
-//// Credit: https://github.com/google/go-github/blob/master/github/github.go#L226
-//func addOptions(s string, opt interface{}) (string, error) {
-//	v := reflect.ValueOf(opt)
-//	if v.Kind() == reflect.Ptr && v.IsNil() {
-//		return s, nil
-//	}
+// addQueryParams takes a slice of opts and adds each field as escaped URL query parameters to s.
+// Each element in opts must be a struct whose fields contain "url" tags.
 //
-//	u, err := url.Parse(s)
-//	if err != nil {
-//		return s, err
-//	}
-//
-//	qs, err := query.Values(opt)
-//	if err != nil {
-//		return s, err
-//	}
-//
-//	u.RawQuery = qs.Encode()
-//	return u.String(), nil
-//}
-
-// addOptions takes a slice of opts and adds the parameters in each opt as URL query parameters to s.
-// each opt must be a struct whose fields may contain "url" tags.
 // Based on: https://github.com/google/go-github/blob/master/github/github.go#L226
-func addOptions(s string, opts ...interface{}) (string, error) {
+func addQueryParams(s string, opts ...interface{}) (string, error) {
 	// Handle if opts is nil
 	v := reflect.ValueOf(opts)
 	if v.Kind() == reflect.Slice && v.IsNil() {
