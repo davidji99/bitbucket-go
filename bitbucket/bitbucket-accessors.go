@@ -873,46 +873,6 @@ func (c *Content) GetType() string {
 	return *c.Type
 }
 
-// GetCloseSourceBranch returns the CloseSourceBranch field if it's non-nil, zero value otherwise.
-func (c *CreatePullRequestOpts) GetCloseSourceBranch() bool {
-	if c == nil || c.CloseSourceBranch == nil {
-		return false
-	}
-	return *c.CloseSourceBranch
-}
-
-// GetDescription returns the Description field if it's non-nil, zero value otherwise.
-func (c *CreatePullRequestOpts) GetDescription() string {
-	if c == nil || c.Description == nil {
-		return ""
-	}
-	return *c.Description
-}
-
-// GetDestination returns the Destination field.
-func (c *CreatePullRequestOpts) GetDestination() *NewPullRequestDestinationOpts {
-	if c == nil {
-		return nil
-	}
-	return c.Destination
-}
-
-// GetSource returns the Source field.
-func (c *CreatePullRequestOpts) GetSource() *NewPullRequestSourceOpts {
-	if c == nil {
-		return nil
-	}
-	return c.Source
-}
-
-// GetTitle returns the Title field if it's non-nil, zero value otherwise.
-func (c *CreatePullRequestOpts) GetTitle() string {
-	if c == nil || c.Title == nil {
-		return ""
-	}
-	return *c.Title
-}
-
 // GetHTML returns the HTML field.
 func (c *CSLinks) GetHTML() *Link {
 	if c == nil {
@@ -1897,30 +1857,6 @@ func (m *MilestoneRequest) GetName() string {
 	return *m.Name
 }
 
-// GetBranch returns the Branch field.
-func (n *NewPullRequestDestinationOpts) GetBranch() *Branch {
-	if n == nil {
-		return nil
-	}
-	return n.Branch
-}
-
-// GetUUID returns the UUID field if it's non-nil, zero value otherwise.
-func (n *NewPullRequestReviewerOpts) GetUUID() string {
-	if n == nil || n.UUID == nil {
-		return ""
-	}
-	return *n.UUID
-}
-
-// GetBranch returns the Branch field.
-func (n *NewPullRequestSourceOpts) GetBranch() *Branch {
-	if n == nil {
-		return nil
-	}
-	return n.Branch
-}
-
 // GetNext returns the Next field if it's non-nil, zero value otherwise.
 func (p *PaginationInfo) GetNext() string {
 	if p == nil || p.Next == nil {
@@ -2023,6 +1959,70 @@ func (p *PRComment) GetPullRequest() *PullRequest {
 		return nil
 	}
 	return p.PullRequest
+}
+
+// GetCloseSourceBranch returns the CloseSourceBranch field if it's non-nil, zero value otherwise.
+func (p *PRRequest) GetCloseSourceBranch() bool {
+	if p == nil || p.CloseSourceBranch == nil {
+		return false
+	}
+	return *p.CloseSourceBranch
+}
+
+// GetDescription returns the Description field if it's non-nil, zero value otherwise.
+func (p *PRRequest) GetDescription() string {
+	if p == nil || p.Description == nil {
+		return ""
+	}
+	return *p.Description
+}
+
+// GetDestination returns the Destination field.
+func (p *PRRequest) GetDestination() *PRRequestDestinationOpts {
+	if p == nil {
+		return nil
+	}
+	return p.Destination
+}
+
+// GetSource returns the Source field.
+func (p *PRRequest) GetSource() *PRRequestSourceOpts {
+	if p == nil {
+		return nil
+	}
+	return p.Source
+}
+
+// GetTitle returns the Title field if it's non-nil, zero value otherwise.
+func (p *PRRequest) GetTitle() string {
+	if p == nil || p.Title == nil {
+		return ""
+	}
+	return *p.Title
+}
+
+// GetBranch returns the Branch field.
+func (p *PRRequestDestinationOpts) GetBranch() *Branch {
+	if p == nil {
+		return nil
+	}
+	return p.Branch
+}
+
+// GetUUID returns the UUID field if it's non-nil, zero value otherwise.
+func (p *PRRequestReviewerOpts) GetUUID() string {
+	if p == nil || p.UUID == nil {
+		return ""
+	}
+	return *p.UUID
+}
+
+// GetBranch returns the Branch field.
+func (p *PRRequestSourceOpts) GetBranch() *Branch {
+	if p == nil {
+		return nil
+	}
+	return p.Branch
 }
 
 // GetAuthor returns the Author field.
@@ -3351,38 +3351,6 @@ func (t *TeamRepoPermission) GetUser() *User {
 		return nil
 	}
 	return t.User
-}
-
-// GetDescription returns the Description field if it's non-nil, zero value otherwise.
-func (u *UpdatePullRequestOpts) GetDescription() string {
-	if u == nil || u.Description == nil {
-		return ""
-	}
-	return *u.Description
-}
-
-// GetDestination returns the Destination field.
-func (u *UpdatePullRequestOpts) GetDestination() *NewPullRequestDestinationOpts {
-	if u == nil {
-		return nil
-	}
-	return u.Destination
-}
-
-// GetSource returns the Source field.
-func (u *UpdatePullRequestOpts) GetSource() *NewPullRequestSourceOpts {
-	if u == nil {
-		return nil
-	}
-	return u.Source
-}
-
-// GetTitle returns the Title field if it's non-nil, zero value otherwise.
-func (u *UpdatePullRequestOpts) GetTitle() string {
-	if u == nil || u.Title == nil {
-		return ""
-	}
-	return *u.Title
 }
 
 // GetAccountID returns the AccountID field if it's non-nil, zero value otherwise.

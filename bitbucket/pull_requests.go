@@ -67,23 +67,14 @@ type PullRequestBranch struct {
 	Branch     *Branch     `json:"branch,omitempty"`
 }
 
-// CreatePullRequestOpts represents a new pull request to be created.
-type CreatePullRequestOpts struct {
-	Title             *string                        `json:"title,omitempty"`  // Required field
-	Source            *NewPullRequestSourceOpts      `json:"source,omitempty"` // Required field
-	Destination       *NewPullRequestDestinationOpts `json:"destination,omitempty"`
-	Reviewers         []*NewPullRequestReviewerOpts  `json:"reviewers"`
-	Description       *string                        `json:"description,omitempty"`
-	CloseSourceBranch *bool                          `json:"close_source_branch"`
-}
-
-// UpdatePullRequestOpts represents the fields that are editable for an existing pull request.
-type UpdatePullRequestOpts struct {
-	Title       *string                        `json:"title,omitempty"` // Required field
-	Description *string                        `json:"description,omitempty"`
-	Source      *NewPullRequestSourceOpts      `json:"source,omitempty"`
-	Destination *NewPullRequestDestinationOpts `json:"destination,omitempty"`
-	Reviewers   []*User                        `json:"reviewers,omitempty"`
+// PRRequest represents a request to create/update a pull request.
+type PRRequest struct {
+	Title             *string                   `json:"title,omitempty"`
+	Source            *PRRequestSourceOpts      `json:"source,omitempty"`
+	Destination       *PRRequestDestinationOpts `json:"destination,omitempty"`
+	Reviewers         []*PRRequestReviewerOpts  `json:"reviewers"`
+	Description       *string                   `json:"description,omitempty"`
+	CloseSourceBranch *bool                     `json:"close_source_branch"`
 }
 
 // PullRequestListOpts represents the filters and query parameters available when listing pull requests.
@@ -94,18 +85,18 @@ type PullRequestListOpts struct {
 	State []string `url:"state,omitempty"`
 }
 
-// NewPullRequestSourceOpts represents the source branch for the new pull request.
-type NewPullRequestSourceOpts struct {
+// PRRequestSourceOpts represents the source branch for the pull request.
+type PRRequestSourceOpts struct {
 	Branch *Branch `json:"branch,omitempty"`
 }
 
-// NewPullRequestDestinationOpts represents the destination branch for the new pull request.
-type NewPullRequestDestinationOpts struct {
+// PRRequestDestinationOpts represents the destination branch for the pull request.
+type PRRequestDestinationOpts struct {
 	Branch *Branch `json:"branch,omitempty"`
 }
 
-// NewPullRequestReviewerOpts represent a reviewer for a pull request specified by the user's UUID.
-type NewPullRequestReviewerOpts struct {
+// PRRequestReviewerOpts represent a reviewer for a pull request specified by the user's UUID.
+type PRRequestReviewerOpts struct {
 	UUID *string `json:"uuid,omitempty"`
 }
 
@@ -169,7 +160,7 @@ func (p *PullRequestsService) ListByUser(targetUser string, opts ...interface{})
 // If the pull request's destination is not specified, it will default to the repository.mainbranch.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests#post
-func (p *PullRequestsService) Create(owner, repoSlug string, po *CreatePullRequestOpts) (*PullRequest, *Response, error) {
+func (p *PullRequestsService) Create(owner, repoSlug string, po *PRRequest) (*PullRequest, *Response, error) {
 	result := new(PullRequest)
 	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests", owner, repoSlug)
 	response, err := p.client.execute("POST", urlStr, result, po)
@@ -181,7 +172,7 @@ func (p *PullRequestsService) Create(owner, repoSlug string, po *CreatePullReque
 // This can be used to change the pull request's branches or description. Only open pull requests can be mutated.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D#put
-func (p *PullRequestsService) Update(owner, repoSlug string, pullRequestID int64, po *UpdatePullRequestOpts) (*PullRequest, *Response, error) {
+func (p *PullRequestsService) Update(owner, repoSlug string, pullRequestID int64, po *PRRequest) (*PullRequest, *Response, error) {
 	result := new(PullRequest)
 	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests/%v", owner, repoSlug, pullRequestID)
 	response, err := p.client.execute("PUT", urlStr, result, po)

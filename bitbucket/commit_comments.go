@@ -31,7 +31,7 @@ type CCLinks struct {
 
 // CommitCommentRequest represents a new commit comment.
 type CommitCommentRequest struct {
-	Content       *Content `json:"content,omitempty"`
+	Content       *Content       `json:"content,omitempty"`
 	ParentComment *CommitComment `json:"parent,omitempty"`
 }
 
