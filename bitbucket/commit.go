@@ -16,7 +16,7 @@ type Commit struct {
 	Links        *CommitLinks          `json:"links,omitempty"`
 	Author       *User                 `json:"author,omitempty"`
 	Summary      *Content              `json:"summary,omitempty"`
-	Participants []*CommitParticipant  `json:"participants,omitempty"`
+	Participants []*Participant        `json:"participants,omitempty"`
 	Parents      []*Commit             `json:"parents,omitempty"`
 	Date         *time.Time            `json:"date,omitempty"`
 	Message      *string               `json:"message,omitempty"`
@@ -28,10 +28,12 @@ type CommitMessageContent struct {
 	Message *Content `json:"message,omitempty"`
 }
 
-// CommitParticipant represents a user that interacted with a commit.
-type CommitParticipant struct {
+// Participant represents a user that interacted with a Bitbucket resource.
+type Participant struct {
 	Role           *string    `json:"role,omitempty"`
 	ParticipatedOn *time.Time `json:"participated_on,omitempty"`
+	Type           *string    `json:"type,omitempty"`
+	Approved       *bool      `json:"approved,omitempty"`
 	User           *User      `json:"user,omitempty"`
 }
 

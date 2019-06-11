@@ -23,7 +23,7 @@ type PullRequest struct {
 	Links             *PullRequestLinks  `json:"links,omitempty"`
 	Title             *string            `json:"title,omitempty"`
 	CloseSourceBranch *bool              `json:"close_source_branch,omitempty"`
-	Reviewers         []*User            `json:"Reviewers,omitempty"` // TODO: validate
+	Reviewers         []*User            `json:"reviewers,omitempty"`
 	ID                *int64             `json:"id,omitempty"`
 	Destination       *PullRequestBranch `json:"destination,omitempty"`
 	CreatedOn         *time.Time         `json:"created_on,omitempty"`
@@ -32,7 +32,7 @@ type PullRequest struct {
 	CommentCount      *int64             `json:"comment_count,omitempty"`
 	State             *string            `json:"state,omitempty"`
 	TaskCount         *int64             `json:"task_count,omitempty"`
-	Participants      []*User            `json:"participants,omitempty"`
+	Participants      []*Participant     `json:"participants,omitempty"`
 	Reason            *string            `json:"reason,omitempty"`
 	UpdatedOn         *string            `json:"updated_on,omitempty"`
 	Author            *User              `json:"author,omitempty"`

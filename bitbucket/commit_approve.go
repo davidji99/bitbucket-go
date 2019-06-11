@@ -6,8 +6,8 @@ package bitbucket
 // In contrast, just the fact that a repository is publicly accessible to users does not give them the ability to approve commits.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/approve#post
-func (c *CommitService) Approve(owner, repoSlug, sha string) (*CommitParticipant, *Response, error) {
-	results := new(CommitParticipant)
+func (c *CommitService) Approve(owner, repoSlug, sha string) (*Participant, *Response, error) {
+	results := new(Participant)
 	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s/approve", owner, repoSlug, sha)
 	response, err := c.client.execute("POST", urlStr, results, nil)
 

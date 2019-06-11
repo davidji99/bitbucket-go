@@ -633,30 +633,6 @@ func (c *CommitMessageContent) GetMessage() *Content {
 	return c.Message
 }
 
-// GetParticipatedOn returns the ParticipatedOn field if it's non-nil, zero value otherwise.
-func (c *CommitParticipant) GetParticipatedOn() time.Time {
-	if c == nil || c.ParticipatedOn == nil {
-		return time.Time{}
-	}
-	return *c.ParticipatedOn
-}
-
-// GetRole returns the Role field if it's non-nil, zero value otherwise.
-func (c *CommitParticipant) GetRole() string {
-	if c == nil || c.Role == nil {
-		return ""
-	}
-	return *c.Role
-}
-
-// GetUser returns the User field.
-func (c *CommitParticipant) GetUser() *User {
-	if c == nil {
-		return nil
-	}
-	return c.User
-}
-
 // GetCreatedOn returns the CreatedOn field if it's non-nil, zero value otherwise.
 func (c *CommitStatus) GetCreatedOn() time.Time {
 	if c == nil || c.CreatedOn == nil {
@@ -1897,6 +1873,46 @@ func (p *PaginationInfo) GetSize() int64 {
 	return *p.Size
 }
 
+// GetApproved returns the Approved field if it's non-nil, zero value otherwise.
+func (p *Participant) GetApproved() bool {
+	if p == nil || p.Approved == nil {
+		return false
+	}
+	return *p.Approved
+}
+
+// GetParticipatedOn returns the ParticipatedOn field if it's non-nil, zero value otherwise.
+func (p *Participant) GetParticipatedOn() time.Time {
+	if p == nil || p.ParticipatedOn == nil {
+		return time.Time{}
+	}
+	return *p.ParticipatedOn
+}
+
+// GetRole returns the Role field if it's non-nil, zero value otherwise.
+func (p *Participant) GetRole() string {
+	if p == nil || p.Role == nil {
+		return ""
+	}
+	return *p.Role
+}
+
+// GetType returns the Type field if it's non-nil, zero value otherwise.
+func (p *Participant) GetType() string {
+	if p == nil || p.Type == nil {
+		return ""
+	}
+	return *p.Type
+}
+
+// GetUser returns the User field.
+func (p *Participant) GetUser() *User {
+	if p == nil {
+		return nil
+	}
+	return p.User
+}
+
 // GetApproval returns the Approval field.
 func (p *PRActivity) GetApproval() *PRApprovalActivity {
 	if p == nil {
@@ -2359,22 +2375,6 @@ func (p *PullRequestLinks) GetStatuses() *Link {
 		return nil
 	}
 	return p.Statuses
-}
-
-// GetApproved returns the Approved field if it's non-nil, zero value otherwise.
-func (p *PullRequestReview) GetApproved() bool {
-	if p == nil || p.Approved == nil {
-		return false
-	}
-	return *p.Approved
-}
-
-// GetType returns the Type field if it's non-nil, zero value otherwise.
-func (p *PullRequestReview) GetType() string {
-	if p == nil || p.Type == nil {
-		return ""
-	}
-	return *p.Type
 }
 
 // GetDate returns the Date field if it's non-nil, zero value otherwise.
