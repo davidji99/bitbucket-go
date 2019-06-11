@@ -65,6 +65,14 @@ func (a *ArtifactFileLinks) GetSelf() *Link {
 	return a.Self
 }
 
+// GetBranch returns the Branch field.
+func (b *BMBranch) GetBranch() *Ref {
+	if b == nil {
+		return nil
+	}
+	return b.Branch
+}
+
 // GetIsValid returns the IsValid field if it's non-nil, zero value otherwise.
 func (b *BMBranch) GetIsValid() bool {
 	if b == nil || b.IsValid == nil {

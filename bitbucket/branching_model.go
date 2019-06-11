@@ -17,16 +17,10 @@ type BranchingModel struct {
 
 // BMBranch represents the git branches you want the model to be applied to.
 type BMBranch struct {
-	Name    *string `json:"name,omitempty"`
-	IsValid *bool   `json:"is_valid,omitempty"`
-	Branch  *struct {
-		Type   *string `json:"type,omitempty"`
-		Name   *string `json:"name,omitempty"`
-		Target *struct {
-			Hash *string `json:"hash,omitempty"`
-		} `json:"target,omitempty"`
-	} `json:"branch,omitempty"`
-	UseMainbranch *bool `json:"use_mainbranch,omitempty"`
+	Name          *string `json:"name,omitempty"`
+	IsValid       *bool   `json:"is_valid,omitempty"`
+	Branch        *Ref    `json:"branch,omitempty"`
+	UseMainbranch *bool   `json:"use_mainbranch,omitempty"`
 }
 
 // BMBranchTypes represents the branch prefix configurations for new branches.
