@@ -8,11 +8,11 @@ type BranchingModelService service
 
 // BranchingModel represents the brancing model for a repository.
 type BranchingModel struct {
-	Development *BMBranch        `json:"development,omitempty"`
-	BranchTypes []*BMBranchTypes `json:"values,omitempty"`
-	Production  *BMBranch        `json:"production,omitempty"`
-	Type        *string          `json:"type,omitempty"`
-	Links       *BMLinks         `json:"links,omitempty"`
+	Development *BMBranch       `json:"development,omitempty"`
+	BranchTypes []*BMBranchType `json:"values,omitempty"`
+	Production  *BMBranch       `json:"production,omitempty"`
+	Type        *string         `json:"type,omitempty"`
+	Links       *BMLinks        `json:"links,omitempty"`
 }
 
 // BMBranch represents the git branches you want the model to be applied to.
@@ -23,8 +23,8 @@ type BMBranch struct {
 	UseMainbranch *bool   `json:"use_mainbranch,omitempty"`
 }
 
-// BMBranchTypes represents the branch prefix configurations for new branches.
-type BMBranchTypes struct {
+// BMBranchType represents the branch prefix configurations for new branches.
+type BMBranchType struct {
 	Kind    *string `json:"kind,omitempty"`
 	Enabled *bool   `json:"enabled,omitempty"`
 	Prefix  *string `json:"prefix,omitempty"`
@@ -39,7 +39,7 @@ type BMLinks struct {
 type BMRequest struct {
 	Development *BMBranchUpdateOpts `json:"development,omitempty"`
 	Production  *BMBranchUpdateOpts `json:"production,omitempty"`
-	BranchTypes []*BMBranchTypes    `json:"branch_types,omitempty"`
+	BranchTypes []*BMBranchType     `json:"branch_types,omitempty"`
 }
 
 // BMBranchUpdateOpts represents the fields available when updating the development/production branches.

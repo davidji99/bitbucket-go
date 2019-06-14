@@ -48,6 +48,7 @@ var (
 	// blacklistStruct lists structs to skip.
 	blacklistStruct = map[string]bool{
 		"Client": true,
+		"AcceptedError": true,
 	}
 )
 
@@ -113,6 +114,19 @@ func (t *templateData) processAST(f *ast.File) error {
 				continue
 			}
 			for _, field := range st.Fields.List {
+				// First handle scenarios where struct field is []*Struct.
+				// Create a 'getter' method that checks if struct receiver has any elements in the slice of structs.
+				_, ok := field.Type.(*ast.ArrayType)
+				if ok {
+					fieldName := field.Names[0]
+					// Skip unexported identifiers.
+					if checkForBlacklist(ts, fieldName) {
+						continue
+					}
+					t.addSliceOfStructs(ts.Name.String(), fieldName.String())
+					continue
+				}
+
 				se, ok := field.Type.(*ast.StarExpr)
 				if len(field.Names) == 0 || !ok {
 					continue
@@ -120,13 +134,7 @@ func (t *templateData) processAST(f *ast.File) error {
 
 				fieldName := field.Names[0]
 				// Skip unexported identifiers.
-				if !fieldName.IsExported() {
-					logf("Field %v is unexported; skipping.", fieldName)
-					continue
-				}
-				// Check if "struct.method" is blacklisted.
-				if key := fmt.Sprintf("%v.Get%v", ts.Name, fieldName); blacklistStructMethod[key] {
-					logf("Method %v is blacklisted; skipping.", key)
+				if checkForBlacklist(ts, fieldName) {
 					continue
 				}
 
@@ -146,6 +154,20 @@ func (t *templateData) processAST(f *ast.File) error {
 		}
 	}
 	return nil
+}
+
+func checkForBlacklist(ts *ast.TypeSpec, fieldName *ast.Ident) bool {
+	if !fieldName.IsExported() {
+		logf("Field %v is unexported; skipping.", fieldName)
+		return true
+	}
+	// Check if "struct.method" is blacklisted.
+	if key := fmt.Sprintf("%v.Get%v", ts.Name, fieldName); blacklistStructMethod[key] {
+		logf("Method %v is blacklisted; skipping.", key)
+		return true
+	}
+
+	return false
 }
 
 func sourceFilter(fi os.FileInfo) bool {
@@ -174,15 +196,16 @@ func (t *templateData) dump() error {
 	return ioutil.WriteFile(t.filename, clean, 0644)
 }
 
-func newGetter(receiverType, fieldName, fieldType, zeroValue string, namedStruct bool) *getter {
+func newGetter(receiverType, fieldName, fieldType, zeroValue string, namedStruct, arrayOfStructs bool) *getter {
 	return &getter{
-		sortVal:      strings.ToLower(receiverType) + "." + strings.ToLower(fieldName),
-		ReceiverVar:  strings.ToLower(receiverType[:1]),
-		ReceiverType: receiverType,
-		FieldName:    fieldName,
-		FieldType:    fieldType,
-		ZeroValue:    zeroValue,
-		NamedStruct:  namedStruct,
+		sortVal:       strings.ToLower(receiverType) + "." + strings.ToLower(fieldName),
+		ReceiverVar:   strings.ToLower(receiverType[:1]),
+		ReceiverType:  receiverType,
+		FieldName:     fieldName,
+		FieldType:     fieldType,
+		ZeroValue:     zeroValue,
+		NamedStruct:   namedStruct,
+		ArrayOfStruct: arrayOfStructs,
 	}
 }
 
@@ -196,7 +219,7 @@ func (t *templateData) addArrayType(x *ast.ArrayType, receiverType, fieldName st
 		return
 	}
 
-	t.Getters = append(t.Getters, newGetter(receiverType, fieldName, "[]"+eltType, "nil", false))
+	t.Getters = append(t.Getters, newGetter(receiverType, fieldName, "[]"+eltType, "nil", false, false))
 }
 
 func (t *templateData) addIdent(x *ast.Ident, receiverType, fieldName string) {
@@ -216,7 +239,7 @@ func (t *templateData) addIdent(x *ast.Ident, receiverType, fieldName string) {
 		namedStruct = true
 	}
 
-	t.Getters = append(t.Getters, newGetter(receiverType, fieldName, x.String(), zeroValue, namedStruct))
+	t.Getters = append(t.Getters, newGetter(receiverType, fieldName, x.String(), zeroValue, namedStruct, false))
 }
 
 func (t *templateData) addMapType(x *ast.MapType, receiverType, fieldName string) {
@@ -240,7 +263,7 @@ func (t *templateData) addMapType(x *ast.MapType, receiverType, fieldName string
 
 	fieldType := fmt.Sprintf("map[%v]%v", keyType, valueType)
 	zeroValue := fmt.Sprintf("map[%v]%v{}", keyType, valueType)
-	t.Getters = append(t.Getters, newGetter(receiverType, fieldName, fieldType, zeroValue, false))
+	t.Getters = append(t.Getters, newGetter(receiverType, fieldName, fieldType, zeroValue, false, false))
 }
 
 func (t *templateData) addSelectorExpr(x *ast.SelectorExpr, receiverType, fieldName string) {
@@ -265,10 +288,14 @@ func (t *templateData) addSelectorExpr(x *ast.SelectorExpr, receiverType, fieldN
 		if xX == "time" && x.Sel.Name == "Duration" {
 			zeroValue = "0"
 		}
-		t.Getters = append(t.Getters, newGetter(receiverType, fieldName, fieldType, zeroValue, false))
+		t.Getters = append(t.Getters, newGetter(receiverType, fieldName, fieldType, zeroValue, false, false))
 	default:
 		logf("addSelectorExpr: xX %q, type %q, field %q: unknown x=%+v; skipping.", xX, receiverType, fieldName, x)
 	}
+}
+
+func (t *templateData) addSliceOfStructs(receiverType, fieldName string) {
+	t.Getters = append(t.Getters, newGetter(receiverType, fieldName, "bool", "", false, true))
 }
 
 type templateData struct {
@@ -280,13 +307,14 @@ type templateData struct {
 }
 
 type getter struct {
-	sortVal      string // Lower-case version of "ReceiverType.FieldName".
-	ReceiverVar  string // The one-letter variable name to match the ReceiverType.
-	ReceiverType string
-	FieldName    string
-	FieldType    string
-	ZeroValue    string
-	NamedStruct  bool // Getter for named struct.
+	sortVal       string // Lower-case version of "ReceiverType.FieldName".
+	ReceiverVar   string // The one-letter variable name to match the ReceiverType.
+	ReceiverType  string
+	FieldName     string
+	FieldType     string
+	ZeroValue     string
+	NamedStruct   bool // Getter for named struct.
+	ArrayOfStruct bool
 }
 
 type byName []*getter
@@ -317,13 +345,26 @@ func ({{.ReceiverVar}} *{{.ReceiverType}}) Get{{.FieldName}}() *{{.FieldType}} {
   }
   return {{.ReceiverVar}}.{{.FieldName}}
 }
-{{else}}
+{{else if not .ArrayOfStruct}}
 // Get{{.FieldName}} returns the {{.FieldName}} field if it's non-nil, zero value otherwise.
 func ({{.ReceiverVar}} *{{.ReceiverType}}) Get{{.FieldName}}() {{.FieldType}} {
   if {{.ReceiverVar}} == nil || {{.ReceiverVar}}.{{.FieldName}} == nil {
     return {{.ZeroValue}}
   }
   return *{{.ReceiverVar}}.{{.FieldName}}
+}
+{{end}}
+{{if .ArrayOfStruct}}
+// Has{{.FieldName}} checks if {{.ReceiverType}} has any {{.FieldName}}.
+func ({{.ReceiverVar}} *{{.ReceiverType}}) Has{{.FieldName}}() bool {
+  if {{.ReceiverVar}} == nil || {{.ReceiverVar}}.{{.FieldName}} == nil {
+    return false
+  }
+
+  if len({{.ReceiverVar}}.{{.FieldName}}) == 0 {
+    return false
+  }
+  return true
 }
 {{end}}
 {{end}}

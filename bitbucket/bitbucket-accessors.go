@@ -65,6 +65,18 @@ func (a *ArtifactFileLinks) GetSelf() *Link {
 	return a.Self
 }
 
+// HasValues checks if Artifacts has any Values.
+func (a *Artifacts) HasValues() bool {
+	if a == nil || a.Values == nil {
+		return false
+	}
+
+	if len(a.Values) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetBranch returns the Branch field.
 func (b *BMBranch) GetBranch() *Ref {
 	if b == nil {
@@ -98,7 +110,7 @@ func (b *BMBranch) GetUseMainbranch() bool {
 }
 
 // GetEnabled returns the Enabled field if it's non-nil, zero value otherwise.
-func (b *BMBranchTypes) GetEnabled() bool {
+func (b *BMBranchType) GetEnabled() bool {
 	if b == nil || b.Enabled == nil {
 		return false
 	}
@@ -106,7 +118,7 @@ func (b *BMBranchTypes) GetEnabled() bool {
 }
 
 // GetKind returns the Kind field if it's non-nil, zero value otherwise.
-func (b *BMBranchTypes) GetKind() string {
+func (b *BMBranchType) GetKind() string {
 	if b == nil || b.Kind == nil {
 		return ""
 	}
@@ -114,7 +126,7 @@ func (b *BMBranchTypes) GetKind() string {
 }
 
 // GetPrefix returns the Prefix field if it's non-nil, zero value otherwise.
-func (b *BMBranchTypes) GetPrefix() string {
+func (b *BMBranchType) GetPrefix() string {
 	if b == nil || b.Prefix == nil {
 		return ""
 	}
@@ -153,6 +165,18 @@ func (b *BMLinks) GetSelf() *Link {
 	return b.Self
 }
 
+// HasBranchTypes checks if BMRequest has any BranchTypes.
+func (b *BMRequest) HasBranchTypes() bool {
+	if b == nil || b.BranchTypes == nil {
+		return false
+	}
+
+	if len(b.BranchTypes) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetDevelopment returns the Development field.
 func (b *BMRequest) GetDevelopment() *BMBranchUpdateOpts {
 	if b == nil {
@@ -175,6 +199,18 @@ func (b *Branch) GetName() string {
 		return ""
 	}
 	return *b.Name
+}
+
+// HasBranchTypes checks if BranchingModel has any BranchTypes.
+func (b *BranchingModel) HasBranchTypes() bool {
+	if b == nil || b.BranchTypes == nil {
+		return false
+	}
+
+	if len(b.BranchTypes) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetDevelopment returns the Development field.
@@ -257,12 +293,36 @@ func (b *BranchRestriction) GetType() string {
 	return *b.Type
 }
 
+// HasUsers checks if BranchRestriction has any Users.
+func (b *BranchRestriction) HasUsers() bool {
+	if b == nil || b.Users == nil {
+		return false
+	}
+
+	if len(b.Users) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetValue returns the Value field if it's non-nil, zero value otherwise.
 func (b *BranchRestriction) GetValue() int64 {
 	if b == nil || b.Value == nil {
 		return 0
 	}
 	return *b.Value
+}
+
+// HasValues checks if BranchRestrictions has any Values.
+func (b *BranchRestrictions) HasValues() bool {
+	if b == nil || b.Values == nil {
+		return false
+	}
+
+	if len(b.Values) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetSelf returns the Self field.
@@ -457,6 +517,30 @@ func (c *Commit) GetMessage() string {
 	return *c.Message
 }
 
+// HasParents checks if Commit has any Parents.
+func (c *Commit) HasParents() bool {
+	if c == nil || c.Parents == nil {
+		return false
+	}
+
+	if len(c.Parents) == 0 {
+		return false
+	}
+	return true
+}
+
+// HasParticipants checks if Commit has any Participants.
+func (c *Commit) HasParticipants() bool {
+	if c == nil || c.Participants == nil {
+		return false
+	}
+
+	if len(c.Participants) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetRendered returns the Rendered field.
 func (c *Commit) GetRendered() *CommitMessageContent {
 	if c == nil {
@@ -585,6 +669,18 @@ func (c *CommitCommentRequest) GetParentComment() *CommitComment {
 	return c.ParentComment
 }
 
+// HasValues checks if CommitComments has any Values.
+func (c *CommitComments) HasValues() bool {
+	if c == nil || c.Values == nil {
+		return false
+	}
+
+	if len(c.Values) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetApprove returns the Approve field.
 func (c *CommitLinks) GetApprove() *Link {
 	if c == nil {
@@ -639,6 +735,18 @@ func (c *CommitMessageContent) GetMessage() *Content {
 		return nil
 	}
 	return c.Message
+}
+
+// HasValues checks if Commits has any Values.
+func (c *Commits) HasValues() bool {
+	if c == nil || c.Values == nil {
+		return false
+	}
+
+	if len(c.Values) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetCreatedOn returns the CreatedOn field if it's non-nil, zero value otherwise.
@@ -719,6 +827,18 @@ func (c *CommitStatus) GetUUID() string {
 		return ""
 	}
 	return *c.UUID
+}
+
+// HasValues checks if CommitStatuses has any Values.
+func (c *CommitStatuses) HasValues() bool {
+	if c == nil || c.Values == nil {
+		return false
+	}
+
+	if len(c.Values) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetDescription returns the Description field if it's non-nil, zero value otherwise.
@@ -823,6 +943,18 @@ func (c *ComponentRequest) GetName() string {
 		return ""
 	}
 	return *c.Name
+}
+
+// HasValues checks if Components has any Values.
+func (c *Components) HasValues() bool {
+	if c == nil || c.Values == nil {
+		return false
+	}
+
+	if len(c.Values) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetHTML returns the HTML field if it's non-nil, zero value otherwise.
@@ -977,6 +1109,18 @@ func (d *DeployKeyRequest) GetLabel() string {
 	return *d.Label
 }
 
+// HasValues checks if DeployKeys has any Values.
+func (d *DeployKeys) HasValues() bool {
+	if d == nil || d.Values == nil {
+		return false
+	}
+
+	if len(d.Values) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetLinesAdded returns the LinesAdded field if it's non-nil, zero value otherwise.
 func (d *Diff) GetLinesAdded() int64 {
 	if d == nil || d.LinesAdded == nil {
@@ -1055,6 +1199,42 @@ func (d *DiffGetOpts) GetPath() string {
 		return ""
 	}
 	return *d.Path
+}
+
+// HasValues checks if Diffs has any Values.
+func (d *Diffs) HasValues() bool {
+	if d == nil || d.Values == nil {
+		return false
+	}
+
+	if len(d.Values) == 0 {
+		return false
+	}
+	return true
+}
+
+// HasBody checks if ErrorResponse has any Body.
+func (e *ErrorResponse) HasBody() bool {
+	if e == nil || e.Body == nil {
+		return false
+	}
+
+	if len(e.Body) == 0 {
+		return false
+	}
+	return true
+}
+
+// HasValues checks if FileHistory has any Values.
+func (f *FileHistory) HasValues() bool {
+	if f == nil || f.Values == nil {
+		return false
+	}
+
+	if len(f.Values) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetHistory returns the History field.
@@ -1199,6 +1379,18 @@ func (h *HookEvent) GetLabel() string {
 		return ""
 	}
 	return *h.Label
+}
+
+// HasValues checks if HookEvents has any Values.
+func (h *HookEvents) HasValues() bool {
+	if h == nil || h.Values == nil {
+		return false
+	}
+
+	if len(h.Values) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetRepository returns the Repository field.
@@ -1521,6 +1713,18 @@ func (i *IssueChangeRequest) GetVersion() string {
 	return *i.Version
 }
 
+// HasValues checks if IssueChanges has any Values.
+func (i *IssueChanges) HasValues() bool {
+	if i == nil || i.Values == nil {
+		return false
+	}
+
+	if len(i.Values) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetContent returns the Content field.
 func (i *IssueComment) GetContent() *Content {
 	if i == nil {
@@ -1607,6 +1811,18 @@ func (i *IssueCommentRequest) GetContent() *Content {
 		return nil
 	}
 	return i.Content
+}
+
+// HasValues checks if IssueComments has any Values.
+func (i *IssueComments) HasValues() bool {
+	if i == nil || i.Values == nil {
+		return false
+	}
+
+	if len(i.Values) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetHTML returns the HTML field if it's non-nil, zero value otherwise.
@@ -1777,6 +1993,18 @@ func (i *IssueRequestContentOpts) GetRaw() string {
 	return *i.Raw
 }
 
+// HasValues checks if Issues has any Values.
+func (i *Issues) HasValues() bool {
+	if i == nil || i.Values == nil {
+		return false
+	}
+
+	if len(i.Values) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetHRef returns the HRef field if it's non-nil, zero value otherwise.
 func (l *Link) GetHRef() string {
 	if l == nil || l.HRef == nil {
@@ -1839,6 +2067,18 @@ func (m *MilestoneRequest) GetName() string {
 		return ""
 	}
 	return *m.Name
+}
+
+// HasValues checks if Milestones has any Values.
+func (m *Milestones) HasValues() bool {
+	if m == nil || m.Values == nil {
+		return false
+	}
+
+	if len(m.Values) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetNext returns the Next field if it's non-nil, zero value otherwise.
@@ -1921,6 +2161,18 @@ func (p *Participant) GetUser() *User {
 	return p.User
 }
 
+// HasValues checks if PRActivities has any Values.
+func (p *PRActivities) HasValues() bool {
+	if p == nil || p.Values == nil {
+		return false
+	}
+
+	if len(p.Values) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetApproval returns the Approval field.
 func (p *PRActivity) GetApproval() *PRApprovalActivity {
 	if p == nil {
@@ -1985,6 +2237,18 @@ func (p *PRComment) GetPullRequest() *PullRequest {
 	return p.PullRequest
 }
 
+// HasValues checks if PRComments has any Values.
+func (p *PRComments) HasValues() bool {
+	if p == nil || p.Values == nil {
+		return false
+	}
+
+	if len(p.Values) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetCloseSourceBranch returns the CloseSourceBranch field if it's non-nil, zero value otherwise.
 func (p *PRRequest) GetCloseSourceBranch() bool {
 	if p == nil || p.CloseSourceBranch == nil {
@@ -2007,6 +2271,18 @@ func (p *PRRequest) GetDestination() *PRRequestDestinationOpts {
 		return nil
 	}
 	return p.Destination
+}
+
+// HasReviewers checks if PRRequest has any Reviewers.
+func (p *PRRequest) HasReviewers() bool {
+	if p == nil || p.Reviewers == nil {
+		return false
+	}
+
+	if len(p.Reviewers) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetSource returns the Source field.
@@ -2201,12 +2477,36 @@ func (p *PullRequest) GetMergeCommit() string {
 	return *p.MergeCommit
 }
 
+// HasParticipants checks if PullRequest has any Participants.
+func (p *PullRequest) HasParticipants() bool {
+	if p == nil || p.Participants == nil {
+		return false
+	}
+
+	if len(p.Participants) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetReason returns the Reason field if it's non-nil, zero value otherwise.
 func (p *PullRequest) GetReason() string {
 	if p == nil || p.Reason == nil {
 		return ""
 	}
 	return *p.Reason
+}
+
+// HasReviewers checks if PullRequest has any Reviewers.
+func (p *PullRequest) HasReviewers() bool {
+	if p == nil || p.Reviewers == nil {
+		return false
+	}
+
+	if len(p.Reviewers) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetSource returns the Source field.
@@ -2385,6 +2685,30 @@ func (p *PullRequestLinks) GetStatuses() *Link {
 	return p.Statuses
 }
 
+// HasState checks if PullRequestListOpts has any State.
+func (p *PullRequestListOpts) HasState() bool {
+	if p == nil || p.State == nil {
+		return false
+	}
+
+	if len(p.State) == 0 {
+		return false
+	}
+	return true
+}
+
+// HasValues checks if PullRequests has any Values.
+func (p *PullRequests) HasValues() bool {
+	if p == nil || p.Values == nil {
+		return false
+	}
+
+	if len(p.Values) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetDate returns the Date field if it's non-nil, zero value otherwise.
 func (r *Ref) GetDate() time.Time {
 	if r == nil || r.Date == nil {
@@ -2401,12 +2725,36 @@ func (r *Ref) GetDefaultMergeStrategy() string {
 	return *r.DefaultMergeStrategy
 }
 
+// HasHeads checks if Ref has any Heads.
+func (r *Ref) HasHeads() bool {
+	if r == nil || r.Heads == nil {
+		return false
+	}
+
+	if len(r.Heads) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetLinks returns the Links field.
 func (r *Ref) GetLinks() *RefLinks {
 	if r == nil {
 		return nil
 	}
 	return r.Links
+}
+
+// HasMergeStrategies checks if Ref has any MergeStrategies.
+func (r *Ref) HasMergeStrategies() bool {
+	if r == nil || r.MergeStrategies == nil {
+		return false
+	}
+
+	if len(r.MergeStrategies) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetMessage returns the Message field if it's non-nil, zero value otherwise.
@@ -2471,6 +2819,30 @@ func (r *RefRequest) GetName() string {
 		return ""
 	}
 	return *r.Name
+}
+
+// HasValues checks if Refs has any Values.
+func (r *Refs) HasValues() bool {
+	if r == nil || r.Values == nil {
+		return false
+	}
+
+	if len(r.Values) == 0 {
+		return false
+	}
+	return true
+}
+
+// HasValues checks if Repositories has any Values.
+func (r *Repositories) HasValues() bool {
+	if r == nil || r.Values == nil {
+		return false
+	}
+
+	if len(r.Values) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetCreatedOn returns the CreatedOn field if it's non-nil, zero value otherwise.
@@ -2665,6 +3037,30 @@ func (r *RepositoryHook) GetDescription() string {
 	return *r.Description
 }
 
+// HasEvents checks if RepositoryHook has any Events.
+func (r *RepositoryHook) HasEvents() bool {
+	if r == nil || r.Events == nil {
+		return false
+	}
+
+	if len(r.Events) == 0 {
+		return false
+	}
+	return true
+}
+
+// HasSubjectType checks if RepositoryHook has any SubjectType.
+func (r *RepositoryHook) HasSubjectType() bool {
+	if r == nil || r.SubjectType == nil {
+		return false
+	}
+
+	if len(r.SubjectType) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetURL returns the URL field if it's non-nil, zero value otherwise.
 func (r *RepositoryHook) GetURL() string {
 	if r == nil || r.URL == nil {
@@ -2697,12 +3093,36 @@ func (r *RepositoryHookRequest) GetDescription() string {
 	return *r.Description
 }
 
+// HasEvents checks if RepositoryHookRequest has any Events.
+func (r *RepositoryHookRequest) HasEvents() bool {
+	if r == nil || r.Events == nil {
+		return false
+	}
+
+	if len(r.Events) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetURL returns the URL field if it's non-nil, zero value otherwise.
 func (r *RepositoryHookRequest) GetURL() string {
 	if r == nil || r.URL == nil {
 		return ""
 	}
 	return *r.URL
+}
+
+// HasValues checks if RepositoryHooks has any Values.
+func (r *RepositoryHooks) HasValues() bool {
+	if r == nil || r.Values == nil {
+		return false
+	}
+
+	if len(r.Values) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetAvatar returns the Avatar field.
@@ -2719,6 +3139,18 @@ func (r *RepositoryLinks) GetBranches() *Link {
 		return nil
 	}
 	return r.Branches
+}
+
+// HasClone checks if RepositoryLinks has any Clone.
+func (r *RepositoryLinks) HasClone() bool {
+	if r == nil || r.Clone == nil {
+		return false
+	}
+
+	if len(r.Clone) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetCommits returns the Commits field.
@@ -2881,12 +3313,36 @@ func (s *SearchCodeResult) GetContentMatchCount() int64 {
 	return *s.ContentMatchCount
 }
 
+// HasContentMatches checks if SearchCodeResult has any ContentMatches.
+func (s *SearchCodeResult) HasContentMatches() bool {
+	if s == nil || s.ContentMatches == nil {
+		return false
+	}
+
+	if len(s.ContentMatches) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetFile returns the File field.
 func (s *SearchCodeResult) GetFile() *CodeFile {
 	if s == nil {
 		return nil
 	}
 	return s.File
+}
+
+// HasPathMatches checks if SearchCodeResult has any PathMatches.
+func (s *SearchCodeResult) HasPathMatches() bool {
+	if s == nil || s.PathMatches == nil {
+		return false
+	}
+
+	if len(s.PathMatches) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetType returns the Type field if it's non-nil, zero value otherwise.
@@ -2929,6 +3385,18 @@ func (s *SearchContentMatchLine) GetLine() int64 {
 	return *s.Line
 }
 
+// HasSegments checks if SearchContentMatchLine has any Segments.
+func (s *SearchContentMatchLine) HasSegments() bool {
+	if s == nil || s.Segments == nil {
+		return false
+	}
+
+	if len(s.Segments) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetMatch returns the Match field if it's non-nil, zero value otherwise.
 func (s *SearchMatch) GetMatch() bool {
 	if s == nil || s.Match == nil {
@@ -2943,6 +3411,18 @@ func (s *SearchMatch) GetText() string {
 		return ""
 	}
 	return *s.Text
+}
+
+// HasAttributes checks if SRCMetadata has any Attributes.
+func (s *SRCMetadata) HasAttributes() bool {
+	if s == nil || s.Attributes == nil {
+		return false
+	}
+
+	if len(s.Attributes) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetCommit returns the Commit field.
@@ -3193,6 +3673,18 @@ func (t *TeamPermission) GetUser() *User {
 	return t.User
 }
 
+// HasValues checks if TeamPermissions has any Values.
+func (t *TeamPermissions) HasValues() bool {
+	if t == nil || t.Values == nil {
+		return false
+	}
+
+	if len(t.Values) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetCreatedOn returns the CreatedOn field if it's non-nil, zero value otherwise.
 func (t *TeamProject) GetCreatedOn() time.Time {
 	if t == nil || t.CreatedOn == nil {
@@ -3329,6 +3821,18 @@ func (t *TeamProjectRequest) GetName() string {
 	return *t.Name
 }
 
+// HasValues checks if TeamProjects has any Values.
+func (t *TeamProjects) HasValues() bool {
+	if t == nil || t.Values == nil {
+		return false
+	}
+
+	if len(t.Values) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetPermission returns the Permission field if it's non-nil, zero value otherwise.
 func (t *TeamRepoPermission) GetPermission() string {
 	if t == nil || t.Permission == nil {
@@ -3359,6 +3863,30 @@ func (t *TeamRepoPermission) GetUser() *User {
 		return nil
 	}
 	return t.User
+}
+
+// HasValues checks if TeamRepoPermissions has any Values.
+func (t *TeamRepoPermissions) HasValues() bool {
+	if t == nil || t.Values == nil {
+		return false
+	}
+
+	if len(t.Values) == 0 {
+		return false
+	}
+	return true
+}
+
+// HasValues checks if Teams has any Values.
+func (t *Teams) HasValues() bool {
+	if t == nil || t.Values == nil {
+		return false
+	}
+
+	if len(t.Values) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetAccountID returns the AccountID field if it's non-nil, zero value otherwise.
@@ -3505,6 +4033,18 @@ func (u *UserEmailLinks) GetSelf() *Link {
 	return u.Self
 }
 
+// HasValues checks if UserEmails has any Values.
+func (u *UserEmails) HasValues() bool {
+	if u == nil || u.Values == nil {
+		return false
+	}
+
+	if len(u.Values) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetActive returns the Active field if it's non-nil, zero value otherwise.
 func (u *UserHook) GetActive() bool {
 	if u == nil || u.Active == nil {
@@ -3529,6 +4069,18 @@ func (u *UserHook) GetDescription() string {
 	return *u.Description
 }
 
+// HasEvents checks if UserHook has any Events.
+func (u *UserHook) HasEvents() bool {
+	if u == nil || u.Events == nil {
+		return false
+	}
+
+	if len(u.Events) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetSubjectType returns the SubjectType field if it's non-nil, zero value otherwise.
 func (u *UserHook) GetSubjectType() string {
 	if u == nil || u.SubjectType == nil {
@@ -3551,6 +4103,18 @@ func (u *UserHook) GetUUID() string {
 		return ""
 	}
 	return *u.UUID
+}
+
+// HasValues checks if UserHooks has any Values.
+func (u *UserHooks) HasValues() bool {
+	if u == nil || u.Values == nil {
+		return false
+	}
+
+	if len(u.Values) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetAvatar returns the Avatar field.
@@ -3649,6 +4213,30 @@ func (u *UserRepositoriesPermission) GetUser() *User {
 	return u.User
 }
 
+// HasValues checks if UserRepositoriesPermissions has any Values.
+func (u *UserRepositoriesPermissions) HasValues() bool {
+	if u == nil || u.Values == nil {
+		return false
+	}
+
+	if len(u.Values) == 0 {
+		return false
+	}
+	return true
+}
+
+// HasValues checks if Users has any Values.
+func (u *Users) HasValues() bool {
+	if u == nil || u.Values == nil {
+		return false
+	}
+
+	if len(u.Values) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetComment returns the Comment field if it's non-nil, zero value otherwise.
 func (u *UsersSSHKey) GetComment() string {
 	if u == nil || u.Comment == nil {
@@ -3729,6 +4317,18 @@ func (u *UsersSSHKeyLinks) GetSelf() *Link {
 	return u.Self
 }
 
+// HasValues checks if UsersSSHKeys has any Values.
+func (u *UsersSSHKeys) HasValues() bool {
+	if u == nil || u.Values == nil {
+		return false
+	}
+
+	if len(u.Values) == 0 {
+		return false
+	}
+	return true
+}
+
 // GetPermission returns the Permission field if it's non-nil, zero value otherwise.
 func (u *UserTeamsPermission) GetPermission() string {
 	if u == nil || u.Permission == nil {
@@ -3759,6 +4359,18 @@ func (u *UserTeamsPermission) GetUser() *User {
 		return nil
 	}
 	return u.User
+}
+
+// HasValues checks if UserTeamsPermissions has any Values.
+func (u *UserTeamsPermissions) HasValues() bool {
+	if u == nil || u.Values == nil {
+		return false
+	}
+
+	if len(u.Values) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetID returns the ID field if it's non-nil, zero value otherwise.
@@ -3815,4 +4427,16 @@ func (v *VersionRequest) GetName() string {
 		return ""
 	}
 	return *v.Name
+}
+
+// HasValues checks if Versions has any Values.
+func (v *Versions) HasValues() bool {
+	if v == nil || v.Values == nil {
+		return false
+	}
+
+	if len(v.Values) == 0 {
+		return false
+	}
+	return true
 }
