@@ -475,12 +475,6 @@ func addQueryParams(s string, opts ...interface{}) (string, error) {
 
 	fulQS := url.Values{}
 	for _, opt := range opts {
-		//// Handle scenario when no opts are passed which means opts is a slice containing one empty slice.
-		//v := reflect.ValueOf(opt)
-		//if v.Kind() == reflect.Slice && v.IsNil() {
-		//	return s, nil
-		//}
-
 		qs, err := query.Values(opt)
 		if err != nil {
 			return s, err

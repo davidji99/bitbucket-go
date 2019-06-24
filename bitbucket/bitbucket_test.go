@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestAddOptions_NoOpts(t *testing.T) {
+func TestAddQueryParams_NoOpts(t *testing.T) {
 	urlStr := fmt.Sprintf("/repositories/%s/%s", "bOrg", "bRepo")
 	urlStr, addOptErr := addQueryParams(urlStr)
 
@@ -14,7 +14,7 @@ func TestAddOptions_NoOpts(t *testing.T) {
 	assert.Equal(t, "/repositories/bOrg/bRepo", urlStr)
 }
 
-func TestAddOptionsRedux_OneOpt(t *testing.T) {
+func TestAddQueryParams_OneOpt(t *testing.T) {
 	opt := &ListOpts{
 		Page:    int64(2),
 		Pagelen: int64(5),
@@ -26,7 +26,7 @@ func TestAddOptionsRedux_OneOpt(t *testing.T) {
 	assert.Equal(t, "/repositories/bOrg/bRepo?page=2&pagelen=5", urlStr)
 }
 
-func TestAddOptionsRedux_MultipleOpts(t *testing.T) {
+func TestAddQueryParams_MultipleOpts(t *testing.T) {
 	opt1 := &ListOpts{
 		Page:    int64(2),
 		Pagelen: int64(5),
