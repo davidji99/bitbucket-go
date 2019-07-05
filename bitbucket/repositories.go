@@ -47,14 +47,9 @@ type RepositoryMainBranch struct {
 	Name *string `json:"name,omitempty"`
 }
 
-// RepositoryCloneLinks represents a collection of repository clone links.
-type RepositoryCloneLinks struct {
-	Values []*Link
-}
-
-// GetHTTPS get the HTTPS clone link. Returns empty string if not found.
-func (rcl *RepositoryCloneLinks) GetHTTPS() string {
-	for _, link := range rcl.Values {
+// GetHTTPSCloneURL get the HTTPS clone url. Returns empty string if not found.
+func (rl *RepositoryLinks) GetHTTPSCloneURL() string {
+	for _, link := range rl.Clone {
 		if link.GetName() == "https" {
 			return link.GetHRef()
 		}
@@ -63,9 +58,9 @@ func (rcl *RepositoryCloneLinks) GetHTTPS() string {
 	return ""
 }
 
-// GetSSH get the SSH clone link. Returns empty string if not found.
-func (rcl *RepositoryCloneLinks) GetSSH() string {
-	for _, link := range rcl.Values {
+// GetSSHCloneURL get the SSH clone url. Returns empty string if not found.
+func (rl *RepositoryLinks) GetSSHCloneURL() string {
+	for _, link := range rl.Clone {
 		if link.GetName() == "ssh" {
 			return link.GetHRef()
 		}
@@ -76,18 +71,18 @@ func (rcl *RepositoryCloneLinks) GetSSH() string {
 
 // RepositoryLinks represents the "links" object in a Bitbucket repository.
 type RepositoryLinks struct {
-	Clone        RepositoryCloneLinks `json:"clone,omitempty"`
-	Watchers     *Link                `json:"watchers,omitempty"`
-	Branches     *Link                `json:"branches,omitempty"`
-	Tags         *Link                `json:"tags,omitempty"`
-	Commits      *Link                `json:"commits,omitempty"`
-	Downloads    *Link                `json:"downloads,omitempty"`
-	Source       *Link                `json:"source,omitempty"`
-	HTML         *Link                `json:"html,omitempty"`
-	Avatar       *Link                `json:"avatar,omitempty"`
-	Forks        *Link                `json:"forks,omitempty"`
-	Self         *Link                `json:"self,omitempty"`
-	PullRequests *Link                `json:"pull_requests,omitempty"`
+	Clone        []*Link `json:"clone,omitempty"`
+	Watchers     *Link   `json:"watchers,omitempty"`
+	Branches     *Link   `json:"branches,omitempty"`
+	Tags         *Link   `json:"tags,omitempty"`
+	Commits      *Link   `json:"commits,omitempty"`
+	Downloads    *Link   `json:"downloads,omitempty"`
+	Source       *Link   `json:"source,omitempty"`
+	HTML         *Link   `json:"html,omitempty"`
+	Avatar       *Link   `json:"avatar,omitempty"`
+	Forks        *Link   `json:"forks,omitempty"`
+	Self         *Link   `json:"self,omitempty"`
+	PullRequests *Link   `json:"pull_requests,omitempty"`
 }
 
 // RepositoryListQueryParams represents the filters and query parameters available when listing repositories.

@@ -3013,18 +3013,6 @@ func (r *Repository) GetWebsite() string {
 	return *r.Website
 }
 
-// HasValues checks if RepositoryCloneLinks has any Values.
-func (r *RepositoryCloneLinks) HasValues() bool {
-	if r == nil || r.Values == nil {
-		return false
-	}
-
-	if len(r.Values) == 0 {
-		return false
-	}
-	return true
-}
-
 // GetActive returns the Active field if it's non-nil, zero value otherwise.
 func (r *RepositoryHook) GetActive() bool {
 	if r == nil || r.Active == nil {
@@ -3151,6 +3139,18 @@ func (r *RepositoryLinks) GetBranches() *Link {
 		return nil
 	}
 	return r.Branches
+}
+
+// HasClone checks if RepositoryLinks has any Clone.
+func (r *RepositoryLinks) HasClone() bool {
+	if r == nil || r.Clone == nil {
+		return false
+	}
+
+	if len(r.Clone) == 0 {
+		return false
+	}
+	return true
 }
 
 // GetCommits returns the Commits field.
