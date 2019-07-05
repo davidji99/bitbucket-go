@@ -87,6 +87,7 @@ type service struct {
 
 // Link represents a single link object from Bitbucket object links.
 type Link struct {
+	Name *string `json:"name,omitempty"`
 	HRef *string `json:"href,omitempty"`
 }
 

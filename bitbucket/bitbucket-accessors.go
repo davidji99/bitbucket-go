@@ -2013,6 +2013,14 @@ func (l *Link) GetHRef() string {
 	return *l.HRef
 }
 
+// GetName returns the Name field if it's non-nil, zero value otherwise.
+func (l *Link) GetName() string {
+	if l == nil || l.Name == nil {
+		return ""
+	}
+	return *l.Name
+}
+
 // GetID returns the ID field if it's non-nil, zero value otherwise.
 func (m *Milestone) GetID() int64 {
 	if m == nil || m.ID == nil {
@@ -2989,6 +2997,14 @@ func (r *Repository) GetUpdatedOn() time.Time {
 	return *r.UpdatedOn
 }
 
+// GetUUID returns the UUID field if it's non-nil, zero value otherwise.
+func (r *Repository) GetUUID() string {
+	if r == nil || r.UUID == nil {
+		return ""
+	}
+	return *r.UUID
+}
+
 // GetWebsite returns the Website field if it's non-nil, zero value otherwise.
 func (r *Repository) GetWebsite() string {
 	if r == nil || r.Website == nil {
@@ -2997,20 +3013,16 @@ func (r *Repository) GetWebsite() string {
 	return *r.Website
 }
 
-// GetHRef returns the HRef field if it's non-nil, zero value otherwise.
-func (r *RepositoryCloneLink) GetHRef() string {
-	if r == nil || r.HRef == nil {
-		return ""
+// HasValues checks if RepositoryCloneLinks has any Values.
+func (r *RepositoryCloneLinks) HasValues() bool {
+	if r == nil || r.Values == nil {
+		return false
 	}
-	return *r.HRef
-}
 
-// GetName returns the Name field if it's non-nil, zero value otherwise.
-func (r *RepositoryCloneLink) GetName() string {
-	if r == nil || r.Name == nil {
-		return ""
+	if len(r.Values) == 0 {
+		return false
 	}
-	return *r.Name
+	return true
 }
 
 // GetActive returns the Active field if it's non-nil, zero value otherwise.
@@ -3139,18 +3151,6 @@ func (r *RepositoryLinks) GetBranches() *Link {
 		return nil
 	}
 	return r.Branches
-}
-
-// HasClone checks if RepositoryLinks has any Clone.
-func (r *RepositoryLinks) HasClone() bool {
-	if r == nil || r.Clone == nil {
-		return false
-	}
-
-	if len(r.Clone) == 0 {
-		return false
-	}
-	return true
 }
 
 // GetCommits returns the Commits field.
