@@ -6,7 +6,7 @@
 > Bitbucket APIv2 library for Golang.
 
 ## NOTE: 
-This repository does not follow its [parent](https://github.com/ktrysmt/go-bitbucket) anymore as I have introduced major breaking changes to this fork. I aim to implement all available API resources Bitbucket APIv2 provides to its users publically.
+This repository was originally a fork of this [repository](https://github.com/ktrysmt/go-bitbucket). As I have introduced major breaking changes to my original fork which made it impossible to track upstream/parent, I have decided it is best move my fork to a standalone repository. I aim to implement all available API resources Bitbucket APIv2 provides to its users publically.
 
 This fork also takes several 'inspirations' (with due credit) from the [go-github library](https://github.com/google/go-github) so if you see similarities, you know why =).
 
