@@ -1,4 +1,4 @@
-module github.com/davidji99/go-bitbucket
+module github.com/davidji99/bitbucket-go
 
 require (
 	github.com/google/go-querystring v1.0.0
