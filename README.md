@@ -1,7 +1,7 @@
 # go-bitbucket
 
-<a class="repo-badge" href="https://godoc.org/github.com/davidji99/go-bitbucket"><img src="https://godoc.org/github.com/davidji99/go-bitbucket?status.svg" alt="go-bitbucket?status"></a>
-<a href="https://goreportcard.com/report/github.com/davidji99/go-bitbucket"><img class="badge" tag="github.com/davidji99/bitbucket-go" src="https://goreportcard.com/badge/github.com/davidji99/go-bitbucket"></a>
+<a class="repo-badge" href="https://godoc.org/github.com/davidji99/bitbucket-go"><img src="https://godoc.org/github.com/davidji99/bitbucket-go?status.svg" alt="bitbucket-go?status"></a>
+<a href="https://goreportcard.com/report/github.com/davidji99/go-bitbucket"><img class="badge" tag="github.com/davidji99/bitbucket-go" src="https://goreportcard.com/badge/github.com/davidji99/bitbucket-go"></a>
 
 > Bitbucket APIv2 library for Golang.
 
