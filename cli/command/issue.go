@@ -2,8 +2,8 @@ package command
 
 import (
 	"fmt"
-	"github.com/davidji99/go-bitbucket/bitbucket"
-	cli2 "github.com/davidji99/go-bitbucket/cli/cli"
+	"github.com/davidji99/bitbucket-go/bitbucket"
+	cli2 "github.com/davidji99/bitbucket-go/cli/cli"
 	"gopkg.in/urfave/cli.v1"
 )
 

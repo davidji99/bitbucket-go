@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	bbcli "github.com/davidji99/go-bitbucket/cli/cli"
-	"github.com/davidji99/go-bitbucket/cli/command"
+	bbcli "github.com/davidji99/bitbucket-go/cli/cli"
+	"github.com/davidji99/bitbucket-go/cli/command"
 	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"

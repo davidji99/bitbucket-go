@@ -1,7 +1,7 @@
 # go-bitbucket
 
 <a class="repo-badge" href="https://godoc.org/github.com/davidji99/go-bitbucket"><img src="https://godoc.org/github.com/davidji99/go-bitbucket?status.svg" alt="go-bitbucket?status"></a>
-<a href="https://goreportcard.com/report/github.com/davidji99/go-bitbucket"><img class="badge" tag="github.com/davidji99/go-bitbucket" src="https://goreportcard.com/badge/github.com/davidji99/go-bitbucket"></a>
+<a href="https://goreportcard.com/report/github.com/davidji99/go-bitbucket"><img class="badge" tag="github.com/davidji99/bitbucket-go" src="https://goreportcard.com/badge/github.com/davidji99/go-bitbucket"></a>
 
 > Bitbucket APIv2 library for Golang.
 
@@ -27,7 +27,7 @@ package main
 import (
         "fmt"
 
-        "github.com/davidji99/go-bitbucket/bitbucket"
+        "github.com/davidji99/bitbucket-go/bitbucket"
 )
 
 func main() {
