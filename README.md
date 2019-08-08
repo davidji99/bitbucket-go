@@ -15,7 +15,7 @@ This fork also takes several 'inspirations' (with due credit) from the [go-githu
 ## Install
 
 ```sh
-go get github.com/davidji99/go-bitbucket
+go get github.com/davidji99/bitbucket-go
 ```
 
 ## Usage
