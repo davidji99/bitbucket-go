@@ -28,5 +28,5 @@ jobs:
       run: go vet ./...
       
     - name: Diff
-      run: diff -u <(echo -n) <(gofmt -d -s .)
+      run: diff -u <(echo -n) <(gofmt -d -s $(find . -name '*.go' |grep -v vendor))
       
