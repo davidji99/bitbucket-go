@@ -15,6 +15,11 @@ type PRComment struct {
 	Deleted     *bool        `json:"deleted,omitempty"`
 }
 
+// PRCommentRequest represents a request to create or update a pull request comment.
+type PRCommentRequest struct {
+	Content *Content `json:"content,omitempty"`
+}
+
 // ListComments returns a paginated list of the pull request's comments.
 //
 // This includes both global, inline comments and replies.
@@ -36,7 +41,7 @@ func (p *PullRequestsService) ListComments(owner, repoSlug string, pullRequestID
 // CreateComment creates a new pull request comment.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D/comments#post
-func (p *PullRequestsService) CreateComment(owner, repoSlug string, pullRequestID int64, po *Content) (*PRComment, *Response, error) {
+func (p *PullRequestsService) CreateComment(owner, repoSlug string, pullRequestID int64, po *PRCommentRequest) (*PRComment, *Response, error) {
 	result := new(PRComment)
 	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests/%v/comments", owner, repoSlug, pullRequestID)
 	response, err := p.client.execute("POST", urlStr, result, po)
@@ -63,7 +68,7 @@ func (p *PullRequestsService) GetComment(owner, repoSlug string, prID, cID int64
 // UpdateComment updates a specific pull request comment.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D/comments#put
-func (p *PullRequestsService) UpdateComment(owner, repoSlug string, prID, cID int64, po *Content) (*PRComment, *Response, error) {
+func (p *PullRequestsService) UpdateComment(owner, repoSlug string, prID, cID int64, po *PRCommentRequest) (*PRComment, *Response, error) {
 	result := new(PRComment)
 	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests/%v/comments/%v", owner, repoSlug, prID, cID)
 	response, err := p.client.execute("PUT", urlStr, result, po)
