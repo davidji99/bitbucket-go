@@ -2245,6 +2245,14 @@ func (p *PRComment) GetPullRequest() *PullRequest {
 	return p.PullRequest
 }
 
+// GetContent returns the Content field.
+func (p *PRCommentRequest) GetContent() *Content {
+	if p == nil {
+		return nil
+	}
+	return p.Content
+}
+
 // HasValues checks if PRComments has any Values.
 func (p *PRComments) HasValues() bool {
 	if p == nil || p.Values == nil {
