@@ -26,3 +26,7 @@ jobs:
 
     - name: Vet
       run: go vet ./...
+      
+    - name: Diff
+      run: diff -u <(echo -n) <(gofmt -d -s .)
+      
