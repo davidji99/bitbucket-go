@@ -2487,10 +2487,10 @@ func (p *PullRequest) GetLinks() *PullRequestLinks {
 
 // GetMergeCommit returns the MergeCommit field if it's non-nil, zero value otherwise.
 func (p *PullRequest) GetMergeCommit() string {
-	if p == nil || p.MergeCommit == nil {
+	if p == nil || p.MergeCommit.Hash == nil {
 		return ""
 	}
-	return *p.MergeCommit
+	return *p.MergeCommit.Hash
 }
 
 // HasParticipants checks if PullRequest has any Participants.
