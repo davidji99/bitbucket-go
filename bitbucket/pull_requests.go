@@ -36,8 +36,10 @@ type PullRequest struct {
 	Reason            *string            `json:"reason,omitempty"`
 	UpdatedOn         *string            `json:"updated_on,omitempty"`
 	Author            *User              `json:"author,omitempty"`
-	MergeCommit       *string            `json:"merge_commit,omitempty"`
-	ClosedBy          *User              `json:"closed_by,omitempty"`
+	MergeCommit       struct {
+		Hash *string `json:"hash,omitempty"`
+	} `json:"merge_commit,omitempty"`
+	ClosedBy *User `json:"closed_by,omitempty"`
 }
 
 // PullRequestLinks represents the "links" object in a Bitbucket pull request.
