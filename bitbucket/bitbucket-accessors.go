@@ -2485,12 +2485,12 @@ func (p *PullRequest) GetLinks() *PullRequestLinks {
 	return p.Links
 }
 
-// GetMergeCommit returns the MergeCommit field if it's non-nil, zero value otherwise.
-func (p *PullRequest) GetMergeCommit() string {
-	if p == nil || p.MergeCommit.Hash == nil {
-		return ""
+// GetMergeCommit returns the MergeCommit field.
+func (p *PullRequest) GetMergeCommit() *PullRequestMergeCommit {
+	if p == nil {
+		return nil
 	}
-	return *p.MergeCommit.Hash
+	return p.MergeCommit
 }
 
 // HasParticipants checks if PullRequest has any Participants.
@@ -2711,6 +2711,14 @@ func (p *PullRequestListOpts) HasState() bool {
 		return false
 	}
 	return true
+}
+
+// GetHash returns the Hash field if it's non-nil, zero value otherwise.
+func (p *PullRequestMergeCommit) GetHash() string {
+	if p == nil || p.Hash == nil {
+		return ""
+	}
+	return *p.Hash
 }
 
 // HasValues checks if PullRequests has any Values.
