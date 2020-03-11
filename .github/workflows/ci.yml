@@ -36,3 +36,7 @@ jobs:
           cd bitbucket
           go run gen-accessors.go
           git diff --exit-code; code=$?; git checkout -- .; (exit $code)
+
+      - name: Tests
+        shell: bash
+        run: go test ./...
