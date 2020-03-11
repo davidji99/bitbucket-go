@@ -17,29 +17,32 @@ type PullRequests struct {
 
 // PullRequest represents a Bitbucket pull request on a repository.
 type PullRequest struct {
-	Body              *PullRequestBody   `json:"rendered,omitempty"`
-	Type              *string            `json:"type,omitempty"`
-	Description       *string            `json:"description,omitempty"`
-	Links             *PullRequestLinks  `json:"links,omitempty"`
-	Title             *string            `json:"title,omitempty"`
-	CloseSourceBranch *bool              `json:"close_source_branch,omitempty"`
-	Reviewers         []*User            `json:"reviewers,omitempty"`
-	ID                *int64             `json:"id,omitempty"`
-	Destination       *PullRequestBranch `json:"destination,omitempty"`
-	CreatedOn         *time.Time         `json:"created_on,omitempty"`
-	Summary           *Content           `json:"summary,omitempty"`
-	Source            *PullRequestBranch `json:"source,omitempty"`
-	CommentCount      *int64             `json:"comment_count,omitempty"`
-	State             *string            `json:"state,omitempty"`
-	TaskCount         *int64             `json:"task_count,omitempty"`
-	Participants      []*Participant     `json:"participants,omitempty"`
-	Reason            *string            `json:"reason,omitempty"`
-	UpdatedOn         *string            `json:"updated_on,omitempty"`
-	Author            *User              `json:"author,omitempty"`
-	MergeCommit       struct {
-		Hash *string `json:"hash,omitempty"`
-	} `json:"merge_commit,omitempty"`
-	ClosedBy *User `json:"closed_by,omitempty"`
+	Body              *PullRequestBody        `json:"rendered,omitempty"`
+	Type              *string                 `json:"type,omitempty"`
+	Description       *string                 `json:"description,omitempty"`
+	Links             *PullRequestLinks       `json:"links,omitempty"`
+	Title             *string                 `json:"title,omitempty"`
+	CloseSourceBranch *bool                   `json:"close_source_branch,omitempty"`
+	Reviewers         []*User                 `json:"reviewers,omitempty"`
+	ID                *int64                  `json:"id,omitempty"`
+	Destination       *PullRequestBranch      `json:"destination,omitempty"`
+	CreatedOn         *time.Time              `json:"created_on,omitempty"`
+	Summary           *Content                `json:"summary,omitempty"`
+	Source            *PullRequestBranch      `json:"source,omitempty"`
+	CommentCount      *int64                  `json:"comment_count,omitempty"`
+	State             *string                 `json:"state,omitempty"`
+	TaskCount         *int64                  `json:"task_count,omitempty"`
+	Participants      []*Participant          `json:"participants,omitempty"`
+	Reason            *string                 `json:"reason,omitempty"`
+	UpdatedOn         *string                 `json:"updated_on,omitempty"`
+	Author            *User                   `json:"author,omitempty"`
+	MergeCommit       *PullRequestMergeCommit `json:"merge_commit,omitempty"`
+	ClosedBy          *User                   `json:"closed_by,omitempty"`
+}
+
+// PullRequestMergeCommit represents the "merge_commit" object in a Bitbucket pull request.
+type PullRequestMergeCommit struct {
+	Hash *string `json:"hash,omitempty"`
 }
 
 // PullRequestLinks represents the "links" object in a Bitbucket pull request.
