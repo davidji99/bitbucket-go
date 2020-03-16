@@ -70,7 +70,7 @@ func (bm *BranchingModelService) Get(owner, repoSlug string, opts ...interface{}
 
 // GetRaw returns the branching model's raw configuration for a repository.
 //
-// A client wishing to see the branching model with its actual current branches should use the 'Get' function above.
+// A http wishing to see the branching model with its actual current branches should use the 'Get' function above.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/branching-model/settings#get
 func (bm *BranchingModelService) GetRaw(owner, repoSlug string, opts ...interface{}) (*BranchingModel, *Response, error) {

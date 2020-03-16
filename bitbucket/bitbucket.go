@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/davidji99/simpleresty"
 	"github.com/google/go-querystring/query"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/bitbucket"
@@ -31,19 +32,28 @@ const (
 
 // A Client manages communication with the Bitbucket API.
 type Client struct {
-	clientMu sync.Mutex   // clientMu protects the client during calls that modify the CheckRedirect func.
-	client   *http.Client // HTTP client used to communicate with the API.
+	// clientMu protects the client during calls that modify the CheckRedirect func.
+	clientMu sync.Mutex
 
-	// Base URL for API requests. Defaults to the public Bitbucket API, but can be
-	// set to a domain endpoint to use with GitHub Enterprise. BaseURL should
-	// always be specified with a trailing slash.
-	BaseURL string
+	// HTTP client used to communicate with the API.
+	http *simpleresty.Client // HTTP http used to communicate with the API.
+
+	// Reuse a single struct instead of allocating one for each service on the heap.
+	common service
+
+	// baseURL for API requests. Defaults to the public BitBucket API, but can be
+	// set to a domain endpoint to use with Bitbucket on-premise instances. No trailing slashes
+	baseURL string
 
 	// User agent used when communicating with the Bitbucket API.
 	UserAgent string
 
-	// Reuse a single struct instead of allocating one for each service on the heap.
-	common service
+	// Custom HTTPHeaders
+	customHTTPHeaders map[string]string
+
+	Pagelen uint64
+
+	Auth    *auth
 
 	// Services used for talking to different parts of the Bitbucket API.
 	BranchRestrictions *BranchRestrictionsService
@@ -69,9 +79,6 @@ type Client struct {
 	Users              *UsersService
 	Versions           *VersionsService
 	Watchers           *WatchersService
-
-	Pagelen uint64
-	Auth    *auth
 }
 
 type auth struct {
@@ -82,7 +89,7 @@ type auth struct {
 }
 
 type service struct {
-	client *Client // TODO: rename this to API
+	client *Client
 }
 
 // Link represents a single link object from Bitbucket object links.
@@ -116,7 +123,7 @@ type PaginationInfo struct {
 	// Total number of objects in the response. This is an optional element that is not provided in all responses, as it can be expensive to compute.
 	Size *int64 `json:"size,omitempty"`
 
-	//Link to previous page if it exists. A collections first page does not have this value.
+	// Link to previous page if it exists. A collections first page does not have this value.
 	// This is an optional element that is not provided in all responses.
 	// Some result sets strictly support forward navigation and never provide previous links.
 	// Clients must anticipate that backwards navigation is not always available.
@@ -212,9 +219,13 @@ func NewBasicAuth(u, p string) *Client {
 	return injectClient(a)
 }
 
+//func New() *Client {
+//
+//}
+
 // injectClient adds all resouce services to the client.
 func injectClient(a *auth) *Client {
-	c := &Client{Auth: a, Pagelen: DefaultPageLength, BaseURL: apiBaseURL, UserAgent: userAgent, client: new(http.Client)}
+	c := &Client{Auth: a, Pagelen: DefaultPageLength, baseURL: apiBaseURL, UserAgent: userAgent, http: new(http.Client)}
 	c.common.client = c
 	c.BranchRestrictions = (*BranchRestrictionsService)(&c.common)
 	c.Commit = (*CommitService)(&c.common)
@@ -228,7 +239,7 @@ func injectClient(a *auth) *Client {
 	c.Forks = (*ForksService)(&c.common)
 	c.HookEvents = (*HookEventsService)(&c.common)
 	c.Issues = (*IssuesService)(&c.common)
-	c.Milestones = (*MilestonesService)(&c.common)
+	c.Milestones = (*MilestonesService)(&c.common)``
 	c.Patch = (*PatchService)(&c.common)
 	c.PullRequests = (*PullRequestsService)(&c.common)
 	c.Refs = (*RefsService)(&c.common)
@@ -245,9 +256,9 @@ func injectClient(a *auth) *Client {
 
 func (c *Client) requestURL(template string, args ...interface{}) string {
 	if len(args) == 1 && args[0] == "" {
-		return c.BaseURL + template
+		return c.baseURL + template
 	}
-	return c.BaseURL + fmt.Sprintf(template, args...)
+	return c.baseURL + fmt.Sprintf(template, args...)
 }
 
 func (c *Client) newRequest(method string, urlStr string, v, body interface{}) (*http.Request, error) {
@@ -307,7 +318,7 @@ func (c *Client) execute(method string, urlStr string, v, body interface{}) (*Re
 func (c *Client) doRequest(req *http.Request, v interface{}, emptyResponse bool) (*Response, error) {
 	c.addAuthHeaders(req)
 
-	resp, err := c.client.Do(req)
+	resp, err := c.http.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -380,7 +391,7 @@ func (c *Client) addAuthHeaders(req *http.Request) {
 	return
 }
 
-// Response represents a response returned from this client.
+// Response represents a response returned from this http.
 type Response struct {
 	*http.Response
 

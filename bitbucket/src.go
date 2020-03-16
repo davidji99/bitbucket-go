@@ -62,7 +62,7 @@ func (s *SRCService) GetRaw(owner, repoSlug, nodeRev, path string,
 	}
 
 	// Execute the request
-	responseRaw, doReqErr := s.client.client.Do(req)
+	responseRaw, doReqErr := s.client.http.Do(req)
 	resp = newResponse(responseRaw)
 	if doReqErr != nil {
 		return nil, nil, resp, doReqErr
