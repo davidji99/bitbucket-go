@@ -1,5 +1,10 @@
 package bitbucket
 
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+)
+
 // RefRequest represents a request to create a new branch.
 type RefRequest struct {
 	Name   *string `json:"name,omitempty"`
@@ -12,15 +17,15 @@ type RefRequest struct {
 // Results will be in the order the source control manager returns them.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/refs/branches#get
-func (r *RefsService) ListBranches(owner, repoSlug string, opts ...interface{}) (*Refs, *Response, error) {
+func (r *RefsService) ListBranches(owner, repoSlug string, opts ...interface{}) (*Refs, *simpleresty.Response, error) {
 	result := new(Refs)
-	urlStr := r.client.requestURL("/repositories/%s/%s/refs/branches", owner, repoSlug)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := r.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/refs/branches", owner, repoSlug), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := r.client.execute("GET", urlStr, result, nil)
+	response, err := r.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -30,10 +35,11 @@ func (r *RefsService) ListBranches(owner, repoSlug string, opts ...interface{}) 
 // The branch name should not include any prefixes (e.g. refs/heads).
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/refs/branches#post
-func (r *RefsService) CreateBranch(owner, repoSlug string, ro *RefRequest) (*Ref, *Response, error) {
+func (r *RefsService) CreateBranch(owner, repoSlug string, ro *RefRequest) (*Ref, *simpleresty.Response, error) {
 	result := new(Ref)
-	urlStr := r.client.requestURL("/repositories/%s/%s/refs/branches", owner, repoSlug)
-	response, err := r.client.execute("POST", urlStr, result, ro)
+	urlStr := r.client.http.RequestURL("/repositories/%s/%s/refs/branches", owner, repoSlug)
+
+	response, err := r.client.http.Post(urlStr, result, ro)
 
 	return result, response, err
 }
@@ -41,15 +47,15 @@ func (r *RefsService) CreateBranch(owner, repoSlug string, ro *RefRequest) (*Ref
 // GetBranch returns a branch object within the specified repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/refs/branches/%7Bname%7D#get
-func (r *RefsService) GetBranch(owner, repoSlug, name string, opts ...interface{}) (*Ref, *Response, error) {
+func (r *RefsService) GetBranch(owner, repoSlug, name string, opts ...interface{}) (*Ref, *simpleresty.Response, error) {
 	result := new(Ref)
-	urlStr := r.client.requestURL("/repositories/%s/%s/refs/branches/%s", owner, repoSlug, name)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := r.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/refs/branches/%s", owner, repoSlug, name), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := r.client.execute("GET", urlStr, result, nil)
+	response, err := r.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -59,9 +65,9 @@ func (r *RefsService) GetBranch(owner, repoSlug, name string, opts ...interface{
 // The main branch is not allowed to be deleted and will return a 400 response.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/refs/branches/%7Bname%7D#delete
-func (r *RefsService) DeleteBranch(owner, repoSlug, name string) (*Response, error) {
-	urlStr := r.client.requestURL("/repositories/%s/%s/refs/branches/%s", owner, repoSlug, name)
-	response, err := r.client.execute("DELETE", urlStr, nil, nil)
+func (r *RefsService) DeleteBranch(owner, repoSlug, name string) (*simpleresty.Response, error) {
+	urlStr := r.client.http.RequestURL("/repositories/%s/%s/refs/branches/%s", owner, repoSlug, name)
+	response, err := r.client.http.Delete(urlStr, nil, nil)
 
 	return response, err
 }

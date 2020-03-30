@@ -1,5 +1,10 @@
 package bitbucket
 
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+)
+
 const versionSelfURLRegex = `http[sS]?:\/\/.*\/2.0\/repositories\/.*\/.*\/versions/(\d+)`
 
 // VersionsService handles communication with the version related methods
@@ -38,15 +43,15 @@ type VersionRequest struct {
 // List all versions that have been defined in the issue tracker.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/versions#get
-func (v *VersionsService) List(owner, repoSlug string, opts ...interface{}) (*Versions, *Response, error) {
+func (v *VersionsService) List(owner, repoSlug string, opts ...interface{}) (*Versions, *simpleresty.Response, error) {
 	versions := new(Versions)
-	urlStr := v.client.requestURL("/repositories/%s/%s/versions", owner, repoSlug)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := v.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/versions", owner, repoSlug), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := v.client.execute("GET", urlStr, versions, nil)
+	response, err := v.client.http.Get(urlStr, versions, nil)
 
 	// Parse and store the version id
 	for _, version := range versions.Values {
@@ -60,15 +65,15 @@ func (v *VersionsService) List(owner, repoSlug string, opts ...interface{}) (*Ve
 // NOTE: The version ID is a numerical value, not the version name, that is visible in the links.self.href object.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/versions/%7Bversion_id%7D#get
-func (v *VersionsService) Get(owner, repoSlug string, versionID int64, opts ...interface{}) (*Version, *Response, error) {
+func (v *VersionsService) Get(owner, repoSlug string, versionID int64, opts ...interface{}) (*Version, *simpleresty.Response, error) {
 	version := new(Version)
-	urlStr := v.client.requestURL("/repositories/%s/%s/versions/%v", owner, repoSlug, versionID)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := v.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/versions/%v", owner, repoSlug, versionID), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := v.client.execute("GET", urlStr, version, nil)
+	response, err := v.client.http.Get(urlStr, version, nil)
 
 	// Parse and store the version id
 	version.ID = parseForResourceID(versionSelfURLRegex, *version.Links.Self.HRef)

@@ -1,5 +1,10 @@
 package bitbucket
 
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+)
+
 // FileHistoryService handles communication with the file history related methods
 // of the Bitbucket API.
 //
@@ -31,15 +36,15 @@ type FileHistoryListOpts struct {
 // Commits are returned in reverse chronological order.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/filehistory/%7Bnode%7D/%7Bpath%7D#get
-func (fh *FileHistoryService) Get(owner, repoSlug, nodeRev, path string, opts ...interface{}) (*FileHistory, *Response, error) {
+func (fh *FileHistoryService) Get(owner, repoSlug, nodeRev, path string, opts ...interface{}) (*FileHistory, *simpleresty.Response, error) {
 	result := new(FileHistory)
-	urlStr := fh.client.requestURL("/repositories/%s/%s/filehistory/%s/%s", owner, repoSlug, nodeRev, path)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := fh.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/filehistory/%s/%s", owner, repoSlug, nodeRev, path), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := fh.client.execute("GET", urlStr, result, nil)
+	response, err := fh.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }

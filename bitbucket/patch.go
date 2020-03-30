@@ -1,6 +1,9 @@
 package bitbucket
 
-import "bytes"
+import (
+	"bytes"
+	"github.com/davidji99/simpleresty"
+)
 
 // PatchService handles communication with the patch related methods
 // of the Bitbucket API.
@@ -13,15 +16,19 @@ type PatchService service
 // represents the source and the second commit the destination).
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/patch/%7Bspec%7D#get
-func (p *PatchService) GetRaw(owner, repoSlug, spec string) (*bytes.Buffer, *Response, error) {
-	urlStr := p.client.requestURL("/repositories/%s/%s/patch/%s", owner, repoSlug, spec)
-	req, reqErr := p.client.newRequest("GET", urlStr, nil, nil)
+func (p *PatchService) GetRaw(owner, repoSlug, spec string) (*bytes.Buffer, *simpleresty.Response, error) {
+	urlStr := p.client.http.RequestURL("/repositories/%s/%s/patch/%s", owner, repoSlug, spec)
+
+	var buff bytes.Buffer
+	req := p.client.http.NewRequest()
+	req.Method = simpleresty.GetMethod
+	req.URL = urlStr
+	req.Result = &buff
+
+	response, reqErr := p.client.http.Dispatch(req)
 	if reqErr != nil {
 		return nil, nil, reqErr
 	}
 
-	var buff bytes.Buffer
-	response, err := p.client.doRequest(req, &buff, false)
-
-	return &buff, response, err
+	return &buff, response, nil
 }

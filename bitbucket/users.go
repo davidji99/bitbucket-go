@@ -1,5 +1,10 @@
 package bitbucket
 
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+)
+
 // UsersService handles communication with the users related methods
 // of the Bitbucket API.
 //
@@ -30,15 +35,15 @@ type UserLinks struct {
 // Accepts the user's UUID, account_id, or username. Recommend to use UUID or account_id.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D#get
-func (u *UsersService) GetByID(userID string, opts ...interface{}) (*User, *Response, error) {
+func (u *UsersService) GetByID(userID string, opts ...interface{}) (*User, *simpleresty.Response, error) {
 	user := new(User)
-	urlStr := u.client.requestURL("/users/%s", userID)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := u.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/users/%s", userID), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := u.client.execute("GET", urlStr, user, nil)
+	response, err := u.client.http.Get(urlStr, user, nil)
 
 	return user, response, err
 }

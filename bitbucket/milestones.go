@@ -1,5 +1,10 @@
 package bitbucket
 
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+)
+
 const milestoneSelfURL = `http[sS]?:\/\/.*\/2.0\/repositories\/.*\/.*\/milestones/(\d+)`
 
 // MilestonesService handles communication with the milestone related methods
@@ -38,17 +43,17 @@ type MilestoneRequest struct {
 // List all milestones that have been defined in the issue tracker.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/milestones#get
-func (m *MilestonesService) List(owner, repoSlug string, opts ...interface{}) (*Milestones, *Response, error) {
+func (m *MilestonesService) List(owner, repoSlug string, opts ...interface{}) (*Milestones, *simpleresty.Response, error) {
 	result := new(Milestones)
-	urlStr := m.client.requestURL("/repositories/%s/%s/milestones", owner, repoSlug)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := m.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/milestones", owner, repoSlug), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := m.client.execute("GET", urlStr, result, nil)
+	response, err := m.client.http.Get(urlStr, result, nil)
 
-	// Parse and store the milestonoe id
+	// Parse and store the milestone id
 	for _, milestone := range result.Values {
 		milestone.ID = parseForResourceID(milestoneSelfURL, *milestone.Links.Self.HRef)
 	}
@@ -60,15 +65,15 @@ func (m *MilestonesService) List(owner, repoSlug string, opts ...interface{}) (*
 // NOTE: The milestone ID is a numerical value, not the component name, that is visible in the links.self.href object.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/milestones/%7Bmilestone_id%7D#get
-func (m *MilestonesService) Get(owner, repoSlug string, milestoneID int64, opts ...interface{}) (*Milestone, *Response, error) {
+func (m *MilestonesService) Get(owner, repoSlug string, milestoneID int64, opts ...interface{}) (*Milestone, *simpleresty.Response, error) {
 	result := new(Milestone)
-	urlStr := m.client.requestURL("/repositories/%s/%s/milestones/%v", owner, repoSlug, milestoneID)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := m.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/milestones/%v", owner, repoSlug, milestoneID), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := m.client.execute("GET", urlStr, result, nil)
+	response, err := m.client.http.Get(urlStr, result, nil)
 
 	// Parse and store the milestone id
 	result.ID = parseForResourceID(milestoneSelfURL, *result.Links.Self.HRef)

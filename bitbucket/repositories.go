@@ -1,6 +1,8 @@
 package bitbucket
 
 import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
 	"time"
 )
 
@@ -130,15 +132,15 @@ type RepositoryDeleteQueryParam struct {
 // ListPublic returns all public repositories.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories#get
-func (r *RepositoriesService) ListPublic(opts ...interface{}) (*Repositories, *Response, error) {
+func (r *RepositoriesService) ListPublic(opts ...interface{}) (*Repositories, *simpleresty.Response, error) {
 	result := new(Repositories)
-	urlStr := r.client.requestURL("/repositories")
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := r.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories"), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := r.client.execute("GET", urlStr, result, nil)
+	response, err := r.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -148,15 +150,15 @@ func (r *RepositoriesService) ListPublic(opts ...interface{}) (*Repositories, *R
 // Accepts a query parameter for 'role.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D#get
-func (r *RepositoriesService) List(owner string, opts ...interface{}) (*Repositories, *Response, error) {
+func (r *RepositoriesService) List(owner string, opts ...interface{}) (*Repositories, *simpleresty.Response, error) {
 	result := new(Repositories)
-	urlStr := r.client.requestURL("/repositories/%s", owner)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := r.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s", owner), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := r.client.execute("GET", urlStr, result, nil)
+	response, err := r.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -164,15 +166,15 @@ func (r *RepositoriesService) List(owner string, opts ...interface{}) (*Reposito
 // Get a single repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#get
-func (r *RepositoriesService) Get(owner, repoSlug string, opts ...interface{}) (*Repository, *Response, error) {
+func (r *RepositoriesService) Get(owner, repoSlug string, opts ...interface{}) (*Repository, *simpleresty.Response, error) {
 	result := new(Repository)
-	urlStr := r.client.requestURL("/repositories/%s/%s", owner, repoSlug)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := r.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s", owner, repoSlug), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := r.client.execute("GET", urlStr, result, nil)
+	response, err := r.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -180,10 +182,10 @@ func (r *RepositoriesService) Get(owner, repoSlug string, opts ...interface{}) (
 // Create a new repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#post
-func (r *RepositoriesService) Create(owner string, rr *RepositoryRequest) (*Repository, *Response, error) {
+func (r *RepositoriesService) Create(owner string, rr *RepositoryRequest) (*Repository, *simpleresty.Response, error) {
 	result := new(Repository)
-	urlStr := r.client.requestURL("/repositories/%s/%s", owner, rr.GetName())
-	response, err := r.client.execute("POST", urlStr, result, rr)
+	urlStr := r.client.http.RequestURL("/repositories/%s/%s", owner, rr.GetName())
+	response, err := r.client.http.Post(urlStr, result, rr)
 
 	return result, response, err
 }
@@ -191,10 +193,10 @@ func (r *RepositoriesService) Create(owner string, rr *RepositoryRequest) (*Repo
 // Update a repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#put
-func (r *RepositoriesService) Update(owner, repoSlug string, rr *RepositoryRequest) (*Repository, *Response, error) {
+func (r *RepositoriesService) Update(owner, repoSlug string, rr *RepositoryRequest) (*Repository, *simpleresty.Response, error) {
 	result := new(Repository)
-	urlStr := r.client.requestURL("/repositories/%s/%s", owner, repoSlug)
-	response, err := r.client.execute("PUT", urlStr, result, rr)
+	urlStr := r.client.http.RequestURL("/repositories/%s/%s", owner, repoSlug)
+	response, err := r.client.http.Put(urlStr, result, rr)
 
 	return result, response, err
 }
@@ -203,14 +205,14 @@ func (r *RepositoriesService) Update(owner, repoSlug string, rr *RepositoryReque
 // This is an irreversible operation.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D#delete
-func (r *RepositoriesService) Delete(owner, repoSlug string, deleteOpt *RepositoryDeleteQueryParam) (*Response, error) {
-	urlStr := r.client.requestURL("/repositories/%s/%s", owner, repoSlug)
-	urlStr, addOptErr := addQueryParams(urlStr, deleteOpt)
-	if addOptErr != nil {
-		return nil, addOptErr
+func (r *RepositoriesService) Delete(owner, repoSlug string, deleteOpt *RepositoryDeleteQueryParam) (*simpleresty.Response, error) {
+	urlStr, urlStrErr := r.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s", owner, repoSlug), deleteOpt)
+	if urlStrErr != nil {
+		return nil, urlStrErr
 	}
 
-	response, err := r.client.execute("DELETE", urlStr, nil, nil)
+	response, err := r.client.http.Delete(urlStr, nil, nil)
 
 	return response, err
 }

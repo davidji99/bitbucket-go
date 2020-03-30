@@ -1,6 +1,10 @@
 package bitbucket
 
-import "time"
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+	"time"
+)
 
 // PullRequestsService handles communication with the pull requests related
 // methods of the Bitbucket API.
@@ -115,15 +119,15 @@ type Branch struct {
 // Example query string: source.repository.full_name != "main/repo" AND state = "OPEN" AND reviewers.username = "evzijst" AND destination.branch.name = "master"
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests#get
-func (p *PullRequestsService) List(owner, repoSlug string, opts ...interface{}) (*PullRequests, *Response, error) {
+func (p *PullRequestsService) List(owner, repoSlug string, opts ...interface{}) (*PullRequests, *simpleresty.Response, error) {
 	result := new(PullRequests)
-	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests", owner, repoSlug)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := p.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/pullrequests", owner, repoSlug), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := p.client.execute("GET", urlStr, result, nil)
+	response, err := p.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -131,15 +135,15 @@ func (p *PullRequestsService) List(owner, repoSlug string, opts ...interface{}) 
 // Get returns a single pull request.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D
-func (p *PullRequestsService) Get(owner, repoSlug string, pullRequestID int64, opts ...interface{}) (*PullRequest, *Response, error) {
+func (p *PullRequestsService) Get(owner, repoSlug string, pullRequestID int64, opts ...interface{}) (*PullRequest, *simpleresty.Response, error) {
 	result := new(PullRequest)
-	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests/%v", owner, repoSlug, pullRequestID)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := p.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/pullrequests/%v", owner, repoSlug, pullRequestID), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := p.client.execute("GET", urlStr, result, nil)
+	response, err := p.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -147,15 +151,15 @@ func (p *PullRequestsService) Get(owner, repoSlug string, pullRequestID int64, o
 // ListByUser returns all pull requests authored by the specified user.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/pullrequests/%7Btarget_user%7D#get
-func (p *PullRequestsService) ListByUser(targetUser string, opts ...interface{}) (*PullRequests, *Response, error) {
+func (p *PullRequestsService) ListByUser(targetUser string, opts ...interface{}) (*PullRequests, *simpleresty.Response, error) {
 	result := new(PullRequests)
-	urlStr := p.client.requestURL("/pullrequests/%s", targetUser)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := p.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/pullrequests/%s", targetUser), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := p.client.execute("GET", urlStr, result, nil)
+	response, err := p.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -165,10 +169,10 @@ func (p *PullRequestsService) ListByUser(targetUser string, opts ...interface{})
 // If the pull request's destination is not specified, it will default to the repository.mainbranch.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests#post
-func (p *PullRequestsService) Create(owner, repoSlug string, po *PRRequest) (*PullRequest, *Response, error) {
+func (p *PullRequestsService) Create(owner, repoSlug string, po *PRRequest) (*PullRequest, *simpleresty.Response, error) {
 	result := new(PullRequest)
-	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests", owner, repoSlug)
-	response, err := p.client.execute("POST", urlStr, result, po)
+	urlStr := p.client.http.RequestURL("/repositories/%s/%s/pullrequests", owner, repoSlug)
+	response, err := p.client.http.Post(urlStr, result, po)
 
 	return result, response, err
 }
@@ -177,10 +181,10 @@ func (p *PullRequestsService) Create(owner, repoSlug string, po *PRRequest) (*Pu
 // This can be used to change the pull request's branches or description. Only open pull requests can be mutated.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D#put
-func (p *PullRequestsService) Update(owner, repoSlug string, pullRequestID int64, po *PRRequest) (*PullRequest, *Response, error) {
+func (p *PullRequestsService) Update(owner, repoSlug string, pullRequestID int64, po *PRRequest) (*PullRequest, *simpleresty.Response, error) {
 	result := new(PullRequest)
-	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests/%v", owner, repoSlug, pullRequestID)
-	response, err := p.client.execute("PUT", urlStr, result, po)
+	urlStr := p.client.http.RequestURL("/repositories/%s/%s/pullrequests/%v", owner, repoSlug, pullRequestID)
+	response, err := p.client.http.Put(urlStr, result, po)
 
 	return result, response, err
 }

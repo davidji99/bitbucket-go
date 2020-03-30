@@ -1,6 +1,10 @@
 package bitbucket
 
-import "time"
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+	"time"
+)
 
 // UsersSSHKeys represents a collection of user ssh keys.
 type UsersSSHKeys struct {
@@ -38,15 +42,15 @@ type SSHKeyAddRequest struct {
 // Accepts the user's UUID, account_id, or username. Recommend to use UUID or account_id.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/ssh-keys#get
-func (u *UsersService) ListSSHKeys(userID string, opts ...interface{}) (*UsersSSHKeys, *Response, error) {
+func (u *UsersService) ListSSHKeys(userID string, opts ...interface{}) (*UsersSSHKeys, *simpleresty.Response, error) {
 	sshKeys := new(UsersSSHKeys)
-	urlStr := u.client.requestURL("/users/%s/ssh-keys", userID)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := u.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/users/%s/ssh-keys", userID), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := u.client.execute("GET", urlStr, sshKeys, nil)
+	response, err := u.client.http.Get(urlStr, sshKeys, nil)
 
 	return sshKeys, response, err
 }
@@ -56,10 +60,10 @@ func (u *UsersService) ListSSHKeys(userID string, opts ...interface{}) (*UsersSS
 // Accepts the user's UUID, account_id, or username. Recommend to use UUID or account_id.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/ssh-keys#post
-func (u *UsersService) AddSSHKey(userID string, newKey *SSHKeyAddRequest) (*UsersSSHKey, *Response, error) {
+func (u *UsersService) AddSSHKey(userID string, newKey *SSHKeyAddRequest) (*UsersSSHKey, *simpleresty.Response, error) {
 	sshKey := new(UsersSSHKey)
-	urlStr := u.client.requestURL("/users/%s/ssh-keys", userID)
-	response, err := u.client.execute("POST", urlStr, sshKey, newKey)
+	urlStr := u.client.http.RequestURL("/users/%s/ssh-keys", userID)
+	response, err := u.client.http.Post(urlStr, sshKey, newKey)
 
 	return sshKey, response, err
 }

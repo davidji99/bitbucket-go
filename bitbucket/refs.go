@@ -1,6 +1,10 @@
 package bitbucket
 
-import "time"
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+	"time"
+)
 
 // RefsService handles communication with the refs related methods
 // of the Bitbucket API.
@@ -42,15 +46,15 @@ type RefLinks struct {
 // Note that this follows simple lexical ordering of the ref names.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/refs#get
-func (r *RefsService) ListAll(owner, repoSlug string, opts ...interface{}) (*Refs, *Response, error) {
+func (r *RefsService) ListAll(owner, repoSlug string, opts ...interface{}) (*Refs, *simpleresty.Response, error) {
 	result := new(Refs)
-	urlStr := r.client.requestURL("/repositories/%s/%s/refs", owner, repoSlug)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := r.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/refs", owner, repoSlug), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := r.client.execute("GET", urlStr, result, nil)
+	response, err := r.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }

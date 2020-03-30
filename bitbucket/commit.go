@@ -1,6 +1,10 @@
 package bitbucket
 
-import "time"
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+	"time"
+)
 
 // CommitService handles communication with the commit related methods
 // of the Bitbucket API.
@@ -50,15 +54,15 @@ type CommitLinks struct {
 // Get return the specified commit.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D#get
-func (c *CommitService) Get(owner, repoSlug, sha string, opts ...interface{}) (*Commit, *Response, error) {
+func (c *CommitService) Get(owner, repoSlug, sha string, opts ...interface{}) (*Commit, *simpleresty.Response, error) {
 	results := new(Commit)
-	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s", owner, repoSlug, sha)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := c.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/commit/%s", owner, repoSlug, sha), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := c.client.execute("GET", urlStr, results, nil)
+	response, err := c.client.http.Get(urlStr, results, nil)
 
 	return results, response, err
 }

@@ -1,6 +1,10 @@
 package bitbucket
 
-import "time"
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+	"time"
+)
 
 // CommitComments represent a collection of a commit's comments.
 type CommitComments struct {
@@ -41,15 +45,15 @@ type CommitCommentRequest struct {
 // The default sorting is oldest to newest and can be overridden with the sort query parameter.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/comments#get
-func (c *CommitService) ListComments(owner, repoSlug, sha string, opts ...interface{}) (*CommitComments, *Response, error) {
+func (c *CommitService) ListComments(owner, repoSlug, sha string, opts ...interface{}) (*CommitComments, *simpleresty.Response, error) {
 	results := new(CommitComments)
-	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s/comments", owner, repoSlug, sha)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := c.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/commit/%s/comments", owner, repoSlug, sha), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := c.client.execute("GET", urlStr, results, nil)
+	response, err := c.client.http.Get(urlStr, results, nil)
 
 	return results, response, err
 }
@@ -57,10 +61,10 @@ func (c *CommitService) ListComments(owner, repoSlug, sha string, opts ...interf
 // CreateComment creates new comment on the specified commit.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/comments#post
-func (c *CommitService) CreateComment(owner, repoSlug, sha string, co *CommitCommentRequest) (*CommitComment, *Response, error) {
+func (c *CommitService) CreateComment(owner, repoSlug, sha string, co *CommitCommentRequest) (*CommitComment, *simpleresty.Response, error) {
 	results := new(CommitComment)
-	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s/comments", owner, repoSlug, sha)
-	response, err := c.client.execute("POST", urlStr, results, co)
+	urlStr := c.client.http.RequestURL("/repositories/%s/%s/commit/%s/comments", owner, repoSlug, sha)
+	response, err := c.client.http.Post(urlStr, results, co)
 
 	return results, response, err
 }
@@ -68,15 +72,15 @@ func (c *CommitService) CreateComment(owner, repoSlug, sha string, co *CommitCom
 // GetComment returns the specified commit comment.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/comments/%7Bcomment_id%7D#get
-func (c *CommitService) GetComment(owner, repoSlug, sha string, cID int64, opts ...interface{}) (*CommitComment, *Response, error) {
+func (c *CommitService) GetComment(owner, repoSlug, sha string, cID int64, opts ...interface{}) (*CommitComment, *simpleresty.Response, error) {
 	results := new(CommitComment)
-	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s/comments/%v", owner, repoSlug, sha, cID)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := c.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/commit/%s/comments/%v", owner, repoSlug, sha, cID), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := c.client.execute("GET", urlStr, results, nil)
+	response, err := c.client.http.Get(urlStr, results, nil)
 
 	return results, response, err
 }

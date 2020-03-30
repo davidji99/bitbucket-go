@@ -1,6 +1,10 @@
 package bitbucket
 
-import "time"
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+	"time"
+)
 
 // TeamsService handles communication with the teams related methods
 // of the Bitbucket API.
@@ -56,15 +60,15 @@ type TeamListOpts struct {
 // Requires 'role' query parameter to be set.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams#get
-func (t *TeamsService) List(opts ...interface{}) (*Teams, *Response, error) {
+func (t *TeamsService) List(opts ...interface{}) (*Teams, *simpleresty.Response, error) {
 	teams := new(Teams)
-	urlStr := t.client.requestURL("/teams")
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := t.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/teams"), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := t.client.execute("GET", urlStr, teams, nil)
+	response, err := t.client.http.Get(urlStr, teams, nil)
 
 	return teams, response, err
 }
@@ -74,15 +78,15 @@ func (t *TeamsService) List(opts ...interface{}) (*Teams, *Response, error) {
 // If the team's profile is private, location, website and created_on elements are omitted.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D#get
-func (t *TeamsService) Get(teamUsername string, opts ...interface{}) (*Team, *Response, error) {
+func (t *TeamsService) Get(teamUsername string, opts ...interface{}) (*Team, *simpleresty.Response, error) {
 	team := new(Team)
-	urlStr := t.client.requestURL("/teams/%s", teamUsername)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := t.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/teams/%s", teamUsername), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := t.client.execute("GET", urlStr, team, nil)
+	response, err := t.client.http.Get(urlStr, team, nil)
 
 	return team, response, err
 }

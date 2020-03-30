@@ -1,6 +1,10 @@
 package bitbucket
 
-import "time"
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+	"time"
+)
 
 // IssuesService handles communication with the issue related methods
 // of the Bitbucket API.
@@ -82,15 +86,15 @@ type IssueRequestAssigneeOpts struct {
 // List returns all issues for a given repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues#get
-func (i *IssuesService) List(owner, repoSlug string, opts ...interface{}) (*Issues, *Response, error) {
+func (i *IssuesService) List(owner, repoSlug string, opts ...interface{}) (*Issues, *simpleresty.Response, error) {
 	result := new(Issues)
-	urlStr := i.client.requestURL("/repositories/%s/%s/issues", owner, repoSlug)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := i.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/issues", owner, repoSlug), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := i.client.execute("GET", urlStr, result, nil)
+	response, err := i.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -98,15 +102,15 @@ func (i *IssuesService) List(owner, repoSlug string, opts ...interface{}) (*Issu
 // Get a single issue.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D#get
-func (i *IssuesService) Get(owner, repoSlug string, issueID int64, opts ...interface{}) (*Issue, *Response, error) {
+func (i *IssuesService) Get(owner, repoSlug string, issueID int64, opts ...interface{}) (*Issue, *simpleresty.Response, error) {
 	result := new(Issue)
-	urlStr := i.client.requestURL("/repositories/%s/%s/issues/%v", owner, repoSlug, issueID)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := i.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/issues/%v", owner, repoSlug, issueID), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := i.client.execute("GET", urlStr, result, nil)
+	response, err := i.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -114,10 +118,10 @@ func (i *IssuesService) Get(owner, repoSlug string, issueID int64, opts ...inter
 // Create a new issue.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues#post
-func (i *IssuesService) Create(owner, repoSlug string, io *IssueRequest) (*Issue, *Response, error) {
+func (i *IssuesService) Create(owner, repoSlug string, io *IssueRequest) (*Issue, *simpleresty.Response, error) {
 	result := new(Issue)
-	urlStr := i.client.requestURL("/repositories/%s/%s/issues", owner, repoSlug)
-	response, err := i.client.execute("POST", urlStr, result, io)
+	urlStr := i.client.http.RequestURL("/repositories/%s/%s/issues", owner, repoSlug)
+	response, err := i.client.http.Post(urlStr, result, io)
 
 	return result, response, err
 }
@@ -125,10 +129,10 @@ func (i *IssuesService) Create(owner, repoSlug string, io *IssueRequest) (*Issue
 // Update an issue.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D#put
-func (i *IssuesService) Update(owner, repoSlug string, issueID int64, io *IssueRequest) (*Issue, *Response, error) {
+func (i *IssuesService) Update(owner, repoSlug string, issueID int64, io *IssueRequest) (*Issue, *simpleresty.Response, error) {
 	result := new(Issue)
-	urlStr := i.client.requestURL("/repositories/%s/%s/issues/%v", owner, repoSlug, issueID)
-	response, err := i.client.execute("PUT", urlStr, result, io)
+	urlStr := i.client.http.RequestURL("/repositories/%s/%s/issues/%v", owner, repoSlug, issueID)
+	response, err := i.client.http.Put(urlStr, result, io)
 
 	return result, response, err
 }
@@ -136,9 +140,9 @@ func (i *IssuesService) Update(owner, repoSlug string, issueID int64, io *IssueR
 // Delete the specified issue. This requires write access to the repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D#delete
-func (i *IssuesService) Delete(owner, repoSlug string, issueID int64) (*Response, error) {
-	urlStr := i.client.requestURL("/repositories/%s/%s/issues/%v", owner, repoSlug, issueID)
-	response, err := i.client.execute("DELETE", urlStr, nil, nil)
+func (i *IssuesService) Delete(owner, repoSlug string, issueID int64) (*simpleresty.Response, error) {
+	urlStr := i.client.http.RequestURL("/repositories/%s/%s/issues/%v", owner, repoSlug, issueID)
+	response, err := i.client.http.Delete(urlStr, nil, nil)
 
 	return response, err
 }

@@ -1,5 +1,10 @@
 package bitbucket
 
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+)
+
 // HookEventsService handles communication with the hook events related methods
 // of the Bitbucket API.
 //
@@ -36,15 +41,15 @@ type HookEventTypesLinks struct {
 // List returns the webhook resource or subject types on which webhooks can be registered.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/hook_events#get
-func (h *HookEventsService) List(opts ...interface{}) (*HookEventTypes, *Response, error) {
+func (h *HookEventsService) List(opts ...interface{}) (*HookEventTypes, *simpleresty.Response, error) {
 	result := new(HookEventTypes)
-	urlStr := h.client.requestURL("/hook_events")
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := h.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/hook_events"), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := h.client.execute("GET", urlStr, result, nil)
+	response, err := h.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -52,15 +57,15 @@ func (h *HookEventsService) List(opts ...interface{}) (*HookEventTypes, *Respons
 // Get returns a paginated list of all valid webhook events for the specified entity.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/hook_events/%7Bsubject_type%7D#get
-func (h *HookEventsService) Get(subjectType string, opts ...interface{}) (*HookEvents, *Response, error) {
+func (h *HookEventsService) Get(subjectType string, opts ...interface{}) (*HookEvents, *simpleresty.Response, error) {
 	result := new(HookEvents)
-	urlStr := h.client.requestURL("/hook_events/%s", subjectType)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := h.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/hook_events/%s", subjectType), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := h.client.execute("GET", urlStr, result, nil)
+	response, err := h.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }

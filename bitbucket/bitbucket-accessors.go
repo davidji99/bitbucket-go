@@ -1213,18 +1213,6 @@ func (d *Diffs) HasValues() bool {
 	return true
 }
 
-// HasBody checks if ErrorResponse has any Body.
-func (e *ErrorResponse) HasBody() bool {
-	if e == nil || e.Body == nil {
-		return false
-	}
-
-	if len(e.Body) == 0 {
-		return false
-	}
-	return true
-}
-
 // HasValues checks if FileHistory has any Values.
 func (f *FileHistory) HasValues() bool {
 	if f == nil || f.Values == nil {

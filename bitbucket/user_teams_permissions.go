@@ -1,5 +1,10 @@
 package bitbucket
 
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+)
+
 // UserTeamsPermissions represents a collection of a user's permissions on repositories.
 type UserTeamsPermissions struct {
 	PaginationInfo
@@ -20,15 +25,15 @@ type UserTeamsPermission struct {
 // If a user is a member of multiple groups with distinct roles, only the highest level is returned.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/permissions/teams#get
-func (u *UserService) ListTeamsPerms(opts ...interface{}) (*UserTeamsPermissions, *Response, error) {
+func (u *UserService) ListTeamsPerms(opts ...interface{}) (*UserTeamsPermissions, *simpleresty.Response, error) {
 	perms := new(UserTeamsPermissions)
-	urlStr := u.client.requestURL("/user/permissions/teams")
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := u.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/user/permissions/teams"), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := u.client.execute("GET", urlStr, perms, nil)
+	response, err := u.client.http.Get(urlStr, perms, nil)
 
 	return perms, response, err
 }

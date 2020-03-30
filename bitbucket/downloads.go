@@ -1,6 +1,10 @@
 package bitbucket
 
-import "net/url"
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+	"net/url"
+)
 
 // DownloadsService handles communication with the downloads related methods
 // of the Bitbucket API.
@@ -33,15 +37,15 @@ type ArtifactFileLinks struct {
 // List returns a list of download links associated with the repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/downloads#get
-func (d *DownloadsService) List(owner, repoSlug string, opts ...interface{}) (*Artifacts, *Response, error) {
+func (d *DownloadsService) List(owner, repoSlug string, opts ...interface{}) (*Artifacts, *simpleresty.Response, error) {
 	downloads := new(Artifacts)
-	urlStr := d.client.requestURL("/repositories/%s/%s/downloads", owner, repoSlug)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := d.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/downloads", owner, repoSlug), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := d.client.execute("GET", urlStr, downloads, nil)
+	response, err := d.client.http.Get(urlStr, downloads, nil)
 
 	return downloads, response, err
 }
@@ -49,10 +53,10 @@ func (d *DownloadsService) List(owner, repoSlug string, opts ...interface{}) (*A
 // Delete the specified download artifact from the repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/downloads/%7Bfilename%7D#delete
-func (d *DownloadsService) Delete(owner, repoSlug, fileName string) (*Response, error) {
+func (d *DownloadsService) Delete(owner, repoSlug, fileName string) (*simpleresty.Response, error) {
 	escapedFilename := url.QueryEscape(fileName)
-	urlStr := d.client.requestURL("/repositories/%s/%s/downloads/%s", owner, repoSlug, escapedFilename)
-	response, err := d.client.execute("DELETE", urlStr, nil, nil)
+	urlStr := d.client.http.RequestURL("/repositories/%s/%s/downloads/%s", owner, repoSlug, escapedFilename)
+	response, err := d.client.http.Delete(urlStr, nil, nil)
 
 	return response, err
 }
