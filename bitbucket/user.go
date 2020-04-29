@@ -1,6 +1,9 @@
 package bitbucket
 
-import "time"
+import (
+	"github.com/davidji99/simpleresty"
+	"time"
+)
 
 // UserService handles communication with the user related methods
 // of the Bitbucket API.
@@ -29,10 +32,10 @@ type User struct {
 // Get returns the currently authenticated user.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/user#get
-func (u *UserService) Get() (*User, *Response, error) {
+func (u *UserService) Get() (*User, *simpleresty.Response, error) {
 	user := new(User)
-	urlStr := u.client.requestURL("/user")
-	response, err := u.client.execute("GET", urlStr, user, nil)
+	urlStr := u.client.http.RequestURL("/user")
+	response, err := u.client.http.Get(urlStr, user, nil)
 
 	return user, response, err
 }

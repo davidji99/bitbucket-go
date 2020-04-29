@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/davidji99/simpleresty"
 	"io"
 	"net/url"
 )
@@ -46,31 +47,27 @@ type srcFormatOpts struct {
 //
 // Bitbucket API docs:https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/src/%7Bnode%7D/%7Bpath%7D#get
 func (s *SRCService) GetRaw(owner, repoSlug, nodeRev, path string,
-	opts ...interface{}) (fileContent *bytes.Buffer, folderContent *FileHistory, resp *Response, err error) {
+	opts ...interface{}) (fileContent *bytes.Buffer, folderContent *FileHistory, resp *simpleresty.Response, err error) {
 
 	encPath := (&url.URL{Path: path}).String()
-	urlStr := s.client.requestURL("/repositories/%s/%s/src/%s/%s", owner, repoSlug, nodeRev, encPath)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, nil, addOptErr
+	urlStr, urlStrErr := s.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/src/%s/%s", owner, repoSlug, nodeRev, encPath), opts...)
+	if urlStrErr != nil {
+		return nil, nil, nil, urlStrErr
 	}
 
-	// Initiate a new request.
-	req, newReqErr := s.client.newRequest("GET", urlStr, nil, nil)
-	if newReqErr != nil {
-		return nil, nil, nil, newReqErr
-	}
+	req := s.client.http.NewRequest()
+	req.Method = simpleresty.GetMethod
+	req.URL = urlStr
 
-	// Execute the request
-	responseRaw, doReqErr := s.client.client.Do(req)
-	resp = newResponse(responseRaw)
-	if doReqErr != nil {
-		return nil, nil, resp, doReqErr
+	resp, reqErr := s.client.http.Dispatch(req)
+	if reqErr != nil {
+		return nil, nil, nil, reqErr
 	}
 
 	// Attempt to unmarshal the response body as folderContent.
 	// If it works, return as folderContent.
-	decErr := json.NewDecoder(resp.Body).Decode(&folderContent)
+	decErr := json.NewDecoder(resp.Resp.RawResponse.Body).Decode(&folderContent)
 	if decErr == io.EOF {
 		decErr = nil
 	}
@@ -81,7 +78,7 @@ func (s *SRCService) GetRaw(owner, repoSlug, nodeRev, path string,
 	// If the unmarshal above doesn't work, raw file content was returned by the API.
 	// Handle and parse the raw content.
 	var buff bytes.Buffer
-	_, parseRawErr := io.Copy(&buff, resp.Body)
+	_, parseRawErr := io.Copy(&buff, resp.Resp.RawResponse.Body)
 	if parseRawErr == nil {
 		fileContent = &buff
 		return fileContent, nil, resp, nil
@@ -98,7 +95,7 @@ func (s *SRCService) GetRaw(owner, repoSlug, nodeRev, path string,
 // listing to only include entries that match certain criteria.
 //
 // Bitbucket API docs:https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/src/%7Bnode%7D/%7Bpath%7D#get
-func (s *SRCService) GetMetadata(owner, repoSlug, nodeRev, path string, opts ...interface{}) (*SRCMetadata, *Response, error) {
+func (s *SRCService) GetMetadata(owner, repoSlug, nodeRev, path string, opts ...interface{}) (*SRCMetadata, *simpleresty.Response, error) {
 	result := new(SRCMetadata)
 	encPath := (&url.URL{Path: path}).String()
 
@@ -106,13 +103,13 @@ func (s *SRCService) GetMetadata(owner, repoSlug, nodeRev, path string, opts ...
 	formatQueryParam := &srcFormatOpts{Format: "meta"}
 	opts = append(opts, formatQueryParam)
 
-	urlStr := s.client.requestURL("/repositories/%s/%s/src/%s/%s", owner, repoSlug, nodeRev, encPath)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := s.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/src/%s/%s", owner, repoSlug, nodeRev, encPath), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := s.client.execute("GET", urlStr, result, nil)
+	response, err := s.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }

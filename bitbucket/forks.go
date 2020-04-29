@@ -1,5 +1,10 @@
 package bitbucket
 
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+)
+
 // ForksService handles communication with the issue related methods
 // of the Bitbucket API.
 //
@@ -24,15 +29,15 @@ type ForkRequest struct {
 // List returns a paginated list of all the forks of the specified repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/forks#get
-func (f *ForksService) List(owner, repoSlug string, opts ...interface{}) (*Repositories, *Response, error) {
+func (f *ForksService) List(owner, repoSlug string, opts ...interface{}) (*Repositories, *simpleresty.Response, error) {
 	result := new(Repositories)
-	urlStr := f.client.requestURL("/repositories/%s/%s/forks", owner, repoSlug)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := f.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/forks", owner, repoSlug), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := f.client.execute("GET", urlStr, result, nil)
+	response, err := f.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -44,10 +49,10 @@ func (f *ForksService) List(owner, repoSlug string, opts ...interface{}) (*Repos
 // The 'owner' & 'repoSlug' parameters represent the repository you want to fork into your account.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/forks#post
-func (f *ForksService) Create(owner, repoSlug string, fo *ForkRequest) (*Repository, *Response, error) {
+func (f *ForksService) Create(owner, repoSlug string, fo *ForkRequest) (*Repository, *simpleresty.Response, error) {
 	result := new(Repository)
-	urlStr := f.client.requestURL("/repositories/%s/%s/forks", owner, repoSlug)
-	response, err := f.client.execute("POST", urlStr, result, fo)
+	urlStr := f.client.http.RequestURL("/repositories/%s/%s/forks", owner, repoSlug)
+	response, err := f.client.http.Post(urlStr, result, fo)
 
 	return result, response, err
 }

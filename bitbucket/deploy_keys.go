@@ -1,6 +1,10 @@
 package bitbucket
 
-import "time"
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+	"time"
+)
 
 // DeployKeysService handles communication with the deploy keys related methods
 // of the Bitbucket API.
@@ -43,15 +47,15 @@ type DeployKeyRequest struct {
 // List returns all deploy-keys belonging to a repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/deploy-keys#get
-func (dk *DeployKeysService) List(owner, repoSlug string, opts ...interface{}) (*DeployKeys, *Response, error) {
+func (dk *DeployKeysService) List(owner, repoSlug string, opts ...interface{}) (*DeployKeys, *simpleresty.Response, error) {
 	result := new(DeployKeys)
-	urlStr := dk.client.requestURL("/repositories/%s/%s/deploy-keys", owner, repoSlug)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := dk.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/deploy-keys", owner, repoSlug), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := dk.client.execute("GET", urlStr, result, nil)
+	response, err := dk.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -59,10 +63,10 @@ func (dk *DeployKeysService) List(owner, repoSlug string, opts ...interface{}) (
 // Add creates a new deploy key in a repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/deploy-keys#post
-func (dk *DeployKeysService) Add(owner, repoSlug string, do *DeployKeyRequest) (*DeployKey, *Response, error) {
+func (dk *DeployKeysService) Add(owner, repoSlug string, do *DeployKeyRequest) (*DeployKey, *simpleresty.Response, error) {
 	result := new(DeployKey)
-	urlStr := dk.client.requestURL("/repositories/%s/%s/deploy-keys", owner, repoSlug)
-	response, err := dk.client.execute("POST", urlStr, result, do)
+	urlStr := dk.client.http.RequestURL("/repositories/%s/%s/deploy-keys", owner, repoSlug)
+	response, err := dk.client.http.Post(urlStr, result, do)
 
 	return result, response, err
 }
@@ -70,15 +74,15 @@ func (dk *DeployKeysService) Add(owner, repoSlug string, do *DeployKeyRequest) (
 // Get returns the deploy key belonging to a specific key.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/deploy-keys/%7Bkey_id%7D#get
-func (dk *DeployKeysService) Get(owner, repoSlug string, keyID int64, opts ...interface{}) (*DeployKey, *Response, error) {
+func (dk *DeployKeysService) Get(owner, repoSlug string, keyID int64, opts ...interface{}) (*DeployKey, *simpleresty.Response, error) {
 	result := new(DeployKey)
-	urlStr := dk.client.requestURL("/repositories/%s/%s/deploy-keys/%v", owner, repoSlug, keyID)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := dk.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/deploy-keys/%v", owner, repoSlug, keyID), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := dk.client.execute("GET", urlStr, result, nil)
+	response, err := dk.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -89,10 +93,10 @@ func (dk *DeployKeysService) Get(owner, repoSlug string, keyID int64, opts ...in
 // For security reasons, you can't modify the contents of an access key. To update, delete and re-add the key.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/deploy-keys/%7Bkey_id%7D#put
-func (dk *DeployKeysService) Update(owner, repoSlug string, keyID int64, do *DeployKeyRequest) (*DeployKey, *Response, error) {
+func (dk *DeployKeysService) Update(owner, repoSlug string, keyID int64, do *DeployKeyRequest) (*DeployKey, *simpleresty.Response, error) {
 	result := new(DeployKey)
-	urlStr := dk.client.requestURL("/repositories/%s/%s/deploy-keys/%v", owner, repoSlug, keyID)
-	response, err := dk.client.execute("PUT", urlStr, result, do)
+	urlStr := dk.client.http.RequestURL("/repositories/%s/%s/deploy-keys/%v", owner, repoSlug, keyID)
+	response, err := dk.client.http.Put(urlStr, result, do)
 
 	return result, response, err
 }
@@ -100,9 +104,9 @@ func (dk *DeployKeysService) Update(owner, repoSlug string, keyID int64, do *Dep
 // Remove deletes a deploy key from a repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/deploy-keys/%7Bkey_id%7D#delete
-func (dk *DeployKeysService) Remove(owner, repoSlug string, keyID int64) (*Response, error) {
-	urlStr := dk.client.requestURL("/repositories/%s/%s/deploy-keys/%v", owner, repoSlug, keyID)
-	response, err := dk.client.execute("DELETE", urlStr, nil, nil)
+func (dk *DeployKeysService) Remove(owner, repoSlug string, keyID int64) (*simpleresty.Response, error) {
+	urlStr := dk.client.http.RequestURL("/repositories/%s/%s/deploy-keys/%v", owner, repoSlug, keyID)
+	response, err := dk.client.http.Delete(urlStr, nil, nil)
 
 	return response, err
 }

@@ -1,5 +1,10 @@
 package bitbucket
 
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+)
+
 // TeamPermissions represents a collection of team permissions.
 type TeamPermissions struct {
 	PaginationInfo
@@ -36,15 +41,15 @@ type TeamRepoPermission struct {
 // only the highest level is returned.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/permissions#get
-func (t *TeamsService) ListPermissions(teamUsername string, opts ...interface{}) (*TeamPermissions, *Response, error) {
+func (t *TeamsService) ListPermissions(teamUsername string, opts ...interface{}) (*TeamPermissions, *simpleresty.Response, error) {
 	result := new(TeamPermissions)
-	urlStr := t.client.requestURL("/teams/%s/permissions", teamUsername)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := t.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/teams/%s/permissions", teamUsername), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := t.client.execute("GET", urlStr, result, nil)
+	response, err := t.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -55,15 +60,15 @@ func (t *TeamsService) ListPermissions(teamUsername string, opts ...interface{})
 // an object containing the repository permissions of all the username's repositories will be returned.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/permissions/repositories#get
-func (t *TeamsService) ListRepositoryPermissions(teamUsername string, opts ...interface{}) (*TeamRepoPermissions, *Response, error) {
+func (t *TeamsService) ListRepositoryPermissions(teamUsername string, opts ...interface{}) (*TeamRepoPermissions, *simpleresty.Response, error) {
 	result := new(TeamRepoPermissions)
-	urlStr := t.client.requestURL("/teams/%s/permissions/repositories", teamUsername)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := t.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/teams/%s/permissions/repositories", teamUsername), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := t.client.execute("GET", urlStr, result, nil)
+	response, err := t.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -74,15 +79,15 @@ func (t *TeamsService) ListRepositoryPermissions(teamUsername string, opts ...in
 // an object containing the repository permissions of the username's repository will be returned.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams/%7Busername%7D/permissions/repositories/%7Brepo_slug%7D#get
-func (t *TeamsService) GetRepositoryPermissions(teamUsername, repoSlug string, opts ...interface{}) (*TeamRepoPermissions, *Response, error) {
+func (t *TeamsService) GetRepositoryPermissions(teamUsername, repoSlug string, opts ...interface{}) (*TeamRepoPermissions, *simpleresty.Response, error) {
 	result := new(TeamRepoPermissions)
-	urlStr := t.client.requestURL("/teams/%s/permissions/repositories/%s", teamUsername, repoSlug)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := t.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/teams/%s/permissions/repositories/%s", teamUsername, repoSlug), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := t.client.execute("GET", urlStr, result, nil)
+	response, err := t.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }

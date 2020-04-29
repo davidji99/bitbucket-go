@@ -2,6 +2,8 @@ package bitbucket
 
 import (
 	"bytes"
+	"fmt"
+	"github.com/davidji99/simpleresty"
 )
 
 // DiffService handles communication with the diff related methods
@@ -39,18 +41,21 @@ type DiffGetOpts struct {
 // or a revspec of 2 commits (e.g. 3a8b42..9ff173 where the first commit represents the source and the second commit the destination).
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/diff/%7Bspec%7D#get
-func (d *DiffService) GetRaw(owner, repoSlug, spec string) (*bytes.Buffer, *Response, error) {
-	urlStr := d.client.requestURL("/repositories/%s/%s/diff/%s", owner, repoSlug, spec)
+func (d *DiffService) GetRaw(owner, repoSlug, spec string) (*bytes.Buffer, *simpleresty.Response, error) {
+	urlStr := d.client.http.RequestURL("/repositories/%s/%s/diff/%s", owner, repoSlug, spec)
 
-	req, reqErr := d.client.newRequest("GET", urlStr, nil, nil)
+	var buff bytes.Buffer
+	req := d.client.http.NewRequest()
+	req.Method = simpleresty.GetMethod
+	req.URL = urlStr
+	req.Result = &buff
+
+	response, reqErr := d.client.http.Dispatch(req)
 	if reqErr != nil {
 		return nil, nil, reqErr
 	}
 
-	var buff bytes.Buffer
-	response, err := d.client.doRequest(req, &buff, false)
-
-	return &buff, response, err
+	return &buff, response, nil
 }
 
 // Get returns the diff stat for the specified commit.
@@ -58,15 +63,15 @@ func (d *DiffService) GetRaw(owner, repoSlug, spec string) (*bytes.Buffer, *Resp
 // Diff stat responses contain a record for every path modified by the commit and lists the number of lines added and removed for each file.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/diffstat/%7Bspec%7D#get
-func (d *DiffService) Get(owner, repoSlug, spec string, opts ...interface{}) (*Diffs, *Response, error) {
+func (d *DiffService) Get(owner, repoSlug, spec string, opts ...interface{}) (*Diffs, *simpleresty.Response, error) {
 	result := new(Diffs)
-	urlStr := d.client.requestURL("/repositories/%s/%s/diffstat/%s", owner, repoSlug, spec)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := d.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/diffstat/%s", owner, repoSlug, spec), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := d.client.execute("GET", urlStr, result, nil)
+	response, err := d.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }

@@ -1,6 +1,10 @@
 package bitbucket
 
-import "time"
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+	"time"
+)
 
 // RepositoryHooks represents a collection of repository hooks.
 type RepositoryHooks struct {
@@ -31,15 +35,15 @@ type RepositoryHookRequest struct {
 // ListHooks returns a paginated list of webhooks installed on a specified repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/hooks#get
-func (r *RepositoriesService) ListHooks(owner, repoSlug string, opts ...interface{}) (*RepositoryHooks, *Response, error) {
+func (r *RepositoriesService) ListHooks(owner, repoSlug string, opts ...interface{}) (*RepositoryHooks, *simpleresty.Response, error) {
 	result := new(RepositoryHooks)
-	urlStr := r.client.requestURL("/repositories/%s/%s/hooks", owner, repoSlug)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := r.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/hooks", owner, repoSlug), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := r.client.execute("GET", urlStr, result, nil)
+	response, err := r.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -47,10 +51,10 @@ func (r *RepositoriesService) ListHooks(owner, repoSlug string, opts ...interfac
 // CreateHook creates a new webhook on the specified repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/hooks#post
-func (r *RepositoriesService) CreateHook(owner, repoSlug string, rho *RepositoryHookRequest) (*RepositoryHook, *Response, error) {
+func (r *RepositoriesService) CreateHook(owner, repoSlug string, rho *RepositoryHookRequest) (*RepositoryHook, *simpleresty.Response, error) {
 	result := new(RepositoryHook)
-	urlStr := r.client.requestURL("/repositories/%s/%s/hooks", owner, repoSlug)
-	response, err := r.client.execute("POST", urlStr, result, rho)
+	urlStr := r.client.http.RequestURL("/repositories/%s/%s/hooks", owner, repoSlug)
+	response, err := r.client.http.Post(urlStr, result, rho)
 
 	return result, response, err
 }
@@ -58,15 +62,15 @@ func (r *RepositoriesService) CreateHook(owner, repoSlug string, rho *Repository
 // GetHook returns the webhook with the specified id installed on the specified repository.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/hooks/%7Buid%7D#get
-func (r *RepositoriesService) GetHook(owner, repoSlug, uid string, opts ...interface{}) (*RepositoryHook, *Response, error) {
+func (r *RepositoriesService) GetHook(owner, repoSlug, uid string, opts ...interface{}) (*RepositoryHook, *simpleresty.Response, error) {
 	result := new(RepositoryHook)
-	urlStr := r.client.requestURL("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := r.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := r.client.execute("POST", urlStr, result, nil)
+	response, err := r.client.http.Post(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -74,10 +78,10 @@ func (r *RepositoriesService) GetHook(owner, repoSlug, uid string, opts ...inter
 // UpdateHook updates the specified webhook subscription.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/hooks/%7Buid%7D#put
-func (r *RepositoriesService) UpdateHook(owner, repoSlug, uid string, rho *RepositoryHookRequest) (*RepositoryHook, *Response, error) {
+func (r *RepositoriesService) UpdateHook(owner, repoSlug, uid string, rho *RepositoryHookRequest) (*RepositoryHook, *simpleresty.Response, error) {
 	result := new(RepositoryHook)
-	urlStr := r.client.requestURL("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid)
-	response, err := r.client.execute("PUT", urlStr, result, rho)
+	urlStr := r.client.http.RequestURL("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid)
+	response, err := r.client.http.Put(urlStr, result, rho)
 
 	return result, response, err
 }
@@ -86,9 +90,9 @@ func (r *RepositoriesService) UpdateHook(owner, repoSlug, uid string, rho *Repos
 // This is an irreversible operation.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/hooks/%7Buid%7D#delete
-func (r *RepositoriesService) DeleteHook(owner, repoSlug, uid string) (*Response, error) {
-	urlStr := r.client.requestURL("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid)
-	response, err := r.client.execute("DELETE", urlStr, nil, nil)
+func (r *RepositoriesService) DeleteHook(owner, repoSlug, uid string) (*simpleresty.Response, error) {
+	urlStr := r.client.http.RequestURL("/repositories/%s/%s/hooks/%s", owner, repoSlug, uid)
+	response, err := r.client.http.Delete(urlStr, nil, nil)
 
 	return response, err
 }

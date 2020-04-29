@@ -1,20 +1,26 @@
 package bitbucket
 
-import "bytes"
+import (
+	"bytes"
+	"github.com/davidji99/simpleresty"
+)
 
 // GetPatchRaw produces a raw patch for the specified pull request.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D/patch#get
-func (p *PullRequestsService) GetPatchRaw(owner, repoSlug string, pid int64) (*bytes.Buffer, *Response, error) {
-	urlStr := p.client.requestURL("/repositories/%s/%s/pullrequests/%v/patch", owner, repoSlug, pid)
+func (p *PullRequestsService) GetPatchRaw(owner, repoSlug string, pid int64) (*bytes.Buffer, *simpleresty.Response, error) {
+	urlStr := p.client.http.RequestURL("/repositories/%s/%s/pullrequests/%v/patch", owner, repoSlug, pid)
 
-	req, reqErr := p.client.newRequest("GET", urlStr, nil, nil)
+	var buff bytes.Buffer
+	req := p.client.http.NewRequest()
+	req.Method = simpleresty.GetMethod
+	req.URL = urlStr
+	req.Result = &buff
+
+	response, reqErr := p.client.http.Dispatch(req)
 	if reqErr != nil {
 		return nil, nil, reqErr
 	}
 
-	var buff bytes.Buffer
-	response, err := p.client.doRequest(req, &buff, false)
-
-	return &buff, response, err
+	return &buff, response, nil
 }

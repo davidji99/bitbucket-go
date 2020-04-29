@@ -1,6 +1,10 @@
 package bitbucket
 
-import "time"
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+	"time"
+)
 
 // IssueComments represents a collection of issue comments.
 type IssueComments struct {
@@ -35,15 +39,15 @@ type IssueCommentRequest struct {
 // ListComments returns a paginated list of all comments that were made on the specified issue.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D/comments#get
-func (i *IssuesService) ListComments(owner, repoSlug string, id int64, opts ...interface{}) (*IssueComments, *Response, error) {
+func (i *IssuesService) ListComments(owner, repoSlug string, id int64, opts ...interface{}) (*IssueComments, *simpleresty.Response, error) {
 	result := new(IssueComments)
-	urlStr := i.client.requestURL("/repositories/%s/%s/issues/%v/comments", owner, repoSlug, id)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := i.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/issues/%v/comments", owner, repoSlug, id), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := i.client.execute("GET", urlStr, result, nil)
+	response, err := i.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -51,10 +55,10 @@ func (i *IssuesService) ListComments(owner, repoSlug string, id int64, opts ...i
 // CreateComment creates a new issue comment.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D/comments#post
-func (i *IssuesService) CreateComment(owner, repoSlug string, id int64, io *IssueCommentRequest) (*IssueComment, *Response, error) {
+func (i *IssuesService) CreateComment(owner, repoSlug string, id int64, io *IssueCommentRequest) (*IssueComment, *simpleresty.Response, error) {
 	result := new(IssueComment)
-	urlStr := i.client.requestURL("/repositories/%s/%s/issues/%v/comments", owner, repoSlug, id)
-	response, err := i.client.execute("POST", urlStr, result, io)
+	urlStr := i.client.http.RequestURL("/repositories/%s/%s/issues/%v/comments", owner, repoSlug, id)
+	response, err := i.client.http.Post(urlStr, result, io)
 
 	return result, response, err
 }
@@ -62,15 +66,15 @@ func (i *IssuesService) CreateComment(owner, repoSlug string, id int64, io *Issu
 // GetComment returns the specified issue comment object.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D/comments/%7Bcomment_id%7D#get
-func (i *IssuesService) GetComment(owner, repoSlug string, id, commentID int64, opts ...interface{}) (*IssueComment, *Response, error) {
+func (i *IssuesService) GetComment(owner, repoSlug string, id, commentID int64, opts ...interface{}) (*IssueComment, *simpleresty.Response, error) {
 	result := new(IssueComment)
-	urlStr := i.client.requestURL("/repositories/%s/%s/issues/%v/comments/%v", owner, repoSlug, id, commentID)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := i.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/issues/%v/comments/%v", owner, repoSlug, id, commentID), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := i.client.execute("GET", urlStr, result, nil)
+	response, err := i.client.http.Get(urlStr, result, nil)
 
 	return result, response, err
 }
@@ -78,10 +82,10 @@ func (i *IssuesService) GetComment(owner, repoSlug string, id, commentID int64, 
 // UpdateComment updates an existing issue comment.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D/comments/%7Bcomment_id%7D#put
-func (i *IssuesService) UpdateComment(owner, repoSlug string, id, commentID int64, io *IssueCommentRequest) (*IssueComment, *Response, error) {
+func (i *IssuesService) UpdateComment(owner, repoSlug string, id, commentID int64, io *IssueCommentRequest) (*IssueComment, *simpleresty.Response, error) {
 	result := new(IssueComment)
-	urlStr := i.client.requestURL("/repositories/%s/%s/issues/%v/comments/%v", owner, repoSlug, id, commentID)
-	response, err := i.client.execute("PUT", urlStr, result, io)
+	urlStr := i.client.http.RequestURL("/repositories/%s/%s/issues/%v/comments/%v", owner, repoSlug, id, commentID)
+	response, err := i.client.http.Put(urlStr, result, io)
 
 	return result, response, err
 }
@@ -89,9 +93,9 @@ func (i *IssuesService) UpdateComment(owner, repoSlug string, id, commentID int6
 // DeleteComment deletes an existing issue comment.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D/comments/%7Bcomment_id%7D#delete
-func (i *IssuesService) DeleteComment(owner, repoSlug string, id, commentID int64) (*Response, error) {
-	urlStr := i.client.requestURL("/repositories/%s/%s/issues/%v/comments/%v", owner, repoSlug, id, commentID)
-	response, err := i.client.execute("DELETE", urlStr, nil, nil)
+func (i *IssuesService) DeleteComment(owner, repoSlug string, id, commentID int64) (*simpleresty.Response, error) {
+	urlStr := i.client.http.RequestURL("/repositories/%s/%s/issues/%v/comments/%v", owner, repoSlug, id, commentID)
+	response, err := i.client.http.Delete(urlStr, nil, nil)
 
 	return response, err
 }

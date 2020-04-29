@@ -1,5 +1,10 @@
 package bitbucket
 
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+)
+
 // UserRepositoriesPermissions represents a collection of a user's permissions on repositories.
 type UserRepositoriesPermissions struct {
 	PaginationInfo
@@ -21,15 +26,15 @@ type UserRepositoriesPermission struct {
 // and does not distinguish between direct and indirect privileges.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/permissions/repositories#get
-func (u *UserService) ListRepositoryPerms(opts ...interface{}) (*UserRepositoriesPermissions, *Response, error) {
+func (u *UserService) ListRepositoryPerms(opts ...interface{}) (*UserRepositoriesPermissions, *simpleresty.Response, error) {
 	perms := new(UserRepositoriesPermissions)
-	urlStr := u.client.requestURL("/user/permissions/repositories")
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := u.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/user/permissions/repositories"), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := u.client.execute("GET", urlStr, perms, nil)
+	response, err := u.client.http.Get(urlStr, perms, nil)
 
 	return perms, response, err
 }

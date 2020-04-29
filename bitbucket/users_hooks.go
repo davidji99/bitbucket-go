@@ -1,6 +1,10 @@
 package bitbucket
 
-import "time"
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+	"time"
+)
 
 // UserHooks represent a user's hooks.
 type UserHooks struct {
@@ -25,15 +29,15 @@ type UserHook struct {
 // Accepts the user's UUID, account_id, or username. Recommend to use UUID or account_id.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/hooks#get
-func (u *UsersService) ListHooks(userID string, opts ...interface{}) (*UserHooks, *Response, error) {
+func (u *UsersService) ListHooks(userID string, opts ...interface{}) (*UserHooks, *simpleresty.Response, error) {
 	hooks := new(UserHooks)
-	urlStr := u.client.requestURL("/users/%s/hooks", userID)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := u.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/users/%s/hooks", userID), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := u.client.execute("GET", urlStr, hooks, nil)
+	response, err := u.client.http.Get(urlStr, hooks, nil)
 
 	return hooks, response, err
 }
@@ -43,15 +47,15 @@ func (u *UsersService) ListHooks(userID string, opts ...interface{}) (*UserHooks
 // Accepts the user's UUID, account_id, or username. Recommend to use UUID or account_id.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/hooks/%7Buid%7D#get
-func (u *UsersService) GetHook(userID, hookID string, opts ...interface{}) (*UserHook, *Response, error) {
+func (u *UsersService) GetHook(userID, hookID string, opts ...interface{}) (*UserHook, *simpleresty.Response, error) {
 	hook := new(UserHook)
-	urlStr := u.client.requestURL("/users/%s/hooks/%s", userID, hookID)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := u.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/users/%s/hooks/%s", userID, hookID), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := u.client.execute("GET", urlStr, hook, nil)
+	response, err := u.client.http.Get(urlStr, hook, nil)
 
 	return hook, response, err
 }
@@ -61,9 +65,9 @@ func (u *UsersService) GetHook(userID, hookID string, opts ...interface{}) (*Use
 // Accepts the user's UUID, account_id, or username. Recommend to use UUID or account_id.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D/hooks/%7Buid%7D#delete
-func (u *UsersService) DeleteHook(userID, hookID string) (*Response, error) {
-	urlStr := u.client.requestURL("/users/%s/hooks/%s", userID, hookID)
-	response, err := u.client.execute("DELETE", urlStr, nil, nil)
+func (u *UsersService) DeleteHook(userID, hookID string) (*simpleresty.Response, error) {
+	urlStr := u.client.http.RequestURL("/users/%s/hooks/%s", userID, hookID)
+	response, err := u.client.http.Delete(urlStr, nil, nil)
 
 	return response, err
 }

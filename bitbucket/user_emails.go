@@ -1,5 +1,10 @@
 package bitbucket
 
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+)
+
 // UserEmails represents a collection of user emails.
 type UserEmails struct {
 	PaginationInfo
@@ -24,15 +29,15 @@ type UserEmailLinks struct {
 // GetEmails returns all the authenticated user's email addresses. Both confirmed and unconfirmed.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/emails/%7Bemail%7D#get
-func (u *UserService) GetEmails(opts ...interface{}) (*UserEmails, *Response, error) {
+func (u *UserService) GetEmails(opts ...interface{}) (*UserEmails, *simpleresty.Response, error) {
 	emails := new(UserEmails)
-	urlStr := u.client.requestURL("/user/emails")
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := u.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/user/emails"), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := u.client.execute("GET", urlStr, emails, nil)
+	response, err := u.client.http.Get(urlStr, emails, nil)
 
 	return emails, response, err
 }

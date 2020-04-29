@@ -1,6 +1,10 @@
 package bitbucket
 
-import "time"
+import (
+	"fmt"
+	"github.com/davidji99/simpleresty"
+	"time"
+)
 
 // CommitStatuses represent a collection of a commit's statuses.
 type CommitStatuses struct {
@@ -42,15 +46,15 @@ type CommitStatusRequest struct {
 // ListStatuses returns all statuses (e.g. build results) for a specific commit.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/statuses#get
-func (c *CommitService) ListStatuses(owner, repoSlug, sha string, opts ...interface{}) (*CommitStatuses, *Response, error) {
+func (c *CommitService) ListStatuses(owner, repoSlug, sha string, opts ...interface{}) (*CommitStatuses, *simpleresty.Response, error) {
 	results := new(CommitStatuses)
-	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s/statuses", owner, repoSlug, sha)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := c.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/commit/%s/statuses", owner, repoSlug, sha), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := c.client.execute("GET", urlStr, results, nil)
+	response, err := c.client.http.Get(urlStr, results, nil)
 
 	return results, response, err
 }
@@ -58,10 +62,10 @@ func (c *CommitService) ListStatuses(owner, repoSlug, sha string, opts ...interf
 // CreateStatus creates a new build status against the specified commit.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/statuses/build#post
-func (c *CommitService) CreateStatus(owner, repoSlug, sha string, co *CommitStatusRequest) (*CommitStatus, *Response, error) {
+func (c *CommitService) CreateStatus(owner, repoSlug, sha string, co *CommitStatusRequest) (*CommitStatus, *simpleresty.Response, error) {
 	results := new(CommitStatus)
-	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s/statuses/build", owner, repoSlug, sha)
-	response, err := c.client.execute("POST", urlStr, results, co)
+	urlStr := c.client.http.RequestURL("/repositories/%s/%s/commit/%s/statuses/build", owner, repoSlug, sha)
+	response, err := c.client.http.Post(urlStr, results, co)
 
 	return results, response, err
 }
@@ -69,10 +73,10 @@ func (c *CommitService) CreateStatus(owner, repoSlug, sha string, co *CommitStat
 // UpdateStatus update the current status of a build status object on the specific commit.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/statuses/build/%7Bkey%7D#put
-func (c *CommitService) UpdateStatus(owner, repoSlug, sha, key string, co *CommitStatusRequest) (*CommitStatus, *Response, error) {
+func (c *CommitService) UpdateStatus(owner, repoSlug, sha, key string, co *CommitStatusRequest) (*CommitStatus, *simpleresty.Response, error) {
 	results := new(CommitStatus)
-	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s/statuses/build/%s", owner, repoSlug, sha, key)
-	response, err := c.client.execute("PUT", urlStr, results, co)
+	urlStr := c.client.http.RequestURL("/repositories/%s/%s/commit/%s/statuses/build/%s", owner, repoSlug, sha, key)
+	response, err := c.client.http.Put(urlStr, results, co)
 
 	return results, response, err
 }
@@ -80,15 +84,15 @@ func (c *CommitService) UpdateStatus(owner, repoSlug, sha, key string, co *Commi
 // GetStatusByBuild returns the specified build status for a commit.
 //
 // Bitbucket API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/commit/%7Bnode%7D/statuses/build/%7Bkey%7D#get
-func (c *CommitService) GetStatusByBuild(owner, repoSlug, sha, key string, opts ...interface{}) (*CommitStatus, *Response, error) {
+func (c *CommitService) GetStatusByBuild(owner, repoSlug, sha, key string, opts ...interface{}) (*CommitStatus, *simpleresty.Response, error) {
 	results := new(CommitStatus)
-	urlStr := c.client.requestURL("/repositories/%s/%s/commit/%s/statuses/build/%s", owner, repoSlug, sha, key)
-	urlStr, addOptErr := addQueryParams(urlStr, opts...)
-	if addOptErr != nil {
-		return nil, nil, addOptErr
+	urlStr, urlStrErr := c.client.http.RequestURLWithQueryParams(
+		fmt.Sprintf("/repositories/%s/%s/commit/%s/statuses/build/%s", owner, repoSlug, sha, key), opts...)
+	if urlStrErr != nil {
+		return nil, nil, urlStrErr
 	}
 
-	response, err := c.client.execute("GET", urlStr, results, nil)
+	response, err := c.client.http.Get(urlStr, results, nil)
 
 	return results, response, err
 }
