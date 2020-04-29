@@ -18,7 +18,6 @@ func (p *PullRequestsService) GetDiffRaw(owner, repoSlug string, pid int64) (*by
 	req.URL = urlStr
 	req.Result = &buff
 
-
 	response, reqErr := p.client.http.Dispatch(req)
 	if reqErr != nil {
 		return nil, nil, reqErr

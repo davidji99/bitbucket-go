@@ -96,7 +96,7 @@ func (dk *DeployKeysService) Get(owner, repoSlug string, keyID int64, opts ...in
 func (dk *DeployKeysService) Update(owner, repoSlug string, keyID int64, do *DeployKeyRequest) (*DeployKey, *simpleresty.Response, error) {
 	result := new(DeployKey)
 	urlStr := dk.client.http.RequestURL("/repositories/%s/%s/deploy-keys/%v", owner, repoSlug, keyID)
-	response, err := dk.client.http.Put( urlStr, result, do)
+	response, err := dk.client.http.Put(urlStr, result, do)
 
 	return result, response, err
 }
