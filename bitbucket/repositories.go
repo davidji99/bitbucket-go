@@ -2,8 +2,9 @@ package bitbucket
 
 import (
 	"fmt"
-	"github.com/davidji99/simpleresty"
 	"time"
+
+	"github.com/davidji99/simpleresty"
 )
 
 // RepositoriesService handles communication with the repository related methods
@@ -16,7 +17,7 @@ type RepositoriesService service
 type Repositories struct {
 	PaginationInfo
 
-	Values []*Issue `json:"values,omitempty"`
+	Values []*Repository `json:"values,omitempty"`
 }
 
 // Repository represents a Bitbucket repository.
