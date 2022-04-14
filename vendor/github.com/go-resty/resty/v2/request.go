@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2020 Jeevanandam M (jeeva@myjeeva.com), All rights reserved.
+// Copyright (c) 2015-2021 Jeevanandam M (jeeva@myjeeva.com), All rights reserved.
 // resty source code and usage is governed by a MIT style
 // license that can be found in the LICENSE file.
 
@@ -30,6 +30,7 @@ type Request struct {
 	URL        string
 	Method     string
 	Token      string
+	AuthScheme string
 	QueryParam url.Values
 	FormData   url.Values
 	Header     http.Header
@@ -42,6 +43,12 @@ type Request struct {
 	UserInfo   *User
 	Cookies    []*http.Cookie
 
+	// Attempt is to represent the request attempt made during a Resty
+	// request execution flow, including retry count.
+	//
+	// Since v2.4.0
+	Attempt int
+
 	isMultiPart         bool
 	isFormData          bool
 	setContentLength    bool
@@ -51,6 +58,7 @@ type Request struct {
 	trace               bool
 	outputFile          string
 	fallbackContentType string
+	forceContentType    string
 	ctx                 context.Context
 	pathParams          map[string]string
 	values              map[string]interface{}
@@ -106,6 +114,21 @@ func (r *Request) SetHeaders(headers map[string]string) *Request {
 	for h, v := range headers {
 		r.SetHeader(h, v)
 	}
+	return r
+}
+
+// SetHeaderVerbatim method is to set a single header field and its value verbatim in the current request.
+//
+// For Example: To set `all_lowercase` and `UPPERCASE` as `available`.
+// 		client.R().
+//			SetHeaderVerbatim("all_lowercase", "available").
+//			SetHeaderVerbatim("UPPERCASE", "available")
+//
+// Also you can override header value, which was set at client instance level.
+//
+// Since v2.6.0
+func (r *Request) SetHeaderVerbatim(header, value string) *Request {
+	r.Header[header] = []string{value}
 	return r
 }
 
@@ -320,6 +343,15 @@ func (r *Request) SetFileReader(param, fileName string, reader io.Reader) *Reque
 	return r
 }
 
+// SetMultipartFormData method allows simple form data to be attached to the request as `multipart:form-data`
+func (r *Request) SetMultipartFormData(data map[string]string) *Request {
+	for k, v := range data {
+		r = r.SetMultipartField(k, "", "", strings.NewReader(v))
+	}
+
+	return r
+}
+
 // SetMultipartField method is to set custom data using io.Reader for multipart upload.
 func (r *Request) SetMultipartField(param, fileName, contentType string, reader io.Reader) *Request {
 	r.isMultiPart = true
@@ -364,7 +396,7 @@ func (r *Request) SetMultipartFields(fields ...*MultipartField) *Request {
 // See `Client.SetContentLength`
 // 		client.R().SetContentLength(true)
 func (r *Request) SetContentLength(l bool) *Request {
-	r.setContentLength = true
+	r.setContentLength = l
 	return r
 }
 
@@ -382,7 +414,7 @@ func (r *Request) SetBasicAuth(username, password string) *Request {
 	return r
 }
 
-// SetAuthToken method sets bearer auth token header in the current HTTP request. Header example:
+// SetAuthToken method sets the auth token header(Default Scheme: Bearer) in the current HTTP request. Header example:
 // 		Authorization: Bearer <auth-token-value-comes-here>
 //
 // For Example: To set auth token BC594900518B4F7EAC75BD37F019E08FBC594900518B4F7EAC75BD37F019E08F
@@ -392,6 +424,27 @@ func (r *Request) SetBasicAuth(username, password string) *Request {
 // This method overrides the Auth token set by method `Client.SetAuthToken`.
 func (r *Request) SetAuthToken(token string) *Request {
 	r.Token = token
+	return r
+}
+
+// SetAuthScheme method sets the auth token scheme type in the HTTP request. For Example:
+//      Authorization: <auth-scheme-value-set-here> <auth-token-value>
+//
+// For Example: To set the scheme to use OAuth
+//
+// 		client.R().SetAuthScheme("OAuth")
+//
+// This auth header scheme gets added to all the request rasied from this client instance.
+// Also it can be overridden or set one at the request level is supported.
+//
+// Information about Auth schemes can be found in RFC7235 which is linked to below along with the page containing
+// the currently defined official authentication schemes:
+//     https://tools.ietf.org/html/rfc7235
+//     https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml#authschemes
+//
+// This method overrides the Authorization scheme set by method `Client.SetAuthScheme`.
+func (r *Request) SetAuthScheme(scheme string) *Request {
+	r.AuthScheme = scheme
 	return r
 }
 
@@ -431,6 +484,20 @@ func (r *Request) SetDoNotParseResponse(parse bool) *Request {
 	return r
 }
 
+// SetPathParam method sets single URL path key-value pair in the
+// Resty current request instance.
+// 		client.R().SetPathParam("userId", "sample@sample.com")
+//
+// 		Result:
+// 		   URL - /v1/users/{userId}/details
+// 		   Composed URL - /v1/users/sample@sample.com/details
+// It replaces the value of the key while composing the request URL. Also you can
+// override Path Params value, which was set at client instance level.
+func (r *Request) SetPathParam(param, value string) *Request {
+	r.pathParams[param] = value
+	return r
+}
+
 // SetPathParams method sets multiple URL path key-value pairs at one go in the
 // Resty current request instance.
 // 		client.R().SetPathParams(map[string]string{
@@ -441,11 +508,11 @@ func (r *Request) SetDoNotParseResponse(parse bool) *Request {
 // 		Result:
 // 		   URL - /v1/users/{userId}/{subAccountId}/details
 // 		   Composed URL - /v1/users/sample@sample.com/100002/details
-// It replace the value of the key while composing request URL. Also you can
+// It replaces the value of the key while composing request URL. Also you can
 // override Path Params value, which was set at client instance level.
 func (r *Request) SetPathParams(params map[string]string) *Request {
 	for p, v := range params {
-		r.pathParams[p] = v
+		r.SetPathParam(p, v)
 	}
 	return r
 }
@@ -454,6 +521,14 @@ func (r *Request) SetPathParams(params map[string]string) *Request {
 // when `Content-Type` response header is unavailable.
 func (r *Request) ExpectContentType(contentType string) *Request {
 	r.fallbackContentType = contentType
+	return r
+}
+
+// ForceContentType method provides a strong sense of response `Content-Type` for automatic unmarshalling.
+// Resty gives this a higher priority than the `Content-Type` response header.  This means that if both
+// `Request.ForceContentType` is set and the response `Content-Type` is available, `ForceContentType` will win.
+func (r *Request) ForceContentType(contentType string) *Request {
+	r.forceContentType = contentType
 	return r
 }
 
@@ -535,17 +610,45 @@ func (r *Request) TraceInfo() TraceInfo {
 		return TraceInfo{}
 	}
 
-	return TraceInfo{
-		DNSLookup:     ct.dnsDone.Sub(ct.dnsStart),
-		ConnTime:      ct.gotConn.Sub(ct.getConn),
-		TLSHandshake:  ct.tlsHandshakeDone.Sub(ct.tlsHandshakeStart),
-		ServerTime:    ct.gotFirstResponseByte.Sub(ct.wroteRequest),
-		ResponseTime:  ct.endTime.Sub(ct.gotFirstResponseByte),
-		TotalTime:     ct.endTime.Sub(ct.getConn),
-		IsConnReused:  ct.gotConnInfo.Reused,
-		IsConnWasIdle: ct.gotConnInfo.WasIdle,
-		ConnIdleTime:  ct.gotConnInfo.IdleTime,
+	ti := TraceInfo{
+		DNSLookup:      ct.dnsDone.Sub(ct.dnsStart),
+		TLSHandshake:   ct.tlsHandshakeDone.Sub(ct.tlsHandshakeStart),
+		ServerTime:     ct.gotFirstResponseByte.Sub(ct.gotConn),
+		IsConnReused:   ct.gotConnInfo.Reused,
+		IsConnWasIdle:  ct.gotConnInfo.WasIdle,
+		ConnIdleTime:   ct.gotConnInfo.IdleTime,
+		RequestAttempt: r.Attempt,
 	}
+
+	// Calculate the total time accordingly,
+	// when connection is reused
+	if ct.gotConnInfo.Reused {
+		ti.TotalTime = ct.endTime.Sub(ct.getConn)
+	} else {
+		ti.TotalTime = ct.endTime.Sub(ct.dnsStart)
+	}
+
+	// Only calculate on successful connections
+	if !ct.connectDone.IsZero() {
+		ti.TCPConnTime = ct.connectDone.Sub(ct.dnsDone)
+	}
+
+	// Only calculate on successful connections
+	if !ct.gotConn.IsZero() {
+		ti.ConnTime = ct.gotConn.Sub(ct.getConn)
+	}
+
+	// Only calculate on successful connections
+	if !ct.gotFirstResponseByte.IsZero() {
+		ti.ResponseTime = ct.endTime.Sub(ct.gotFirstResponseByte)
+	}
+
+	// Capture remote address info when connection is non-nil
+	if ct.gotConnInfo.Conn != nil {
+		ti.RemoteAddr = ct.gotConnInfo.Conn.RemoteAddr()
+	}
+
+	return ti
 }
 
 //‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
@@ -602,15 +705,18 @@ func (r *Request) Send() (*Response, error) {
 // 		resp, err := client.R().Execute(resty.GET, "http://httpbin.org/get")
 func (r *Request) Execute(method, url string) (*Response, error) {
 	var addrs []*net.SRV
+	var resp *Response
 	var err error
 
 	if r.isMultiPart && !(method == MethodPost || method == MethodPut || method == MethodPatch) {
+		// No OnError hook here since this is a request validation error
 		return nil, fmt.Errorf("multipart content is not allowed in HTTP verb [%v]", method)
 	}
 
 	if r.SRV != nil {
 		_, addrs, err = net.LookupSRV(r.SRV.Service, "tcp", r.SRV.Domain)
 		if err != nil {
+			r.client.onErrorHooks(r, nil, err)
 			return nil, err
 		}
 	}
@@ -619,20 +725,21 @@ func (r *Request) Execute(method, url string) (*Response, error) {
 	r.URL = r.selectAddr(addrs, url, 0)
 
 	if r.client.RetryCount == 0 {
-		return r.client.execute(r)
+		r.Attempt = 1
+		resp, err = r.client.execute(r)
+		r.client.onErrorHooks(r, resp, unwrapNoRetryErr(err))
+		return resp, unwrapNoRetryErr(err)
 	}
 
-	var resp *Response
-	attempt := 0
 	err = Backoff(
 		func() (*Response, error) {
-			attempt++
+			r.Attempt++
 
-			r.URL = r.selectAddr(addrs, url, attempt)
+			r.URL = r.selectAddr(addrs, url, r.Attempt)
 
 			resp, err = r.client.execute(r)
 			if err != nil {
-				r.client.log.Errorf("%v, Attempt %v", err, attempt)
+				r.client.log.Errorf("%v, Attempt %v", err, r.Attempt)
 			}
 
 			return resp, err
@@ -641,9 +748,12 @@ func (r *Request) Execute(method, url string) (*Response, error) {
 		WaitTime(r.client.RetryWaitTime),
 		MaxWaitTime(r.client.RetryMaxWaitTime),
 		RetryConditions(r.client.RetryConditions),
+		RetryHooks(r.client.RetryHooks),
 	)
 
-	return resp, err
+	r.client.onErrorHooks(r, resp, unwrapNoRetryErr(err))
+
+	return resp, unwrapNoRetryErr(err)
 }
 
 //‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
