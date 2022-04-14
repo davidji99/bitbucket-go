@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2020 Jeevanandam M (jeeva@myjeeva.com), All rights reserved.
+// Copyright (c) 2015-2021 Jeevanandam M (jeeva@myjeeva.com), All rights reserved.
 // resty source code and usage is governed by a MIT style
 // license that can be found in the LICENSE file.
 
@@ -15,12 +15,10 @@ import (
 	"io"
 	"io/ioutil"
 	"math"
-	"net"
 	"net/http"
 	"net/url"
 	"reflect"
 	"regexp"
-	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -55,7 +53,7 @@ var (
 	hdrContentTypeKey     = http.CanonicalHeaderKey("Content-Type")
 	hdrContentLengthKey   = http.CanonicalHeaderKey("Content-Length")
 	hdrContentEncodingKey = http.CanonicalHeaderKey("Content-Encoding")
-	hdrAuthorizationKey   = http.CanonicalHeaderKey("Authorization")
+	hdrLocationKey        = http.CanonicalHeaderKey("Location")
 
 	plainTextType   = "text/plain; charset=utf-8"
 	jsonContentType = "application/json"
@@ -66,6 +64,26 @@ var (
 
 	hdrUserAgentValue = "go-resty/" + Version + " (https://github.com/go-resty/resty)"
 	bufPool           = &sync.Pool{New: func() interface{} { return &bytes.Buffer{} }}
+)
+
+type (
+	// RequestMiddleware type is for request middleware, called before a request is sent
+	RequestMiddleware func(*Client, *Request) error
+
+	// ResponseMiddleware type is for response middleware, called after a response has been received
+	ResponseMiddleware func(*Client, *Response) error
+
+	// PreRequestHook type is for the request hook, called right before the request is sent
+	PreRequestHook func(*Client, *http.Request) error
+
+	// RequestLogCallback type is for request logs, called before the request is logged
+	RequestLogCallback func(*RequestLog) error
+
+	// ResponseLogCallback type is for response logs, called before the response is logged
+	ResponseLogCallback func(*ResponseLog) error
+
+	// ErrorHook type is for reacting to request errors, called after all retries were attempted
+	ErrorHook func(*Request, error)
 )
 
 // Client struct is used to create Resty client with client level settings,
@@ -80,6 +98,7 @@ type Client struct {
 	Header                http.Header
 	UserInfo              *User
 	Token                 string
+	AuthScheme            string
 	Cookies               []*http.Cookie
 	Error                 reflect.Type
 	Debug                 bool
@@ -89,9 +108,14 @@ type Client struct {
 	RetryWaitTime         time.Duration
 	RetryMaxWaitTime      time.Duration
 	RetryConditions       []RetryConditionFunc
+	RetryHooks            []OnRetryFunc
 	RetryAfter            RetryAfterFunc
 	JSONMarshal           func(v interface{}) ([]byte, error)
 	JSONUnmarshal         func(data []byte, v interface{}) error
+
+	// HeaderAuthorizationKey is used to set/access Request Authorization header
+	// value when `SetAuthToken` option is used.
+	HeaderAuthorizationKey string
 
 	jsonEscapeHTML     bool
 	setContentLength   bool
@@ -105,12 +129,13 @@ type Client struct {
 	log                Logger
 	httpClient         *http.Client
 	proxyURL           *url.URL
-	beforeRequest      []func(*Client, *Request) error
-	udBeforeRequest    []func(*Client, *Request) error
-	preReqHook         func(*Client, *http.Request) error
-	afterResponse      []func(*Client, *Response) error
-	requestLog         func(*RequestLog) error
-	responseLog        func(*ResponseLog) error
+	beforeRequest      []RequestMiddleware
+	udBeforeRequest    []RequestMiddleware
+	preReqHook         PreRequestHook
+	afterResponse      []ResponseMiddleware
+	requestLog         RequestLogCallback
+	responseLog        ResponseLogCallback
+	errorHooks         []ErrorHook
 }
 
 // User type is to hold an username and password information
@@ -166,6 +191,21 @@ func (c *Client) SetHeaders(headers map[string]string) *Client {
 	for h, v := range headers {
 		c.Header.Set(h, v)
 	}
+	return c
+}
+
+// SetHeaderVerbatim method is to set a single header field and its value verbatim in the current request.
+//
+// For Example: To set `all_lowercase` and `UPPERCASE` as `available`.
+// 		client.R().
+//			SetHeaderVerbatim("all_lowercase", "available").
+//			SetHeaderVerbatim("UPPERCASE", "available")
+//
+// Also you can override header value, which was set at client instance level.
+//
+// Since v2.6.0
+func (c *Client) SetHeaderVerbatim(header, value string) *Client {
+	c.Header[header] = []string{value}
 	return c
 }
 
@@ -278,19 +318,41 @@ func (c *Client) SetBasicAuth(username, password string) *Client {
 	return c
 }
 
-// SetAuthToken method sets bearer auth token header in the HTTP request. For Example:
-// 		Authorization: Bearer <auth-token-value-comes-here>
+// SetAuthToken method sets the auth token of the `Authorization` header for all HTTP requests.
+// The default auth scheme is `Bearer`, it can be customized with the method `SetAuthScheme`. For Example:
+// 		Authorization: <auth-scheme> <auth-token-value>
 //
 // For Example: To set auth token BC594900518B4F7EAC75BD37F019E08FBC594900518B4F7EAC75BD37F019E08F
 //
 // 		client.SetAuthToken("BC594900518B4F7EAC75BD37F019E08FBC594900518B4F7EAC75BD37F019E08F")
 //
-// This bearer auth token gets added to all the request rasied from this client instance.
+// This auth token gets added to all the requests rasied from this client instance.
 // Also it can be overridden or set one at the request level is supported.
 //
 // See `Request.SetAuthToken`.
 func (c *Client) SetAuthToken(token string) *Client {
 	c.Token = token
+	return c
+}
+
+// SetAuthScheme method sets the auth scheme type in the HTTP request. For Example:
+//      Authorization: <auth-scheme-value> <auth-token-value>
+//
+// For Example: To set the scheme to use OAuth
+//
+// 		client.SetAuthScheme("OAuth")
+//
+// This auth scheme gets added to all the requests rasied from this client instance.
+// Also it can be overridden or set one at the request level is supported.
+//
+// Information about auth schemes can be found in RFC7235 which is linked to below
+// along with the page containing the currently defined official authentication schemes:
+//     https://tools.ietf.org/html/rfc7235
+//     https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml#authschemes
+//
+// See `Request.SetAuthToken`.
+func (c *Client) SetAuthScheme(scheme string) *Client {
+	c.AuthScheme = scheme
 	return c
 }
 
@@ -326,7 +388,7 @@ func (c *Client) NewRequest() *Request {
 //
 //				return nil 	// if its success otherwise return error
 //			})
-func (c *Client) OnBeforeRequest(m func(*Client, *Request) error) *Client {
+func (c *Client) OnBeforeRequest(m RequestMiddleware) *Client {
 	c.udBeforeRequest = append(c.udBeforeRequest, m)
 	return c
 }
@@ -340,8 +402,24 @@ func (c *Client) OnBeforeRequest(m func(*Client, *Request) error) *Client {
 //
 //				return nil 	// if its success otherwise return error
 //			})
-func (c *Client) OnAfterResponse(m func(*Client, *Response) error) *Client {
+func (c *Client) OnAfterResponse(m ResponseMiddleware) *Client {
 	c.afterResponse = append(c.afterResponse, m)
+	return c
+}
+
+// OnError method adds a callback that will be run whenever a request execution fails.
+// This is called after all retries have been attempted (if any).
+// If there was a response from the server, the error will be wrapped in *ResponseError
+// which has the last response received from the server.
+//
+//		client.OnError(func(req *resty.Request, err error) {
+//			if v, ok := err.(*resty.ResponseError); ok {
+//				// Do something with v.Response
+//			}
+//			// Log the error, increment a metric, etc...
+//		})
+func (c *Client) OnError(h ErrorHook) *Client {
+	c.errorHooks = append(c.errorHooks, h)
 	return c
 }
 
@@ -349,7 +427,7 @@ func (c *Client) OnAfterResponse(m func(*Client, *Response) error) *Client {
 // It is called right before the request is fired.
 //
 // Note: Only one pre-request hook can be registered. Use `client.OnBeforeRequest` for mutilple.
-func (c *Client) SetPreRequestHook(h func(*Client, *http.Request) error) *Client {
+func (c *Client) SetPreRequestHook(h PreRequestHook) *Client {
 	if c.preReqHook != nil {
 		c.log.Warnf("Overwriting an existing pre-request hook: %s", functionName(h))
 	}
@@ -375,7 +453,7 @@ func (c *Client) SetDebugBodyLimit(sl int64) *Client {
 
 // OnRequestLog method used to set request log callback into Resty. Registered callback gets
 // called before the resty actually logs the information.
-func (c *Client) OnRequestLog(rl func(*RequestLog) error) *Client {
+func (c *Client) OnRequestLog(rl RequestLogCallback) *Client {
 	if c.requestLog != nil {
 		c.log.Warnf("Overwriting an existing on-request-log callback from=%s to=%s",
 			functionName(c.requestLog), functionName(rl))
@@ -386,7 +464,7 @@ func (c *Client) OnRequestLog(rl func(*RequestLog) error) *Client {
 
 // OnResponseLog method used to set response log callback into Resty. Registered callback gets
 // called before the resty actually logs the information.
-func (c *Client) OnResponseLog(rl func(*ResponseLog) error) *Client {
+func (c *Client) OnResponseLog(rl ResponseLogCallback) *Client {
 	if c.responseLog != nil {
 		c.log.Warnf("Overwriting an existing on-response-log callback from=%s to=%s",
 			functionName(c.responseLog), functionName(rl))
@@ -513,6 +591,26 @@ func (c *Client) SetRetryAfter(callback RetryAfterFunc) *Client {
 // retry if any of the functions return true and error is nil.
 func (c *Client) AddRetryCondition(condition RetryConditionFunc) *Client {
 	c.RetryConditions = append(c.RetryConditions, condition)
+	return c
+}
+
+// AddRetryAfterErrorCondition adds the basic condition of retrying after encountering
+// an error from the http response
+//
+// Since v2.6.0
+func (c *Client) AddRetryAfterErrorCondition() *Client {
+	c.AddRetryCondition(func(response *Response, err error) bool {
+		return response.IsError()
+	})
+	return c
+}
+
+// AddRetryHook adds a side-effecting retry hook to an array of hooks
+// that will be executed on each retry.
+//
+// Since v2.6.0
+func (c *Client) AddRetryHook(hook OnRetryFunc) *Client {
+	c.RetryHooks = append(c.RetryHooks, hook)
 	return c
 }
 
@@ -683,6 +781,22 @@ func (c *Client) SetDoNotParseResponse(parse bool) *Client {
 	return c
 }
 
+// SetPathParam method sets single URL path key-value pair in the
+// Resty client instance.
+// 		client.SetPathParam("userId", "sample@sample.com")
+//
+// 		Result:
+// 		   URL - /v1/users/{userId}/details
+// 		   Composed URL - /v1/users/sample@sample.com/details
+// It replaces the value of the key while composing the request URL.
+//
+// Also it can be overridden at request level Path Params options,
+// see `Request.SetPathParam` or `Request.SetPathParams`.
+func (c *Client) SetPathParam(param, value string) *Client {
+	c.pathParams[param] = value
+	return c
+}
+
 // SetPathParams method sets multiple URL path key-value pairs at one go in the
 // Resty client instance.
 // 		client.SetPathParams(map[string]string{
@@ -693,11 +807,13 @@ func (c *Client) SetDoNotParseResponse(parse bool) *Client {
 // 		Result:
 // 		   URL - /v1/users/{userId}/{subAccountId}/details
 // 		   Composed URL - /v1/users/sample@sample.com/100002/details
-// It replace the value of the key while composing request URL. Also it can be
-// overridden at request level Path Params options, see `Request.SetPathParams`.
+// It replaces the value of the key while composing the request URL.
+//
+// Also it can be overridden at request level Path Params options,
+// see `Request.SetPathParam` or `Request.SetPathParams`.
 func (c *Client) SetPathParams(params map[string]string) *Client {
 	for p, v := range params {
-		c.pathParams[p] = v
+		c.SetPathParam(p, v)
 	}
 	return c
 }
@@ -761,14 +877,14 @@ func (c *Client) execute(req *Request) (*Response, error) {
 	// to modify the *resty.Request object
 	for _, f := range c.udBeforeRequest {
 		if err = f(c, req); err != nil {
-			return nil, err
+			return nil, wrapNoRetryErr(err)
 		}
 	}
 
 	// resty middlewares
 	for _, f := range c.beforeRequest {
 		if err = f(c, req); err != nil {
-			return nil, err
+			return nil, wrapNoRetryErr(err)
 		}
 	}
 
@@ -779,29 +895,24 @@ func (c *Client) execute(req *Request) (*Response, error) {
 	// call pre-request if defined
 	if c.preReqHook != nil {
 		if err = c.preReqHook(c, req.RawRequest); err != nil {
-			return nil, err
+			return nil, wrapNoRetryErr(err)
 		}
 	}
 
 	if err = requestLogger(c, req); err != nil {
-		return nil, err
+		return nil, wrapNoRetryErr(err)
 	}
 
 	req.Time = time.Now()
 	resp, err := c.httpClient.Do(req.RawRequest)
-	endTime := time.Now()
-
-	if c.trace || req.trace {
-		req.clientTrace.endTime = endTime
-	}
 
 	response := &Response{
 		Request:     req,
 		RawResponse: resp,
-		receivedAt:  endTime,
 	}
 
 	if err != nil || req.notParseResponse || c.notParseResponse {
+		response.setReceivedAt()
 		return response, err
 	}
 
@@ -814,6 +925,7 @@ func (c *Client) execute(req *Request) (*Response, error) {
 			if _, ok := body.(*gzip.Reader); !ok {
 				body, err = gzip.NewReader(body)
 				if err != nil {
+					response.setReceivedAt()
 					return response, err
 				}
 				defer closeq(body)
@@ -821,11 +933,14 @@ func (c *Client) execute(req *Request) (*Response, error) {
 		}
 
 		if response.body, err = ioutil.ReadAll(body); err != nil {
+			response.setReceivedAt()
 			return response, err
 		}
 
 		response.size = int64(len(response.body))
 	}
+
+	response.setReceivedAt() // after we read the body
 
 	// Apply Response middleware
 	for _, f := range c.afterResponse {
@@ -834,7 +949,7 @@ func (c *Client) execute(req *Request) (*Response, error) {
 		}
 	}
 
-	return response, err
+	return response, wrapNoRetryErr(err)
 }
 
 // getting TLS client config if not exists then create one
@@ -862,6 +977,35 @@ func (c *Client) transport() (*http.Transport, error) {
 func (c *Client) outputLogTo(w io.Writer) *Client {
 	c.log.(*logger).l.SetOutput(w)
 	return c
+}
+
+// ResponseError is a wrapper for including the server response with an error.
+// Neither the err nor the response should be nil.
+type ResponseError struct {
+	Response *Response
+	Err      error
+}
+
+func (e *ResponseError) Error() string {
+	return e.Err.Error()
+}
+
+func (e *ResponseError) Unwrap() error {
+	return e.Err
+}
+
+// Helper to run onErrorHooks hooks.
+// It wraps the error in a ResponseError if the resp is not nil
+// so hooks can access it.
+func (c *Client) onErrorHooks(req *Request, resp *Response, err error) {
+	if err != nil {
+		if resp != nil { // wrap with ResponseError
+			err = &ResponseError{Response: resp, Err: err}
+		}
+		for _, h := range c.errorHooks {
+			h(req, err)
+		}
+	}
 }
 
 //‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
@@ -902,25 +1046,26 @@ func createClient(hc *http.Client) *Client {
 	}
 
 	c := &Client{ // not setting lang default values
-		QueryParam:         url.Values{},
-		FormData:           url.Values{},
-		Header:             http.Header{},
-		Cookies:            make([]*http.Cookie, 0),
-		RetryWaitTime:      defaultWaitTime,
-		RetryMaxWaitTime:   defaultMaxWaitTime,
-		JSONMarshal:        json.Marshal,
-		JSONUnmarshal:      json.Unmarshal,
-		jsonEscapeHTML:     true,
-		httpClient:         hc,
-		debugBodySizeLimit: math.MaxInt32,
-		pathParams:         make(map[string]string),
+		QueryParam:             url.Values{},
+		FormData:               url.Values{},
+		Header:                 http.Header{},
+		Cookies:                make([]*http.Cookie, 0),
+		RetryWaitTime:          defaultWaitTime,
+		RetryMaxWaitTime:       defaultMaxWaitTime,
+		JSONMarshal:            json.Marshal,
+		JSONUnmarshal:          json.Unmarshal,
+		HeaderAuthorizationKey: http.CanonicalHeaderKey("Authorization"),
+		jsonEscapeHTML:         true,
+		httpClient:             hc,
+		debugBodySizeLimit:     math.MaxInt32,
+		pathParams:             make(map[string]string),
 	}
 
 	// Logger
 	c.SetLogger(createLogger())
 
 	// default before request middlewares
-	c.beforeRequest = []func(*Client, *Request) error{
+	c.beforeRequest = []RequestMiddleware{
 		parseRequestURL,
 		parseRequestHeader,
 		parseRequestBody,
@@ -929,34 +1074,14 @@ func createClient(hc *http.Client) *Client {
 	}
 
 	// user defined request middlewares
-	c.udBeforeRequest = []func(*Client, *Request) error{}
+	c.udBeforeRequest = []RequestMiddleware{}
 
 	// default after response middlewares
-	c.afterResponse = []func(*Client, *Response) error{
+	c.afterResponse = []ResponseMiddleware{
 		responseLogger,
 		parseResponseBody,
 		saveResponseIntoFile,
 	}
 
 	return c
-}
-
-func createTransport(localAddr net.Addr) *http.Transport {
-	dialer := &net.Dialer{
-		Timeout:   30 * time.Second,
-		KeepAlive: 30 * time.Second,
-		DualStack: true,
-	}
-	if localAddr != nil {
-		dialer.LocalAddr = localAddr
-	}
-	return &http.Transport{
-		Proxy:                 http.ProxyFromEnvironment,
-		DialContext:           dialer.DialContext,
-		MaxIdleConns:          100,
-		IdleConnTimeout:       90 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
-		MaxIdleConnsPerHost:   runtime.GOMAXPROCS(0) + 1,
-	}
 }

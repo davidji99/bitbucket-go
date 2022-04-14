@@ -1,25 +1,37 @@
-# github.com/davecgh/go-spew v1.1.0
+# github.com/davecgh/go-spew v1.1.1
+## explicit
 github.com/davecgh/go-spew/spew
 # github.com/davidji99/go-querystring v1.0.2
+## explicit
 github.com/davidji99/go-querystring/query
-# github.com/davidji99/simpleresty v0.2.1
+# github.com/davidji99/simpleresty v0.3.0
+## explicit; go 1.16
 github.com/davidji99/simpleresty
-# github.com/go-resty/resty/v2 v2.2.0
+# github.com/go-resty/resty/v2 v2.6.0
+## explicit; go 1.11
 github.com/go-resty/resty/v2
 # github.com/golang/protobuf v1.2.0
+## explicit
 github.com/golang/protobuf/proto
 # github.com/pmezard/go-difflib v1.0.0
+## explicit
 github.com/pmezard/go-difflib/difflib
-# github.com/stretchr/testify v1.4.0
+# github.com/stretchr/testify v1.7.0
+## explicit; go 1.13
 github.com/stretchr/testify/assert
-# golang.org/x/net v0.0.0-20200222125558-5a598a2470a0
+# golang.org/x/net v0.0.0-20210428140749-89ef3d95e781
+## explicit; go 1.11
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/publicsuffix
-# golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
+# golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
+## explicit; go 1.11
 golang.org/x/oauth2
+golang.org/x/oauth2/bitbucket
+golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
 # google.golang.org/appengine v1.4.0
+## explicit
 google.golang.org/appengine/internal
 google.golang.org/appengine/internal/base
 google.golang.org/appengine/internal/datastore
@@ -27,5 +39,6 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# gopkg.in/yaml.v2 v2.2.2
-gopkg.in/yaml.v2
+# gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+## explicit
+gopkg.in/yaml.v3
