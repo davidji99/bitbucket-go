@@ -2009,6 +2009,14 @@ func (l *Link) GetName() string {
 	return *l.Name
 }
 
+// GetCloseSourceBranch returns the CloseSourceBranch field if it's non-nil, zero value otherwise.
+func (m *MergePrRequest) GetCloseSourceBranch() bool {
+	if m == nil || m.CloseSourceBranch == nil {
+		return false
+	}
+	return *m.CloseSourceBranch
+}
+
 // GetID returns the ID field if it's non-nil, zero value otherwise.
 func (m *Milestone) GetID() int64 {
 	if m == nil || m.ID == nil {
